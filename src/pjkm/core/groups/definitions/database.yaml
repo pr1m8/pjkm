@@ -1,0 +1,22 @@
+id: database
+name: "Database & Migrations"
+description: "SQLAlchemy async ORM with Alembic migrations"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  database:
+    - "sqlalchemy[asyncio]>=2.0.40"
+    - "alembic>=1.15.0"
+    - "asyncpg>=0.30.0"
+    - "greenlet>=3.2.0"
+
+scaffolded_files:
+  - template_fragment: "database_alembic"
+    destination: "."
+    description: "Alembic migration scaffolding with async SQLAlchemy config"
+
+pyproject_tool_config: {}

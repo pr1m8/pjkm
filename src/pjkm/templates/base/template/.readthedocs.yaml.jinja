@@ -1,0 +1,13 @@
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "{{ python_version }}"
+  commands:
+    - pip install pdm
+    - pdm install -G docs
+    - pdm run sphinx-build -b html docs/ $READTHEDOCS_OUTPUT/html
+
+sphinx:
+  configuration: docs/conf.py

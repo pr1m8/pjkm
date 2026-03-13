@@ -1,0 +1,14 @@
+id: security
+name: "Security Scanning"
+description: "Bandit security linter and detect-secrets"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  security:
+    - "bandit>=1.9.0"
+    - "detect-secrets>=1.5.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

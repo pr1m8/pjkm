@@ -1,0 +1,26 @@
+"""Example Celery tasks."""
+
+from __future__ import annotations
+
+from {{ project_slug }}.workers.celery_app import app
+
+
+@app.task(bind=True, max_retries=3, default_retry_delay=60)
+def example_task(self, data: dict) -> dict:
+    """Example task with retry support.
+
+    Usage:
+        from {{ project_slug }}.workers.tasks import example_task
+        result = example_task.delay({"key": "value"})
+    """
+    try:
+        # Your task logic here
+        return {"status": "completed", "input": data}
+    except Exception as exc:
+        self.retry(exc=exc)
+
+
+@app.task
+def periodic_cleanup() -> str:
+    """Example periodic task — register in beat_schedule."""
+    return "cleanup completed"

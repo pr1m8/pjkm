@@ -1,0 +1,14 @@
+id: jupyter
+name: "Jupyter Notebook Support"
+description: "Jupyter Lab with IPython kernel"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  jupyter:
+    - "jupyterlab>=4.4.0"
+    - "ipykernel>=6.30.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

@@ -1,0 +1,56 @@
+python:
+  - changed-files:
+      - any-glob-to-any-file: "src/**/*.py"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: "tests/**"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docs/**"
+          - "*.md"
+          - "*.rst"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - ".pre-commit-config.yaml"
+          - ".trunk/**"
+
+infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "infra/**"
+          - "k8s/**"
+          - "helm/**"
+          - "Dockerfile*"
+          - "compose*.yaml"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "pyproject.toml"
+          - "pdm.lock"
+          - "package.json"
+          - "pnpm-lock.yaml"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".config/**"
+          - ".env*"
+          - ".secrets*"
+          - "*.yaml"
+          - "*.yml"
+          - "*.toml"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/**"
+          - "packages/**"
+          - "turbo.json"
+          - "pnpm-workspace.yaml"

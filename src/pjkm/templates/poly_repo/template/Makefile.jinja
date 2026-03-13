@@ -1,0 +1,175 @@
+SHELL := /bin/bash
+.DEFAULT_GOAL := help
+
+# ==============================================================================
+# {{ project_name }} Makefile (poly-repo)
+# ==============================================================================
+
+ENV_FILE      ?= ./.env
+COMPOSE_FILE  ?= infra/compose.yaml
+PROJECT_NAME  ?= {{ project_slug }}
+SHOW_SECRETS  ?= 1
+NETWORK_NAME  ?= {{ project_slug }}_default
+
+# Compose command used everywhere.
+DC := docker compose --env-file "$(ENV_FILE)" -f "$(COMPOSE_FILE)" -p "$(PROJECT_NAME)"
+
+# Source .env for shell helper targets.
+WITH_ENV := set -a; if [ -f "$(ENV_FILE)" ]; then source "$(ENV_FILE)"; fi; set +a
+
+# Cross-platform opener.
+OPEN_CMD := $(shell \
+	if command -v wslview >/dev/null 2>&1; then echo wslview; \
+	elif command -v open >/dev/null 2>&1; then echo open; \
+	else echo xdg-open; fi)
+
+.PHONY: help guard-docker \
+	up up-build stop start down destroy ps logs pull restart config \
+	install install-all test lint fmt typecheck check \
+	submodules install-packages \
+	doctor urls open \
+	db-shell redis-cli \
+	network-users clean-network clean
+
+# ── Guards ────────────────────────────────────────────
+guard-docker:
+	@docker info >/dev/null 2>&1 || { \
+		echo "Docker daemon is not running or not reachable."; \
+		echo "Start Docker Desktop (or the Docker service) and retry."; \
+		exit 1; \
+	}
+
+# ── Infrastructure ───────────────────────────────────
+up: guard-docker ## Start infrastructure services
+	$(DC) up -d --remove-orphans
+
+up-build: guard-docker ## Rebuild and start services
+	$(DC) up -d --build --remove-orphans
+
+stop: guard-docker ## Stop services (preserving state)
+	$(DC) stop
+
+start: guard-docker ## Start stopped services
+	$(DC) start
+
+down: guard-docker ## Stop and remove services
+	$(DC) down --remove-orphans
+
+destroy: guard-docker ## Stop, remove services, and delete volumes
+	$(DC) down -v --remove-orphans
+
+ps: guard-docker ## Show running services
+	$(DC) ps
+
+logs: guard-docker ## Tail service logs (logs svc=name for one service)
+	@if [ -n "$(svc)" ]; then \
+		$(DC) logs -f --tail=200 "$(svc)"; \
+	else \
+		$(DC) logs -f --tail=200; \
+	fi
+
+pull: guard-docker ## Pull latest images
+	$(DC) pull
+
+restart: guard-docker ## Restart a service (restart svc=name)
+	@if [ -z "$(svc)" ]; then \
+		echo "Usage: make restart svc=postgres"; \
+		exit 1; \
+	fi
+	$(DC) restart "$(svc)"
+
+config: guard-docker ## Show resolved Compose config
+	$(DC) config
+
+# ── Packages / Submodules ────────────────────────────
+submodules: ## Initialize and update git submodules
+	git submodule update --init --recursive
+
+install-packages: ## Install all sub-packages in packages/
+	@for dir in packages/*/; do \
+		if [ -f "$$dir/pyproject.toml" ]; then \
+			echo "Installing $$dir..."; \
+			(cd "$$dir" && pdm install) || true; \
+		fi; \
+	done
+
+# ── Development ──────────────────────────────────────
+install: ## Install main project
+	pdm install -G dev
+
+install-all: install install-packages ## Install root + all sub-packages
+
+test: ## Run tests
+	pdm run pytest
+
+lint: ## Run linters
+	pdm run ruff check .
+
+fmt: ## Format code
+	pdm run ruff format .
+
+typecheck: ## Run type checker
+	pdm run pyright src/
+
+check: lint typecheck test ## Run all checks (lint + typecheck + test)
+
+# ── Diagnostics ──────────────────────────────────────
+doctor: guard-docker ps urls ## Check health of all services
+
+urls: ## Show service URLs and credentials
+	@$(WITH_ENV); \
+	echo "Project:    $(PROJECT_NAME)"; \
+	echo ""; \
+	echo "Postgres:   postgresql://$${POSTGRES_USER:-postgres}:****@localhost:$${POSTGRES_PORT:-5432}/$${POSTGRES_DB:-{{ project_slug }}}"; \
+	echo "Redis:      redis://localhost:$${REDIS_PORT:-6379}"; \
+	if [ "$(SHOW_SECRETS)" = "1" ]; then \
+		echo ""; \
+		echo "Credentials:"; \
+		echo "  Postgres: $${POSTGRES_USER:-postgres} / $${POSTGRES_PASSWORD:-postgres}"; \
+	fi
+
+open: ## Open app in browser
+	@$(WITH_ENV); \
+	$(OPEN_CMD) "http://localhost:$${APP_PORT:-8000}" >/dev/null 2>&1 || true
+
+# ── Database Access ──────────────────────────────────
+db-shell: guard-docker ## Open psql shell
+	@$(WITH_ENV); \
+	$(DC) exec postgres psql -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-{{ project_slug }}}"
+
+redis-cli: guard-docker ## Open redis-cli
+	$(DC) exec redis redis-cli
+
+# ── Network Debugging ────────────────────────────────
+network-users: guard-docker ## Show containers on the project network
+	@echo "Containers attached to $(NETWORK_NAME):"
+	@docker ps -a --filter "network=$(NETWORK_NAME)"
+	@echo ""
+	@docker network inspect "$(NETWORK_NAME)" 2>/dev/null || echo "Network $(NETWORK_NAME) does not exist."
+
+clean-network: guard-docker ## Remove stale project network
+	@docker network inspect "$(NETWORK_NAME)" >/dev/null 2>&1 || { \
+		echo "Network $(NETWORK_NAME) does not exist."; exit 0; \
+	}
+	@ids="$$(docker ps -aq --filter "network=$(NETWORK_NAME)")"; \
+	if [ -n "$$ids" ]; then \
+		echo "Removing containers attached to $(NETWORK_NAME): $$ids"; \
+		docker rm -f $$ids; \
+	fi
+	@docker network rm "$(NETWORK_NAME)" || { \
+		echo "Could not remove $(NETWORK_NAME). Run 'make network-users' for detail."; \
+		exit 1; \
+	}
+
+# ── Cleanup ──────────────────────────────────────────
+clean: ## Remove build artifacts and caches
+	rm -rf dist/ build/ *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov/
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+
+# ── Help ─────────────────────────────────────────────
+help: ## Show this help
+	@echo "{{ project_name }} Makefile (poly-repo)"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "Tip: make logs svc=postgres | make restart svc=redis | make urls SHOW_SECRETS=0"

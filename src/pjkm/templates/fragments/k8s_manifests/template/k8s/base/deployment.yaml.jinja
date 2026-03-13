@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ project_slug }}
+  labels:
+    app: {{ project_slug }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ project_slug }}
+  template:
+    metadata:
+      labels:
+        app: {{ project_slug }}
+    spec:
+      containers:
+        - name: {{ project_slug }}
+          image: {{ project_slug }}:latest
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ project_slug }}-config
+            - secretRef:
+                name: {{ project_slug }}-secrets
+                optional: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      restartPolicy: Always

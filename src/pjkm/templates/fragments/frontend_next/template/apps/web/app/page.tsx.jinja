@@ -1,0 +1,37 @@
+export default function Home() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold mb-4">{{ project_name }}</h1>
+      <p className="text-lg text-gray-600">
+        Next.js frontend + Python backend
+      </p>
+      <div className="mt-8 grid gap-4 text-center lg:grid-cols-3">
+        <a
+          href="/api/health"
+          className="rounded-lg border px-5 py-4 hover:border-gray-300"
+        >
+          <h2 className="text-xl font-semibold">API Health</h2>
+          <p className="text-sm text-gray-500">Check backend status</p>
+        </a>
+        <a
+          href="https://nextjs.org/docs"
+          className="rounded-lg border px-5 py-4 hover:border-gray-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h2 className="text-xl font-semibold">Next.js Docs</h2>
+          <p className="text-sm text-gray-500">Learn Next.js</p>
+        </a>
+        <a
+          href="https://supabase.com/docs"
+          className="rounded-lg border px-5 py-4 hover:border-gray-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h2 className="text-xl font-semibold">Supabase Docs</h2>
+          <p className="text-sm text-gray-500">Backend as a service</p>
+        </a>
+      </div>
+    </main>
+  );
+}

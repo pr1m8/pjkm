@@ -1,0 +1,13 @@
+"""Tests for {{ project_name }} CLI."""
+
+from typer.testing import CliRunner
+
+from {{ project_slug }}.cli import app
+
+runner = CliRunner()
+
+
+def test_run():
+    result = runner.invoke(app, ["run"])
+    assert result.exit_code == 0
+    assert "Hello from {{ project_name }}" in result.output

@@ -1,0 +1,114 @@
+# Auto-detect text files and normalize line endings
+* text=auto eol=lf
+
+# Python
+*.py text diff=python
+*.pyi text diff=python
+*.pyx text diff=python
+
+# Config / Data
+*.cfg text
+*.conf text
+*.csv text
+*.env text
+*.ini text
+*.json text
+*.sql text
+*.toml text
+*.xml text
+*.yaml text
+*.yml text
+
+# Docs
+*.md text diff=markdown
+*.rst text
+*.txt text
+LICENSE text
+CHANGELOG text
+
+# Shell
+*.bash text eol=lf
+*.sh text eol=lf
+
+# Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Web
+*.css text diff=css
+*.scss text diff=css
+*.htm text diff=html
+*.html text diff=html
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.mjs text
+*.cjs text
+*.vue text
+*.svelte text
+
+# Docker
+Dockerfile text
+*.dockerignore text
+
+# Kubernetes / Helm
+*.tpl text
+
+# Makefiles
+Makefile text eol=lf
+*.mk text eol=lf
+
+# Binary files — do not diff/merge
+*.gz binary
+*.ico binary
+*.jar binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.png binary
+*.gif binary
+*.svg binary
+*.tar binary
+*.whl binary
+*.zip binary
+*.tar.gz binary
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+
+# ML model files
+*.pkl binary
+*.pickle binary
+*.h5 binary
+*.hdf5 binary
+*.pt binary
+*.pth binary
+*.onnx binary
+*.safetensors binary
+*.model binary
+
+# Data files
+*.parquet binary
+*.feather binary
+*.arrow binary
+*.msgpack binary
+*.npy binary
+*.npz binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# Jupyter notebooks — treat as text for diffing
+*.ipynb text diff
+
+# Lock files — do not diff (generated)
+pdm.lock -diff
+pnpm-lock.yaml -diff
+package-lock.json -diff
+yarn.lock -diff

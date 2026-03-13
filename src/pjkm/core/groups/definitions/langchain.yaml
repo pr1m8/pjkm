@@ -1,0 +1,20 @@
+id: langchain
+name: "LangChain"
+description: "LangChain framework with common integrations for LLM applications"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  langchain:
+    - "langchain>=0.3.0"
+    - "langchain-core>=0.3.0"
+    - "langchain-community>=0.3.0"
+    - "langchain-openai>=0.3.0"
+    - "langchain-anthropic>=0.3.0"
+    - "langchain-huggingface>=1.2.0"
+    - "langgraph>=0.4.0"
+    - "langsmith>=0.3.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

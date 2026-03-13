@@ -1,0 +1,9 @@
+"""Basic tests for {{ project_name }}."""
+
+from {{ project_slug }} import *  # noqa: F401, F403
+
+
+def test_import():
+    """Verify the package can be imported."""
+    import {{ project_slug }}
+    assert {{ project_slug }} is not None

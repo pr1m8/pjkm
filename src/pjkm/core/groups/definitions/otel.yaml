@@ -1,0 +1,24 @@
+id: otel
+name: "OpenTelemetry Observability"
+description: "OTel Collector + Prometheus + Grafana + Jaeger + Loki stack"
+archetypes:
+  - service
+  - poly_repo
+requires_groups:
+  - logging
+platform_filter: null
+
+dependencies:
+  otel:
+    - "opentelemetry-distro>=0.52b1"
+    - "opentelemetry-api>=1.31.1"
+    - "opentelemetry-sdk>=1.31.1"
+    - "opentelemetry-exporter-otlp>=1.31.1"
+    - "opentelemetry-instrumentation>=0.52b1"
+
+scaffolded_files:
+  - template_fragment: "infra_otel"
+    destination: "infra/"
+    description: "OTel collector, Prometheus, Grafana, Loki, Jaeger configs"
+
+pyproject_tool_config: {}

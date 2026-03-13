@@ -1,0 +1,10 @@
+_min_copier_version: "9.0.0"
+_subdirectory: "template"
+
+project_name:
+  type: str
+project_slug:
+  type: str
+python_version:
+  type: str
+  default: "3.13"

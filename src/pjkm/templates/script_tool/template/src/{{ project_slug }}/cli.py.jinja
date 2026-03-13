@@ -1,0 +1,15 @@
+"""{{ project_name }} CLI."""
+
+import typer
+
+app = typer.Typer(
+    name="{{ project_slug }}",
+    help="{{ description }}",
+    no_args_is_help=True,
+)
+
+
+@app.command()
+def run() -> None:
+    """Run {{ project_name }}."""
+    typer.echo("Hello from {{ project_name }}!")

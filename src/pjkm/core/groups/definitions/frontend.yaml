@@ -1,0 +1,17 @@
+id: frontend
+name: "Frontend (Next.js + pnpm)"
+description: "Next.js frontend with pnpm workspaces, Turborepo, and Supabase integration"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "frontend_next"
+    destination: "."
+    description: "apps/web/ Next.js app, pnpm-workspace.yaml, turbo.json, root package.json"
+
+pyproject_tool_config: {}

@@ -1,0 +1,23 @@
+id: ml
+name: "Machine Learning"
+description: "Core ML stack: scikit-learn, XGBoost, LightGBM, ONNX, and data tools"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  ml:
+    - "scikit-learn>=1.6.0"
+    - "xgboost>=3.0.0"
+    - "lightgbm>=4.6.0"
+    - "onnx>=1.18.0"
+    - "onnxruntime>=1.22.0"
+    - "pandas>=2.3.0"
+    - "numpy>=2.2.0"
+    - "scipy>=1.15.0"
+    - "matplotlib>=3.10.0"
+    - "seaborn>=0.13.0"
+    - "polars>=1.30.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

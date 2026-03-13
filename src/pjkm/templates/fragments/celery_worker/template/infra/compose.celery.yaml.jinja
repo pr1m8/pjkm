@@ -1,0 +1,50 @@
+# Celery worker + beat + flower monitoring
+# Usage: docker compose -f infra/compose.yaml -f infra/compose.celery.yaml up -d
+
+services:
+  celery-worker:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: >
+      celery -A {{ project_slug }}.workers.celery_app worker
+      --loglevel=info
+      --concurrency=4
+      --queues=default
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: >
+      celery -A {{ project_slug }}.workers.beat_schedule beat
+      --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  flower:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: >
+      celery -A {{ project_slug }}.workers.celery_app flower
+      --port=5555
+      --broker=redis://redis:6379/0
+    ports:
+      - "${FLOWER_PORT:-5555}:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped

@@ -1,0 +1,18 @@
+id: api
+name: "API Framework"
+description: "FastAPI with Uvicorn, Pydantic settings, and CORS middleware"
+archetypes:
+  - service
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  api:
+    - "fastapi>=0.115.0"
+    - "uvicorn[standard]>=0.34.0"
+    - "pydantic-settings>=2.7.0"
+    - "python-multipart>=0.0.20"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

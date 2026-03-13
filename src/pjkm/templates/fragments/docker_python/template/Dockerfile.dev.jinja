@@ -1,0 +1,43 @@
+# Development Dockerfile — includes all dev tools, hot-reload ready
+FROM python:{{ python_version }}-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        git \
+        build-essential \
+        sudo \
+        openssh-client \
+        # Node.js (for frontend/tooling)
+        gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js LTS + pnpm (for frontend/tooling support)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && corepack enable \
+    && corepack prepare pnpm@latest --activate \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python tooling
+RUN pip install --no-cache-dir pdm pipx \
+    && pipx ensurepath
+
+# Non-root user with sudo
+RUN groupadd --gid 1000 dev \
+    && useradd --uid 1000 --gid dev --shell /bin/bash --create-home dev \
+    && echo "dev ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/dev
+
+USER dev
+WORKDIR /home/dev/app
+
+# Install project deps (cached layer)
+COPY --chown=dev:dev pyproject.toml pdm.lock* ./
+RUN pdm install --no-self --no-editable 2>/dev/null || true
+
+# Mount source via volume for hot-reload
+CMD ["pdm", "run", "python", "-m", "{{ project_slug }}"]

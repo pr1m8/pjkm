@@ -1,0 +1,17 @@
+id: docker
+name: "Docker & Containers"
+description: "Dockerfile, .dockerignore, devcontainer, and multi-stage build for Python 3.13 with PDM"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "docker_python"
+    destination: "."
+    description: "Dockerfile (multi-stage), .dockerignore, devcontainer.json, compose.dev.yml"
+
+pyproject_tool_config: {}

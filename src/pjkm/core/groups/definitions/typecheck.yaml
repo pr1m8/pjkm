@@ -1,0 +1,23 @@
+id: typecheck
+name: "Type Checking"
+description: "Pyright (strict) + mypy as secondary checker"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  typecheck:
+    - "pyright>=1.1.400"
+    - "mypy>=1.15.0"
+
+scaffolded_files: []
+
+pyproject_tool_config:
+  pyright:
+    pythonVersion: "3.13"
+    typeCheckingMode: "strict"
+  mypy:
+    python_version: "3.13"
+    strict: true
+    warn_return_any: true
+    warn_unused_configs: true

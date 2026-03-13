@@ -1,0 +1,43 @@
+# ── Stage 1: Base ────────────────────────────────────
+FROM python:{{ python_version }}-slim AS base
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        git \
+        build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PDM
+RUN pip install --no-cache-dir pdm pipx \
+    && pipx ensurepath
+
+WORKDIR /app
+
+# ── Stage 2: Dependencies ───────────────────────────
+FROM base AS deps
+
+COPY pyproject.toml pdm.lock* ./
+RUN pdm install --prod --no-lock --no-self --no-editable
+
+# ── Stage 3: Runtime ────────────────────────────────
+FROM base AS runtime
+
+# Non-root user
+RUN groupadd --gid 1000 app \
+    && useradd --uid 1000 --gid app --shell /bin/bash --create-home app
+
+COPY --from=deps /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY . /app
+RUN pdm install --no-lock --no-self --no-editable 2>/dev/null || true
+
+USER app
+EXPOSE 8000
+
+CMD ["python", "-m", "{{ project_slug }}"]

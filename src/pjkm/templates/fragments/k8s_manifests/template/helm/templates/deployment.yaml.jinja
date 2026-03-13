@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {% raw %}{{ include "chart.fullname" . }}{% endraw %}
+  labels:
+    {% raw %}{{- include "chart.labels" . | nindent 4 }}{% endraw %}
+spec:
+  {% raw %}{{- if not .Values.autoscaling.enabled }}{% endraw %}
+  replicas: {% raw %}{{ .Values.replicaCount }}{% endraw %}
+  {% raw %}{{- end }}{% endraw %}
+  selector:
+    matchLabels:
+      {% raw %}{{- include "chart.selectorLabels" . | nindent 6 }}{% endraw %}
+  template:
+    metadata:
+      labels:
+        {% raw %}{{- include "chart.selectorLabels" . | nindent 8 }}{% endraw %}
+    spec:
+      containers:
+        - name: {% raw %}{{ .Chart.Name }}{% endraw %}
+          image: "{% raw %}{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}{% endraw %}"
+          imagePullPolicy: {% raw %}{{ .Values.image.pullPolicy }}{% endraw %}
+          ports:
+            - containerPort: {% raw %}{{ .Values.service.targetPort }}{% endraw %}
+              protocol: TCP
+          env:
+            {% raw %}{{- range $key, $value := .Values.env }}{% endraw %}
+            - name: {% raw %}{{ $key }}{% endraw %}
+              value: {% raw %}{{ $value | quote }}{% endraw %}
+            {% raw %}{{- end }}{% endraw %}
+          resources:
+            {% raw %}{{- toYaml .Values.resources | nindent 12 }}{% endraw %}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {% raw %}{{ .Values.service.targetPort }}{% endraw %}
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {% raw %}{{ .Values.service.targetPort }}{% endraw %}
+            initialDelaySeconds: 5

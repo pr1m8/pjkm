@@ -1,0 +1,18 @@
+id: logging
+name: "Structured Logging"
+description: "Rich + structlog with console and optional OTel log export"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  logging:
+    - "rich>=14.0.0"
+    - "structlog>=25.0.0"
+
+scaffolded_files:
+  - template_fragment: "logging_structlog"
+    destination: "src/{{ project_slug }}/core/logging/"
+    description: "Structlog + Rich logging configuration module"
+
+pyproject_tool_config: {}

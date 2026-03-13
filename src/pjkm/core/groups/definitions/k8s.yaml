@@ -1,0 +1,20 @@
+id: k8s
+name: "Kubernetes & Deployment"
+description: "K8s manifests, Kustomize overlays, and Helm chart scaffold"
+archetypes:
+  - service
+  - poly_repo
+requires_groups:
+  - docker
+platform_filter: null
+
+dependencies:
+  k8s:
+    - "kubernetes>=32.0.0"
+
+scaffolded_files:
+  - template_fragment: "k8s_manifests"
+    destination: "."
+    description: "k8s/ manifests, Kustomize base/overlays, Helm chart scaffold"
+
+pyproject_tool_config: {}

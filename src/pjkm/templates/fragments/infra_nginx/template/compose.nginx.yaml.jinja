@@ -1,0 +1,14 @@
+services:
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    restart: unless-stopped
+    volumes:
+      - static_data:/var/www/static:ro
+
+volumes:
+  static_data:

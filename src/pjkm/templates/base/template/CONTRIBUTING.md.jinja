@@ -1,0 +1,36 @@
+# Contributing to {{ project_name }}
+
+## Development Setup
+
+```bash
+git clone <repo-url>
+cd {{ project_slug }}
+pdm install -G dev
+pdm run pre-commit install
+pdm run pre-commit install --hook-type commit-msg
+```
+
+## Code Style
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+Pre-commit hooks enforce style automatically.
+
+## Commit Messages
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/).
+Commitizen validates commit messages via pre-commit hook.
+
+## Running Tests
+
+```bash
+pdm run pytest
+pdm run pytest --cov
+```
+
+## Pull Requests
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feat/my-feature`)
+3. Commit your changes using conventional commits
+4. Push to your fork and open a pull request
+5. Fill out the PR template

@@ -5,7 +5,7 @@ description = "Default template for PDM package"
 authors = [
     {name = "Will", email = "you@example.com"},
 ]
-dependencies = []
+dependencies = ["pydantic>=2.12.5", "pydantic-settings>=2.13.1", "typing-extensions>=4.15.0", "copier>=9.13.1", "jinja2>=3.1.6"]
 requires-python = ">=3.13"
 readme = "README.md"
 license = {text = "MIT"}

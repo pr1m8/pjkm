@@ -1,0 +1,18 @@
+id: nginx
+name: "Nginx Reverse Proxy"
+description: "Nginx config for reverse proxy, SSL termination, and static files"
+category: "Infrastructure"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "infra_nginx"
+    destination: "infra/"
+    description: "Nginx configuration and Docker Compose service"
+
+pyproject_tool_config: {}

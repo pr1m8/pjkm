@@ -1,0 +1,18 @@
+id: vector_stores
+name: "Vector Stores"
+description: "Vector database clients for embeddings and similarity search"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  vector_stores:
+    - "qdrant-client>=1.13.0"
+    - "chromadb>=1.0.0"
+    - "pgvector>=0.4.0"
+    - "faiss-cpu>=1.10.0"
+    - "rank-bm25>=0.2.2"
+
+scaffolded_files: []
+pyproject_tool_config: {}

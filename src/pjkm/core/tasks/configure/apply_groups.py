@@ -16,15 +16,7 @@ from pjkm.core.models.task import Phase, TaskResult
 from pjkm.core.tasks.base import BaseTask
 from pjkm.core.templates.loader import TemplateLoader, TemplateNotFoundError
 from pjkm.core.templates.renderer import TemplateRenderer
-
-
-def _deep_merge(target: dict, dotted_key: str, value: dict) -> None:
-    """Merge a dotted key (e.g., 'ruff.lint') into a nested dict structure."""
-    parts = dotted_key.split(".")
-    current = target
-    for part in parts[:-1]:
-        current = current.setdefault(part, {})
-    current.setdefault(parts[-1], {}).update(value)
+from pjkm.core.utils import deep_merge
 
 
 class ApplyGroupsTask(BaseTask):
@@ -81,7 +73,7 @@ class ApplyGroupsTask(BaseTask):
                 optional_deps[group_name] = merged
 
             for tool_name, tool_conf in group.pyproject_tool_config.items():
-                _deep_merge(tool_config, tool_name, tool_conf)
+                deep_merge(tool_config, tool_name, tool_conf)
 
         # Track applied groups for `pjkm add`
         pjkm_config = pyproject.setdefault("tool", {}).setdefault("pjkm", {})

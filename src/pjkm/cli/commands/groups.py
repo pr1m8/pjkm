@@ -53,6 +53,7 @@ def group_create(
 id: {gid}
 name: "{display_name}"
 description: ""
+category: "Core Dev"        # Core Dev, AI / ML, Web & API, Data & Storage, Infrastructure, Frontend, Docs & Meta, Platform
 archetypes: []              # empty = all archetypes
 requires_groups: []         # e.g. [logging, database]
 platform_filter: null       # null = all platforms, or "darwin", "linux", "win32"
@@ -171,7 +172,7 @@ def group_validate(
         console.print(f"[red]Path not found: {target}[/red]")
         raise typer.Exit(1)
 
-    files = [target] if target.is_file() else sorted(target.glob("*.yaml"))
+    files = [target] if target.is_file() else sorted(target.rglob("*.yaml"))
     if not files:
         console.print(f"[yellow]No .yaml files found in {target}[/yellow]")
         raise typer.Exit(1)

@@ -1,0 +1,25 @@
+id: code_quality
+name: "Code Quality"
+description: "Static analysis, dead code detection, dependency auditing, and complexity metrics"
+category: "Core Dev"
+archetypes: []
+requires_groups: [linting]
+platform_filter: null
+
+dependencies:
+  code_quality:
+    - "vulture>=2.14"
+    - "radon>=6.0.0"
+    - "xenon>=0.9.0"
+    - "deptry>=0.23.0"
+    - "pip-audit>=2.9.0"
+    - "interrogate>=1.7.0"
+    - "pydocstyle>=6.3.0"
+
+pyproject_tool_config:
+  interrogate:
+    ignore-init-method: true
+    ignore-init-module: true
+    fail-under: 80
+
+scaffolded_files: []

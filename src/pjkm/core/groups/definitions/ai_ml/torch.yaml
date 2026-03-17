@@ -1,0 +1,16 @@
+id: torch
+name: "PyTorch"
+description: "PyTorch deep learning framework with vision and audio extensions"
+category: "AI / ML"
+archetypes: []
+requires_groups: [ml]
+platform_filter: null
+
+dependencies:
+  torch:
+    - "torch>=2.6.0"
+    - "torchvision>=0.21.0"
+    - "torchaudio>=2.6.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

@@ -1,0 +1,18 @@
+id: monitoring
+name: "Application Monitoring"
+description: "Prometheus client metrics, health checks, and structured event tracking"
+category: "Infrastructure"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  monitoring:
+    - "prometheus-client>=0.22.0"
+    - "prometheus-fastapi-instrumentator>=7.0.2"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

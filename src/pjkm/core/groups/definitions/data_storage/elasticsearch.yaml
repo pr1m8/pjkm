@@ -1,0 +1,15 @@
+id: elasticsearch
+name: "Elasticsearch"
+description: "Elasticsearch client for full-text search and analytics"
+category: "Data & Storage"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  elasticsearch:
+    - "elasticsearch>=9.0.0"
+    - "elasticsearch-dsl>=9.0.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

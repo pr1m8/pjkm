@@ -1,0 +1,16 @@
+id: aws
+name: "AWS"
+description: "AWS SDK (boto3) with S3, SQS, and common service integrations"
+category: "Infrastructure"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  aws:
+    - "boto3>=1.38.0"
+    - "botocore>=1.38.0"
+    - "aws-lambda-powertools>=3.10.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

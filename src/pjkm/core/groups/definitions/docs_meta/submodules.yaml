@@ -1,0 +1,17 @@
+id: submodules
+name: "Git Submodules"
+description: "Git submodule patterns with .gitmodules template and sync scripts"
+category: "Docs & Meta"
+archetypes:
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "submodules"
+    destination: "."
+    description: ".gitmodules template and scripts/sync-submodules.sh"
+
+pyproject_tool_config: {}

@@ -1,0 +1,26 @@
+id: linting
+name: "Linting & Formatting"
+description: "Ruff linting/formatting, pre-commit hooks, commitizen"
+category: "Core Dev"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  linting:
+    - "ruff>=0.15.0"
+    - "pre-commit>=4.0.0"
+    - "commitizen>=4.0.0"
+    - "interrogate>=1.7.0"
+
+scaffolded_files: []
+
+pyproject_tool_config:
+  ruff:
+    target-version: "py313"
+    line-length: 100
+  ruff.lint:
+    select: ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]
+  commitizen:
+    name: "cz_conventional_commits"
+    version_provider: "pep621"

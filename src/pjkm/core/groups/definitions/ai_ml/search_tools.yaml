@@ -1,0 +1,19 @@
+id: search_tools
+name: "Search & Research APIs"
+description: "Web search, academic research, and knowledge retrieval tools"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  search_tools:
+    - "tavily-python>=0.5.0"
+    - "duckduckgo-search>=7.0.0"
+    - "google-search-results>=2.4.0"
+    - "serpapi>=0.1.5"
+    - "wikipedia>=1.4.0"
+    - "arxiv>=2.1.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

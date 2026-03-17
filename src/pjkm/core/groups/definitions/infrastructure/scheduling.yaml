@@ -1,0 +1,17 @@
+id: scheduling
+name: "Job Scheduling"
+description: "APScheduler for cron-like recurring jobs and task scheduling"
+category: "Infrastructure"
+archetypes:
+  - service
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  scheduling:
+    - "apscheduler>=3.11.0"
+    - "croniter>=5.0.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

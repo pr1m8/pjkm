@@ -1,0 +1,20 @@
+id: finance
+name: "Financial Data & Analysis"
+description: "Market data, economic indicators, and quantitative analysis tools"
+category: "AI / ML"
+archetypes: []
+requires_groups: [ml]
+platform_filter: null
+
+dependencies:
+  finance:
+    - "yfinance>=1.2.0"
+    - "fredapi>=0.5.2"
+    - "statsmodels>=0.14.6"
+    - "arch>=8.0.0"
+    - "pykalman>=0.11.0"
+    - "hmmlearn>=0.3.0"
+    - "ruptures>=1.1.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

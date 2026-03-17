@@ -1,0 +1,20 @@
+id: gateway
+name: "API Gateway & Resilience"
+description: "Rate limiting, retries, circuit breakers, and request validation"
+category: "Web & API"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  gateway:
+    - "slowapi>=0.1.9"
+    - "tenacity>=9.0.0"
+    - "pyrate-limiter>=3.7.0"
+    - "httpx>=0.28.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

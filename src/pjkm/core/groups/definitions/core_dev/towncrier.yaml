@@ -1,0 +1,24 @@
+id: towncrier
+name: "Towncrier Changelog"
+description: "Fragment-based changelog management with towncrier"
+category: "Core Dev"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  towncrier:
+    - "towncrier>=24.8.0"
+
+scaffolded_files:
+  - template_fragment: "towncrier"
+    destination: "."
+
+pyproject_tool_config:
+  towncrier:
+    directory: "changes"
+    filename: "CHANGELOG.md"
+    title_format: "## {version} - {project_date}"
+    issue_format: "[#{issue}](https://github.com/OWNER/REPO/issues/{issue})"
+    template: "default"
+    underlines: ["", "", ""]

@@ -1,0 +1,25 @@
+id: testing_extended
+name: "Extended Testing"
+description: "Property-based testing, benchmarks, load testing, and test factories"
+category: "Core Dev"
+archetypes: []
+requires_groups: [testing]
+platform_filter: null
+
+dependencies:
+  testing_extended:
+    - "hypothesis>=6.131.0"
+    - "factory-boy>=3.3.0"
+    - "mimesis>=18.0.0"
+    - "pytest-benchmark>=5.1.0"
+    - "pytest-xdist>=3.8.0"
+    - "pytest-randomly>=3.16.0"
+    - "pytest-timeout>=2.4.0"
+    - "pytest-sugar>=1.0.0"
+    - "locust>=2.37.0"
+
+pyproject_tool_config:
+  pytest.ini_options:
+    addopts: "--cov --cov-report=html --cov-report=term-missing -n auto --dist=worksteal --timeout=300"
+
+scaffolded_files: []

@@ -1,0 +1,15 @@
+id: streamlit
+name: "Streamlit"
+description: "Streamlit web app framework for data dashboards and AI demos"
+category: "Web & API"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  streamlit:
+    - "streamlit>=1.40.0"
+    - "httpx>=0.28.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

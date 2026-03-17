@@ -4,53 +4,7 @@ from __future__ import annotations
 
 import typer
 
-# Category map for group listing — shared constant
-CATEGORY_MAP: dict[str, str] = {
-    # Core Dev
-    "logging": "Core Dev", "testing": "Core Dev", "typecheck": "Core Dev",
-    "security": "Core Dev", "coverage": "Core Dev", "dev": "Core Dev",
-    "linting": "Core Dev", "dev_extended": "Core Dev", "code_quality": "Core Dev",
-    "refactoring": "Core Dev", "debugging": "Core Dev", "profiling": "Core Dev",
-    "testing_extended": "Core Dev", "reporting": "Core Dev", "scripts": "Core Dev",
-    "towncrier": "Core Dev", "pydantic_extra": "Core Dev",
-    "config_mgmt": "Core Dev", "cli_rich": "Core Dev", "async_tools": "Core Dev",
-    "http_client": "Core Dev",
-    # AI / ML
-    "langchain": "AI / ML", "langchain_providers": "AI / ML",
-    "langgraph": "AI / ML", "hf": "AI / ML", "ml": "AI / ML",
-    "torch": "AI / ML", "mcp_tools": "AI / ML", "dataviz": "AI / ML",
-    "notebook": "AI / ML", "jupyter": "AI / ML", "search_tools": "AI / ML",
-    "doc_parsing": "AI / ML", "vector_stores": "AI / ML",
-    "translation": "AI / ML", "finance": "AI / ML", "image": "AI / ML",
-    # Web & API
-    "api": "Web & API", "gateway": "Web & API", "auth": "Web & API",
-    "graphql": "Web & API", "grpc": "Web & API", "web_scraping": "Web & API",
-    "crawling": "Web & API", "streamlit": "Web & API", "gradio": "Web & API",
-    "messaging": "Web & API", "payments": "Web & API",
-    "error_tracking": "Web & API", "websocket": "Web & API",
-    "email": "Web & API", "pdf": "Web & API",
-    # Data & Storage
-    "database": "Data & Storage", "redis": "Data & Storage",
-    "mongodb": "Data & Storage", "kafka": "Data & Storage",
-    "rabbitmq": "Data & Storage", "neo4j": "Data & Storage",
-    "elasticsearch": "Data & Storage", "supabase": "Data & Storage",
-    "caching": "Data & Storage",
-    # Infrastructure
-    "docker": "Infrastructure", "k8s": "Infrastructure", "nginx": "Infrastructure",
-    "otel": "Infrastructure", "otel_instrumentations": "Infrastructure",
-    "monitoring": "Infrastructure", "celery": "Infrastructure",
-    "airflow": "Infrastructure", "aws": "Infrastructure",
-    "google_cloud": "Infrastructure", "makefile": "Infrastructure",
-    "ci_cd": "Infrastructure", "task_queue": "Infrastructure",
-    "scheduling": "Infrastructure",
-    # Frontend
-    "frontend": "Frontend", "frontend_vite": "Frontend",
-    # Docs & Meta
-    "docs": "Docs & Meta", "docs_mkdocs": "Docs & Meta",
-    "github_templates": "Docs & Meta", "submodules": "Docs & Meta",
-    # Platform
-    "mac": "Platform", "linux": "Platform",
-}
+# Display order for group categories (category is now a field in each group YAML)
 CATEGORY_ORDER = [
     "Core Dev", "AI / ML", "Web & API", "Data & Storage",
     "Infrastructure", "Frontend", "Docs & Meta", "Platform",
@@ -105,8 +59,7 @@ def list_cmd(
 
         categorized: dict[str, list] = {c: [] for c in CATEGORY_ORDER}
         for g in groups:
-            cat = CATEGORY_MAP.get(g.id, "Core Dev")
-            categorized.setdefault(cat, []).append(g)
+            categorized.setdefault(g.category, []).append(g)
 
         for cat_name in CATEGORY_ORDER:
             cat_groups = categorized.get(cat_name, [])

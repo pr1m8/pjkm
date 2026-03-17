@@ -1,0 +1,19 @@
+id: caching
+name: "Caching Layer"
+description: "Redis caching with cashews, dogpile, and local LRU caches"
+category: "Data & Storage"
+archetypes:
+  - service
+  - poly_repo
+requires_groups:
+  - redis
+platform_filter: null
+
+dependencies:
+  caching:
+    - "cashews[redis]>=7.3.0"
+    - "cachetools>=5.5.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

@@ -1,0 +1,15 @@
+id: mcp_tools
+name: "Model Context Protocol"
+description: "MCP server/client SDK with LangChain adapter for tool-using AI agents"
+category: "AI / ML"
+archetypes: []
+requires_groups: [langchain]
+platform_filter: null
+
+dependencies:
+  mcp_tools:
+    - "mcp>=1.10.0"
+    - "langchain-mcp-adapters>=0.1.8"
+
+scaffolded_files: []
+pyproject_tool_config: {}

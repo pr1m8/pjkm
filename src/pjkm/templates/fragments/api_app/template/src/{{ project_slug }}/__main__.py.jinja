@@ -1,0 +1,20 @@
+"""Entry point — run with `python -m {{ project_slug }}`."""
+
+import uvicorn
+
+from {{ project_slug }}.core.settings import get_settings
+
+
+def main() -> None:
+    settings = get_settings()
+    uvicorn.run(
+        "{{ project_slug }}.api.app:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.is_development,
+        log_level=settings.log_level.lower(),
+    )
+
+
+if __name__ == "__main__":
+    main()

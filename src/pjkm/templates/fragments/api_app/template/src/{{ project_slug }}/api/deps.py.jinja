@@ -1,13 +1,56 @@
-"""Shared FastAPI dependencies — inject settings, DB sessions, Redis, etc."""
+"""Shared FastAPI dependencies — inject settings, DB sessions, Redis, etc.
+
+Usage in routes:
+    from {{ project_slug }}.api.deps import get_settings{% if "database" in groups %}, get_db{% endif %}{% if "redis" in groups %}, get_redis{% endif %}
+
+    @router.get("/")
+    async def index(
+        settings: Settings = Depends(get_settings),{% if "database" in groups %}
+        db: AsyncSession = Depends(get_db),{% endif %}{% if "redis" in groups %}
+        redis: Redis = Depends(get_redis),{% endif %}
+    ): ...
+"""
 
 from __future__ import annotations
 
 from functools import lru_cache
+{% if "database" in groups %}
+from collections.abc import AsyncIterator
+{% endif %}
 
 from {{ project_slug }}.core.settings import Settings
 
 
 @lru_cache
 def get_settings() -> Settings:
-    """Settings dependency — use in route signatures via Depends(get_settings)."""
+    """Settings dependency."""
     return Settings()
+{% if "database" in groups %}
+
+
+async def get_db() -> AsyncIterator:
+    """Yield a database session — auto-commits on success, rolls back on error."""
+    from {{ project_slug }}.core.database import get_session
+
+    async for session in get_session():
+        yield session
+{% endif %}
+{% if "redis" in groups %}
+
+
+async def get_redis():
+    """Yield a Redis client from the connection pool."""
+    from {{ project_slug }}.core.redis import redis_session
+
+    async with redis_session() as client:
+        yield client
+{% endif %}
+{% if "auth" in groups %}
+
+
+async def get_current_user(credentials=None):
+    """Re-export from auth module for convenience."""
+    from {{ project_slug }}.auth.deps import get_current_user as _get_user
+
+    return await _get_user(credentials)
+{% endif %}

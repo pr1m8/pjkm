@@ -15,11 +15,17 @@ async def health() -> dict:
 
 @router.get("/ready")
 async def ready() -> dict:
-    """Readiness probe — check downstream dependencies.
-
-    Extend this to ping database, Redis, external APIs, etc.
-    """
+    """Readiness probe — checks all downstream dependencies."""
     checks: dict[str, str] = {}
-    # checks["database"] = "ok" if await db.ping() else "error"
-    # checks["redis"] = "ok" if await redis.ping() else "error"
-    return {"status": "ok", "checks": checks}
+{% if "database" in groups %}
+    from {{ project_slug }}.core.database import ping as db_ping
+
+    checks["database"] = "ok" if await db_ping() else "error"
+{% endif %}
+{% if "redis" in groups %}
+    from {{ project_slug }}.core.redis import ping as redis_ping
+
+    checks["redis"] = "ok" if await redis_ping() else "error"
+{% endif %}
+    overall = "ok" if all(v == "ok" for v in checks.values()) else "degraded"
+    return {"status": overall, "checks": checks}

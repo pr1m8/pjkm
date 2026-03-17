@@ -281,10 +281,12 @@ def add(
         if m:
             python_version = m.group(1)
 
+    all_group_ids = sorted(set(already_applied + [g.id for g in new_groups]))
     data = {
         "project_name": project_name,
         "project_slug": project_slug,
         "python_version": python_version,
+        "groups": all_group_ids,
     }
 
     rendered_fragments: list[str] = []

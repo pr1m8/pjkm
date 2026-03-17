@@ -25,7 +25,7 @@ src/pjkm/
     tasks/
       base.py                   # BaseTask ABC
       registry.py               # TaskRegistry
-      defaults.py               # create_default_registry() -> 8 built-in tasks
+      defaults.py               # create_default_registry() -> 9 built-in tasks + plugin loading
       scaffold/
         init_project.py          # Renders base + archetype templates
         init_git.py              # git init
@@ -33,6 +33,7 @@ src/pjkm/
       configure/
         apply_groups.py          # Merges group deps into pyproject.toml + renders fragments
         configure_linting.py     # Writes pre-commit, trunk, secrets baseline, tool configs
+        setup_git_lfs.py         # Auto-setup Git LFS for ML groups (hf, ml)
       install/
         pdm_install.py           # pdm install
         pre_commit_install.py    # pre-commit install (pre-commit + commit-msg hooks)
@@ -40,13 +41,13 @@ src/pjkm/
         verify_structure.py      # Validates expected files per archetype
     templates/
       loader.py                  # Resolves built-in/local template paths
-      renderer.py                # Wraps copier.run_copy()
+      renderer.py                # Wraps copier.run_copy() + run_update()
       composer.py                # Layers base -> archetype -> fragments
     groups/
       registry.py                # GroupRegistry (auto-discovers YAML + custom + remote sources)
       resolver.py                # GroupResolver (transitive deps, cycle detection)
       sources.py                 # GroupSourceManager (git clone/pull/cache for remote repos)
-      definitions/               # 25 YAML group files
+      definitions/               # 43 YAML group files
     platform/
       detect.py                  # OS, arch, available tools
       groups.py                  # Platform-specific adjustments
@@ -67,8 +68,20 @@ src/pjkm/
       k8s_manifests/             # Kustomize base + overlays, Helm chart
       celery_worker/             # Celery app, tasks, beat schedule, compose.celery
       frontend_next/             # Next.js 15 + React 19 + Supabase SSR + Tailwind v4 + shadcn/ui
+      frontend_vite/             # Vite + React + TypeScript SPA with API proxy
+      notebooks/                 # Jupyter notebooks directory + example notebook
+      scripts_cli/               # CLI scripts directory + example Typer script
+      docs_mkdocs/               # MkDocs + Material theme + mkdocstrings
+      submodules/                # .gitmodules + sync-submodules.sh
+      github_templates/          # Issue/PR templates, CODEOWNERS, CONTRIBUTING, SECURITY
+      makefile_sections/         # Modular .mk include files (docker, python, db, redis, etc.)
+      compose_postgres/          # Docker Compose service for PostgreSQL
+      compose_redis/             # Docker Compose service for Redis
+      compose_kafka/             # Docker Compose service for Kafka
+      compose_mongodb/           # Docker Compose service for MongoDB
+      compose_rabbitmq/          # Docker Compose service for RabbitMQ
   cli/
-    app.py                       # Typer app: init, tui, list, info, doctor, defaults, group
+    app.py                       # Typer app: init, add, update, upgrade, link, tui, list, info, doctor, defaults, group
   tui/
     app.py                       # PjkmApp (Textual)
     app.tcss                     # TUI stylesheet
@@ -125,7 +138,7 @@ SCAFFOLD (1) -> CONFIGURE (2) -> INSTALL (3) -> VERIFY (4)
 | Phase       | Tasks                                      | Purpose                                                                        |
 | ----------- | ------------------------------------------ | ------------------------------------------------------------------------------ |
 | `SCAFFOLD`  | `init_project`, `init_git`, `setup_remote` | Create directory structure from Copier templates, `git init`, configure remote |
-| `CONFIGURE` | `apply_groups`, `configure_linting`        | Merge group deps into pyproject.toml, write pre-commit/trunk/secrets configs   |
+| `CONFIGURE` | `apply_groups`, `configure_linting`, `setup_git_lfs` | Merge group deps, write lint configs, LFS setup for ML groups |
 | `INSTALL`   | `pdm_install`, `pre_commit_install`        | `pdm install`, `pre-commit install` (pre-commit + commit-msg hooks)            |
 | `VERIFY`    | `verify_structure`                         | Validate expected files exist for the archetype                                |
 
@@ -133,7 +146,7 @@ SCAFFOLD (1) -> CONFIGURE (2) -> INSTALL (3) -> VERIFY (4)
 
 ```
 SCAFFOLD:     init_project -> init_git -> setup_remote
-CONFIGURE:    apply_groups    configure_linting    (independent)
+CONFIGURE:    apply_groups    configure_linting    setup_git_lfs   (independent)
 INSTALL:      pdm_install -> pre_commit_install
 VERIFY:       verify_structure
 ```
@@ -150,7 +163,7 @@ See [TEMPLATES.md](TEMPLATES.md) for full reference.
 
 ## Package Groups
 
-25 built-in YAML groups in `core/groups/definitions/`, extensible via:
+43 built-in YAML groups in `core/groups/definitions/`, extensible via:
 
 - **Local custom groups** in `~/.pjkm/groups/` and `./.pjkm/groups/` (auto-loaded)
 - **Remote group sources** — git repos registered via `pjkm group source add` or `.pjkmrc.yaml`
@@ -217,6 +230,10 @@ Generated projects follow a three-tier config layout:
 
 ```
 pjkm init NAME [-a ARCHETYPE] [-g GROUP...] [-d DIR] [--dry-run] [--author] [--email]
+pjkm add [-g GROUP...] [-d DIR]
+pjkm update [-d DIR] [--dry-run]
+pjkm upgrade [-g GROUP...] [-d DIR] [--latest] [--refresh-tools] [--dry-run] [--install/--no-install]
+pjkm link TOOL_NAME [-d DIR] [--dry-run]
 pjkm tui
 pjkm list [archetypes|groups]
 pjkm info GROUP_ID
@@ -235,9 +252,9 @@ pjkm group source remove NAME
 ## Key Statistics
 
 - **4** archetypes: single_package, service, poly_repo, script_tool
-- **28** built-in package groups (extensible via custom + remote sources)
-- **8** built-in tasks across 4 phases
-- **9** template fragments with scaffolded code/config
-- **13** CLI commands/subcommands
+- **43** built-in package groups (extensible via custom + remote sources + entry point plugins)
+- **9** built-in tasks across 4 phases
+- **21** template fragments with scaffolded code/config
+- **18** CLI commands/subcommands
 - **5** TUI screens
 - **133** tests

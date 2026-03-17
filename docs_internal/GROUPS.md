@@ -65,9 +65,9 @@ pyproject_tool_config: # merged into [tool.*] sections via _deep_merge
 
 All fields except `id`, `name`, and `description` are optional. Defaults: `archetypes: []`, `requires_groups: []`, `platform_filter: null`, `dependencies: {}`, `scaffolded_files: []`, `pyproject_tool_config: {}`.
 
-## Current Built-in Groups (28)
+## Current Built-in Groups (43)
 
-### Development & Quality (8)
+### Development & Quality (10)
 
 | ID          | Name                     | Dependencies                                                                      | Requires                              | Archetype |
 | ----------- | ------------------------ | --------------------------------------------------------------------------------- | ------------------------------------- | --------- |
@@ -79,8 +79,19 @@ All fields except `id`, `name`, and `description` are optional. Defaults: `arche
 | `security`  | Security Scanning        | bandit, detect-secrets                                                            | —                                     | all       |
 | `docs`      | Documentation            | sphinx, sphinx-autobuild, sphinx-autodoc-typehints, sphinx-rtd-theme, myst-parser | —                                     | all       |
 | `jupyter`   | Jupyter Notebook Support | jupyterlab, ipykernel                                                             | —                                     | all       |
+| `dev_extended` | Extended Dev Tools    | pre-commit, commitizen, tox, nox, hatch                                           | dev, docs, security                   | all       |
+| `dataviz`   | Data Visualization       | matplotlib, seaborn, plotly, altair, kaleido                                      | —                                     | all       |
 
-### Infrastructure & Containers (3)
+### Infrastructure & Containers (4)
+
+| ID         | Name                    | Dependencies    | Requires | Archetype          | Scaffold                                                                    |
+| ---------- | ----------------------- | --------------- | -------- | ------------------ | --------------------------------------------------------------------------- |
+| `docker`   | Docker & Containers     | —               | —        | service, poly_repo | Dockerfile, Dockerfile.dev, .devcontainer/, compose.dev.yaml, .dockerignore |
+| `k8s`      | Kubernetes & Deployment | kubernetes      | docker   | service, poly_repo | k8s/ (Kustomize base + dev/prod overlays), helm/ chart                      |
+| `nginx`    | Nginx Reverse Proxy     | — (config only) | —        | service, poly_repo | infra/nginx/ config + Dockerfile                                            |
+| `makefile` | Modular Makefile        | —               | —        | service, poly_repo | make/ directory with 10 composable .mk sections                             |
+
+### Backend Services (9)
 
 | ID       | Name                    | Dependencies    | Requires | Archetype          | Scaffold                                                                    |
 | -------- | ----------------------- | --------------- | -------- | ------------------ | --------------------------------------------------------------------------- |
@@ -98,6 +109,9 @@ All fields except `id`, `name`, and `description` are optional. Defaults: `arche
 | `redis`    | Redis                    | redis[hiredis]                                                  | —        | service, poly_repo |
 | `mongodb`  | MongoDB                  | motor, beanie, pymongo                                          | —        | service, poly_repo |
 | `supabase` | Supabase                 | supabase, postgrest, gotrue, storage3, realtime                 | —        | service, poly_repo |
+| `grpc`     | gRPC                     | grpcio, grpcio-tools, protobuf, grpcio-reflection               | api      | service            |
+| `graphql`  | GraphQL                  | strawberry-graphql[fastapi], graphql-core                       | api      | service            |
+| `auth`     | Authentication           | python-jose[cryptography], passlib[bcrypt], authlib              | api      | service            |
 
 ### Task Queues & Messaging (4)
 
@@ -116,11 +130,12 @@ All fields except `id`, `name`, and `description` are optional. Defaults: `arche
 | `otel`       | OpenTelemetry Observability | opentelemetry-distro, -api, -sdk, -exporter-otlp, -instrumentation | logging  | service, poly_repo |
 | `monitoring` | Application Monitoring      | prometheus-client, prometheus-fastapi-instrumentator               | api      | service            |
 
-### Frontend (1)
+### Frontend (2)
 
-| ID         | Name             | Dependencies | Requires | Archetype          | Scaffold                                                                                                |
-| ---------- | ---------------- | ------------ | -------- | ------------------ | ------------------------------------------------------------------------------------------------------- |
-| `frontend` | Next.js Frontend | — (npm deps) | —        | service, poly_repo | apps/web/ (Next.js 15, React 19, Supabase SSR, Tailwind v4, shadcn/ui), pnpm-workspace.yaml, turbo.json |
+| ID              | Name                   | Dependencies | Requires | Archetype          | Scaffold                                                                                                |
+| --------------- | ---------------------- | ------------ | -------- | ------------------ | ------------------------------------------------------------------------------------------------------- |
+| `frontend`      | Next.js Frontend       | — (npm deps) | —        | service, poly_repo | apps/web/ (Next.js 15, React 19, Supabase SSR, Tailwind v4, shadcn/ui), pnpm-workspace.yaml, turbo.json |
+| `frontend_vite` | Vite + React + TS      | — (npm deps) | —        | service, poly_repo | Vite 6 + React 19 + TypeScript SPA with /api proxy to :8000                                            |
 
 ### AI & Machine Learning (3)
 
@@ -129,6 +144,39 @@ All fields except `id`, `name`, and `description` are optional. Defaults: `arche
 | `hf`        | Hugging Face     | huggingface-hub, transformers, datasets, accelerate, sentence-transformers, sentencepiece, safetensors, tokenizers, hf-transfer, hf-xet, peft, bitsandbytes (Linux x86_64 only) | —        | all       |
 | `ml`        | Machine Learning | scikit-learn, xgboost, lightgbm, onnx, onnxruntime, pandas, numpy, scipy, matplotlib, seaborn, polars                                                                           | —        | all       |
 | `langchain` | LangChain        | langchain, langchain-core, -community, -openai, -anthropic, -huggingface, langgraph, langsmith                                                                                  | —        | all       |
+
+### Notebook & Data Science (2)
+
+| ID         | Name                     | Dependencies                                              | Requires          | Archetype |
+| ---------- | ------------------------ | --------------------------------------------------------- | ----------------- | --------- |
+| `notebook` | Notebook & Data Science  | nbconvert, nbformat, ipywidgets, pandas, numpy            | jupyter, dataviz  | all       |
+| `scripts`  | Scripts & CLI Tools      | typer[all], click, shellingham, python-dotenv, invoke      | —                 | all       |
+
+### Docs Alternatives (1)
+
+| ID           | Name                 | Dependencies                                                     | Requires | Archetype |
+| ------------ | -------------------- | ---------------------------------------------------------------- | -------- | --------- |
+| `docs_mkdocs`| Documentation (MkDocs)| mkdocs, mkdocs-material, mkdocstrings[python], gen-files         | —        | all       |
+
+### Cloud & Infra (1)
+
+| ID   | Name | Dependencies                                 | Requires | Archetype |
+| ---- | ---- | -------------------------------------------- | -------- | --------- |
+| `aws`| AWS  | boto3, botocore, aws-lambda-powertools       | —        | all       |
+
+### Project Management (2)
+
+| ID                 | Name              | Dependencies | Requires | Archetype  | Scaffold                                              |
+| ------------------ | ----------------- | ------------ | -------- | ---------- | ----------------------------------------------------- |
+| `github_templates` | GitHub Templates  | —            | —        | all        | Issue/PR templates, CODEOWNERS, CONTRIBUTING, SECURITY |
+| `submodules`       | Git Submodules    | —            | —        | poly_repo  | .gitmodules + scripts/sync-submodules.sh               |
+
+### Platform (2)
+
+| ID      | Name  | Dependencies                             | Platform | Archetype |
+| ------- | ----- | ---------------------------------------- | -------- | --------- |
+| `mac`   | macOS | watchdog, pyobjc-core, pyobjc-Cocoa      | darwin   | all       |
+| `linux` | Linux | inotify-simple, python-systemd, setproctitle | linux | all       |
 
 ## Groups with Scaffolded Files
 
@@ -145,6 +193,18 @@ These groups render template fragments into the generated project:
 | `k8s`      | `k8s_manifests`     | `.`                        | k8s/ Kustomize (base + dev/prod overlays), helm/ chart (deployment, HPA, helpers)                           |
 | `celery`   | `celery_worker`     | `.`                        | workers/ (celery_app.py, tasks.py, beat_schedule.py), infra/compose.celery.yaml                             |
 | `frontend` | `frontend_next`     | `.`                        | apps/web/ (Next.js 15 + React 19 + Supabase SSR + Tailwind v4 + shadcn/ui), pnpm-workspace.yaml, turbo.json |
+| `frontend_vite` | `frontend_vite` | `.`                   | Vite + React + TypeScript SPA with dev server proxy                                                      |
+| `notebook` | `notebooks`          | `.`                        | notebooks/ with example Jupyter notebook                                                                  |
+| `scripts`  | `scripts_cli`        | `.`                        | scripts/ with example Typer CLI script                                                                    |
+| `docs_mkdocs` | `docs_mkdocs`    | `.`                        | mkdocs.yml + docs/ with Material theme                                                                    |
+| `submodules` | `submodules`       | `.`                        | .gitmodules + scripts/sync-submodules.sh                                                                  |
+| `github_templates` | `github_templates` | `.`              | Issue/PR templates, CODEOWNERS, CONTRIBUTING.md, SECURITY.md                                              |
+| `makefile` | `makefile_sections`  | `.`                        | make/ with 10 composable .mk include files                                                                |
+| `database` | `compose_postgres`   | `.`                        | infra/compose.postgres.yaml Docker Compose service                                                        |
+| `redis`    | `compose_redis`      | `.`                        | infra/compose.redis.yaml Docker Compose service                                                           |
+| `kafka`    | `compose_kafka`      | `.`                        | infra/compose.kafka.yaml Docker Compose service                                                           |
+| `mongodb`  | `compose_mongodb`    | `.`                        | infra/compose.mongodb.yaml Docker Compose service                                                         |
+| `rabbitmq` | `compose_rabbitmq`   | `.`                        | infra/compose.rabbitmq.yaml Docker Compose service                                                        |
 
 ## Dependency Graph
 
@@ -156,17 +216,28 @@ dev
  └── coverage
       └── testing
 
+dev_extended
+ ├── dev
+ │    ├── linting
+ │    ├── testing
+ │    ├── typecheck
+ │    └── coverage
+ │         └── testing
+ ├── docs
+ └── security
+
 k8s
  └── docker
 
 otel
  └── logging
 
-gateway
+gateway / grpc / graphql / auth / monitoring
  └── api
 
-monitoring
- └── api
+notebook
+ ├── jupyter
+ └── dataviz
 ```
 
 ## Resolution Algorithm
@@ -301,8 +372,8 @@ pjkm group validate mygroup.yaml       # validate a single file
 
 The test suite (`tests/test_templates.py` and `tests/test_group_sources.py`) verifies:
 
-- All 28 built-in groups load without errors
-- Every `scaffolded_files` fragment reference points to an existing template
+- All 43 built-in groups load without errors
+- Every `scaffolded_files` fragment reference points to an existing template (21 fragments, 0 orphans)
 - All group IDs are unique
 - All `requires_groups` references point to existing groups
 - Custom groups can be loaded from arbitrary directories

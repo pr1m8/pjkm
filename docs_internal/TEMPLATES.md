@@ -93,6 +93,18 @@ src/pjkm/templates/
     k8s_manifests/               # Kustomize base + overlays, Helm chart
     celery_worker/               # Celery app, tasks, beat schedule, compose.celery
     frontend_next/               # Next.js 15 + React 19 + Supabase SSR + Tailwind v4 + shadcn/ui
+    frontend_vite/               # Vite + React + TypeScript SPA with API proxy
+    notebooks/                   # Jupyter notebooks dir + example notebook
+    scripts_cli/                 # CLI scripts dir + example Typer script
+    docs_mkdocs/                 # MkDocs + Material theme + mkdocstrings
+    submodules/                  # .gitmodules + sync-submodules.sh
+    github_templates/            # Issue/PR templates, CODEOWNERS, CONTRIBUTING, SECURITY
+    makefile_sections/           # Modular .mk include files (10 sections)
+    compose_postgres/            # Docker Compose service for PostgreSQL
+    compose_redis/               # Docker Compose service for Redis
+    compose_kafka/               # Docker Compose service for Kafka
+    compose_mongodb/             # Docker Compose service for MongoDB
+    compose_rabbitmq/            # Docker Compose service for RabbitMQ
 ```
 
 ## Copier Template Format

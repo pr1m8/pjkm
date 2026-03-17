@@ -123,7 +123,7 @@ Cross-phase dependencies are ignored by the DAG resolver — phase ordering is i
 
 CLI subscribes to render Rich console output. TUI subscribes to update ProgressBar, RichLog, and status Label widgets.
 
-## Built-in Tasks (8)
+## Built-in Tasks (9)
 
 ### SCAFFOLD Phase
 
@@ -181,6 +181,17 @@ CLI subscribes to render Rich console output. TUI subscribes to update ProgressB
   - `.secrets.baseline` — detect-secrets baseline with 20 detector plugins
   - `.config/yamllint.yaml` — line-length 120, truthy check-keys false
   - `.config/.markdownlint-cli2.yaml` — line-length 120, MD033/MD041 disabled
+- Respects dry-run.
+
+**`setup_git_lfs`** (`configure/setup_git_lfs.py`)
+
+- depends_on: `[]`
+- Description: "Set up Git LFS for ML model files"
+- should_run: `"hf"` or `"ml"` in `selected_groups`
+- Logic:
+  1. Appends LFS tracking rules for 12 ML file types (*.onnx, *.safetensors, *.bin, *.pt, *.pth, *.h5, *.hdf5, *.pkl, *.joblib, *.npy, *.npz, *.parquet) to `.gitattributes`.
+  2. Runs `git lfs install` if git-lfs is available.
+  3. Skips gracefully if git-lfs is not installed (adds tracking patterns but warns).
 - Respects dry-run.
 
 ### INSTALL Phase

@@ -715,3 +715,63 @@ class TestLinkCommand:
             app, ["link", "nonexistent_tool", "--dir", str(tmp_path)]
         )
         assert result.exit_code != 0
+
+
+class TestAdoptCommand:
+    """Test the adopt command."""
+
+    def test_adopt_empty_dir(self, tmp_path):
+        result = runner.invoke(app, ["adopt", "--dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "No recognizable" in result.stdout
+
+    def test_adopt_detects_fastapi(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\ndependencies = ["fastapi>=0.115.0", "uvicorn"]\n'
+        )
+        result = runner.invoke(app, ["adopt", "--dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "api" in result.stdout
+
+    def test_adopt_detects_structure(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text('[project]\nname = "test"\n')
+        (tmp_path / "Dockerfile").write_text("FROM python:3.13\n")
+        (tmp_path / "Makefile").write_text("test:\n\tpytest\n")
+        result = runner.invoke(app, ["adopt", "--dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "docker" in result.stdout
+        assert "makefile" in result.stdout
+
+    def test_adopt_detects_requirements_txt(self, tmp_path):
+        (tmp_path / "requirements.txt").write_text("redis>=5.0\npandas>=2.0\n")
+        result = runner.invoke(app, ["adopt", "--dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "redis" in result.stdout
+
+
+class TestStatusCommand:
+    """Test the status command."""
+
+    def test_status_no_pyproject(self, tmp_path):
+        result = runner.invoke(app, ["status", "--dir", str(tmp_path)])
+        assert result.exit_code != 0
+
+    def test_status_no_groups(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n'
+        )
+        result = runner.invoke(app, ["status", "--dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "No groups" in result.stdout
+
+    def test_status_with_groups(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n\n'
+            '[project.optional-dependencies]\n'
+            'logging = ["structlog>=24.0.0", "rich>=13.0.0"]\n\n'
+            '[tool.pjkm]\narchetype = "service"\ngroups = ["logging"]\n'
+        )
+        result = runner.invoke(app, ["status", "--dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "logging" in result.stdout
+        assert "service" in result.stdout

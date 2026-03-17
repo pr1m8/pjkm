@@ -1,0 +1,12 @@
+# -- Redis ---------------------------------------------------------------------
+
+.PHONY: redis-cli redis-flush redis-monitor
+
+redis-cli: guard-docker ## Open redis-cli
+	$(DC) exec redis redis-cli
+
+redis-flush: guard-docker ## Flush all Redis data
+	$(DC) exec redis redis-cli FLUSHALL
+
+redis-monitor: guard-docker ## Monitor Redis commands in real-time
+	$(DC) exec redis redis-cli MONITOR

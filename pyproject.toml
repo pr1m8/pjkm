@@ -2,7 +2,7 @@
 name = "pjkm"
 version = "0.1.0"
 description = "Python project builder with DAG-based task system, Copier templates, and Textual TUI"
-authors = [{ name = "Will", email = "you@example.com" }]
+authors = [{ name = "Will", email = "will@pr1m8.dev" }]
 dependencies = [
   "pydantic>=2.12.5",
   "pydantic-settings>=2.13.1",
@@ -32,10 +32,10 @@ classifiers = [
 pjkm = "pjkm.cli.app:app"
 
 [project.urls]
-Homepage = "https://github.com/you/pjkm"
-Repository = "https://github.com/you/pjkm"
-Issues = "https://github.com/you/pjkm/issues"
-Documentation = "https://github.com/you/pjkm/tree/main/docs_internal"
+Homepage = "https://github.com/pr1m8/pjkm"
+Repository = "https://github.com/pr1m8/pjkm"
+Issues = "https://github.com/pr1m8/pjkm/issues"
+Documentation = "https://github.com/pr1m8/pjkm/tree/main/docs_internal"
 
 [project.optional-dependencies]
 dev = [
@@ -68,3 +68,32 @@ known-first-party = ["pjkm"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
+
+[tool.pdm.scripts]
+fmt = "ruff format src tests"
+lint = "ruff check src tests"
+check = {composite = ["fmt", "lint"]}
+test = "pytest"
+typecheck = "pyright src"
+cov = "pytest --cov --cov-report=html --cov-report=term-missing"
+clean = {shell = "rm -rf dist/ build/ *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov/"}
+
+[tool.pyright]
+pythonVersion = "3.13"
+pythonPlatform = "All"
+typeCheckingMode = "basic"
+include = ["src"]
+exclude = ["tests", "docs"]
+
+[tool.coverage.run]
+source = ["src/pjkm"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "if __name__"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

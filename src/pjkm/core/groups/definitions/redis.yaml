@@ -11,6 +11,9 @@ dependencies:
   redis:
     - "redis[hiredis]>=5.2.0"
 
-scaffolded_files: []
+scaffolded_files:
+  - template_fragment: "compose_redis"
+    destination: "."
+    description: "Docker Compose service definition for Redis"
 
 pyproject_tool_config: {}

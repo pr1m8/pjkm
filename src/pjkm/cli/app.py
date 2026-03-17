@@ -536,6 +536,341 @@ def update(
         )
 
 
+@app.command()
+def upgrade(
+    group: list[str] = typer.Option(
+        [],
+        "--group",
+        "-g",
+        help="Specific group(s) to upgrade (default: all applied groups)",
+    ),
+    directory: str = typer.Option(
+        "",
+        "--dir",
+        "-d",
+        help="Project directory (default: cwd)",
+    ),
+    latest: bool = typer.Option(
+        False,
+        "--latest",
+        help="Remove version pins and use latest (e.g. 'pkg' instead of 'pkg>=1.0')",
+    ),
+    refresh_tools: bool = typer.Option(
+        False,
+        "--refresh-tools",
+        help="Re-apply tool config from group definitions (overwrites customizations)",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show what would change without modifying files",
+    ),
+    install: bool = typer.Option(
+        True,
+        "--install/--no-install",
+        help="Run `pdm install` after upgrading (default: yes)",
+    ),
+) -> None:
+    """Upgrade dependencies for applied groups to their latest defined versions.
+
+    Reads [tool.pjkm.groups] from pyproject.toml, loads the current group
+    definitions, and replaces dependency version pins with the latest from
+    the group YAML files. Optionally re-applies tool config sections.
+
+    Examples:
+
+      pjkm upgrade                        # upgrade all group deps
+      pjkm upgrade -g logging -g testing  # upgrade specific groups
+      pjkm upgrade --latest               # strip version pins entirely
+      pjkm upgrade --refresh-tools        # also re-apply [tool.*] config
+      pjkm upgrade --dry-run              # preview changes
+    """
+    import re
+    import subprocess
+    from pathlib import Path
+
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib  # type: ignore[no-redef]
+
+    import tomli_w
+    from rich.console import Console
+    from rich.table import Table
+
+    from pjkm.core.groups.registry import GroupRegistry
+    from pjkm.core.groups.resolver import GroupResolver
+    from pjkm.core.models.platform import PlatformInfo
+
+    console = Console()
+    project_dir = Path(directory).resolve() if directory else Path.cwd()
+    pyproject_path = project_dir / "pyproject.toml"
+
+    if not pyproject_path.exists():
+        console.print(f"[red]pyproject.toml not found in {project_dir}[/red]")
+        raise typer.Exit(1)
+
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+
+    # Read [tool.pjkm] metadata
+    pjkm_config = pyproject.get("tool", {}).get("pjkm", {})
+    applied_groups: list[str] = pjkm_config.get("groups", [])
+
+    if not applied_groups:
+        console.print("[yellow]No groups found in [tool.pjkm.groups].[/yellow]")
+        console.print("[dim]Use `pjkm add` to add groups first.[/dim]")
+        raise typer.Exit(1)
+
+    # Determine which groups to upgrade
+    target_groups = group if group else applied_groups
+
+    # Load registry
+    registry = GroupRegistry()
+    registry.load_all()
+    valid_ids = set(registry.group_ids)
+
+    invalid = [g for g in target_groups if g not in valid_ids]
+    if invalid:
+        console.print(f"[red]Unknown group(s): {', '.join(sorted(invalid))}[/red]")
+        raise typer.Exit(1)
+
+    not_applied = [g for g in target_groups if g not in applied_groups]
+    if not_applied:
+        console.print(
+            f"[yellow]Group(s) not in project: {', '.join(sorted(not_applied))}[/yellow]"
+        )
+        console.print("[dim]Use `pjkm add` to add them first.[/dim]")
+        raise typer.Exit(1)
+
+    # Resolve groups
+    resolver = GroupResolver({g.id: g for g in registry.list_all()})
+    platform = PlatformInfo()
+    try:
+        resolved = resolver.resolve(target_groups, platform=platform)
+    except Exception as exc:
+        console.print(f"[red]Group resolution failed: {exc}[/red]")
+        raise typer.Exit(1)
+
+    # Filter to only the target groups (not transitive deps unless requested)
+    target_set = set(target_groups)
+    groups_to_upgrade = [g for g in resolved if g.id in target_set]
+
+    # Track changes for summary
+    dep_changes: list[tuple[str, str, str, str]] = []  # (section, pkg, old, new)
+    tool_changes: list[str] = []
+
+    optional_deps = pyproject.get("project", {}).get("optional-dependencies", {})
+    tool_config = pyproject.get("tool", {})
+
+    for grp in groups_to_upgrade:
+        for section, new_deps in grp.dependencies.items():
+            existing = optional_deps.get(section, [])
+            existing_map: dict[str, str] = {}
+            for dep in existing:
+                # Parse "package>=1.0.0" into (package, >=1.0.0)
+                m = re.match(r"^([a-zA-Z0-9_-]+(?:\[[^\]]+\])?)\s*(.*)", dep)
+                if m:
+                    existing_map[m.group(1).lower()] = dep
+
+            updated: list[str] = []
+            for new_dep in new_deps:
+                m_new = re.match(r"^([a-zA-Z0-9_-]+(?:\[[^\]]+\])?)\s*(.*)", new_dep)
+                if not m_new:
+                    updated.append(new_dep)
+                    continue
+
+                pkg_name = m_new.group(1).lower()
+                if latest:
+                    # Strip version pin
+                    final_dep = m_new.group(1)
+                else:
+                    final_dep = new_dep
+
+                old_dep = existing_map.get(pkg_name, "")
+                if old_dep != final_dep:
+                    dep_changes.append((section, pkg_name, old_dep, final_dep))
+
+                updated.append(final_dep)
+                # Remove from existing_map so we keep non-group deps
+                existing_map.pop(pkg_name, None)
+
+            # Keep deps that aren't from this group
+            remaining = [
+                dep for dep in existing
+                if re.match(r"^([a-zA-Z0-9_-]+(?:\[[^\]]+\])?)", dep)
+                and re.match(r"^([a-zA-Z0-9_-]+(?:\[[^\]]+\])?)", dep).group(1).lower()
+                in existing_map
+            ]
+            optional_deps[section] = updated + remaining
+
+        # Re-apply tool config if requested
+        if refresh_tools and grp.pyproject_tool_config:
+            for tool_name, tool_conf in grp.pyproject_tool_config.items():
+                parts = tool_name.split(".")
+                current = tool_config
+                for part in parts[:-1]:
+                    current = current.setdefault(part, {})
+                current[parts[-1]] = tool_conf
+                tool_changes.append(f"[tool.{tool_name}]")
+
+    # Show summary
+    if dry_run:
+        console.print("[bold]Dry run — no changes will be made[/bold]\n")
+
+    if dep_changes:
+        table = Table(title="Dependency Changes")
+        table.add_column("Section", style="cyan")
+        table.add_column("Package")
+        table.add_column("Old", style="red")
+        table.add_column("New", style="green")
+        for section, pkg, old, new in dep_changes:
+            table.add_row(section, pkg, old or "(new)", new)
+        console.print(table)
+    else:
+        console.print("[dim]No dependency changes needed.[/dim]")
+
+    if tool_changes:
+        console.print(f"\n[bold]Tool config refreshed:[/bold] {', '.join(tool_changes)}")
+
+    if not dep_changes and not tool_changes:
+        console.print("[green]Everything is up to date.[/green]")
+        raise typer.Exit(0)
+
+    if dry_run:
+        raise typer.Exit(0)
+
+    # Write changes
+    pyproject.setdefault("project", {})["optional-dependencies"] = optional_deps
+    if refresh_tools:
+        pyproject["tool"] = tool_config
+
+    with open(pyproject_path, "wb") as f:
+        tomli_w.dump(pyproject, f)
+
+    console.print(
+        f"\n[bold green]Upgraded {len(groups_to_upgrade)} group(s) "
+        f"({len(dep_changes)} dep change(s))[/bold green]"
+    )
+
+    # Run pdm install if requested
+    if install and dep_changes:
+        console.print("\n[dim]Running pdm install...[/dim]")
+        result = subprocess.run(
+            ["pdm", "install", "-G", ":all"],
+            cwd=project_dir,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            console.print("[green]Dependencies installed.[/green]")
+        else:
+            console.print("[yellow]pdm install had issues:[/yellow]")
+            if result.stderr:
+                console.print(f"[dim]{result.stderr[:500]}[/dim]")
+            console.print("[dim]Run `pdm install` manually to investigate.[/dim]")
+
+
+@app.command(name="link")
+def link_tool(
+    tool_name: str = typer.Argument(help="Tool to configure (e.g. ruff, pyright, pytest)"),
+    directory: str = typer.Option(
+        "",
+        "--dir",
+        "-d",
+        help="Project directory (default: cwd)",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Preview changes without writing",
+    ),
+) -> None:
+    """Link/refresh tool configuration from group definitions.
+
+    Reads the applied groups and re-applies their [tool.*] config sections
+    to pyproject.toml. Useful after updating pjkm or group definitions to
+    pick up new recommended settings.
+
+    Examples:
+
+      pjkm link ruff       # refresh [tool.ruff.*] config from groups
+      pjkm link pytest     # refresh [tool.pytest.*] config
+      pjkm link pyright    # refresh [tool.pyright] config
+    """
+    from pathlib import Path
+
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib  # type: ignore[no-redef]
+
+    import tomli_w
+    from rich.console import Console
+
+    from pjkm.core.groups.registry import GroupRegistry
+    from pjkm.core.groups.resolver import GroupResolver
+    from pjkm.core.models.platform import PlatformInfo
+
+    console = Console()
+    project_dir = Path(directory).resolve() if directory else Path.cwd()
+    pyproject_path = project_dir / "pyproject.toml"
+
+    if not pyproject_path.exists():
+        console.print(f"[red]pyproject.toml not found in {project_dir}[/red]")
+        raise typer.Exit(1)
+
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+
+    applied_groups = pyproject.get("tool", {}).get("pjkm", {}).get("groups", [])
+    if not applied_groups:
+        console.print("[yellow]No groups in [tool.pjkm.groups].[/yellow]")
+        raise typer.Exit(1)
+
+    registry = GroupRegistry()
+    registry.load_all()
+    resolver = GroupResolver({g.id: g for g in registry.list_all()})
+    platform = PlatformInfo()
+    resolved = resolver.resolve(applied_groups, platform=platform)
+
+    tool_config = pyproject.setdefault("tool", {})
+    matched = []
+
+    for grp in resolved:
+        for tool_key, tool_conf in grp.pyproject_tool_config.items():
+            # Match if the tool_key starts with the requested tool name
+            if tool_key == tool_name or tool_key.startswith(f"{tool_name}."):
+                parts = tool_key.split(".")
+                current = tool_config
+                for part in parts[:-1]:
+                    current = current.setdefault(part, {})
+                current[parts[-1]] = tool_conf
+                matched.append(f"[tool.{tool_key}]")
+
+    if not matched:
+        console.print(
+            f"[yellow]No groups define config for '{tool_name}'.[/yellow]"
+        )
+        console.print("[dim]Available tool configs from your groups:[/dim]")
+        all_tools = set()
+        for grp in resolved:
+            for key in grp.pyproject_tool_config:
+                all_tools.add(key.split(".")[0])
+        if all_tools:
+            console.print(f"  {', '.join(sorted(all_tools))}")
+        raise typer.Exit(1)
+
+    if dry_run:
+        console.print(f"[bold]Would update:[/bold] {', '.join(matched)}")
+        raise typer.Exit(0)
+
+    with open(pyproject_path, "wb") as f:
+        tomli_w.dump(pyproject, f)
+
+    console.print(f"[green]Updated {', '.join(matched)} from group definitions.[/green]")
+
+
 def _extract_python_version(requires_python: str) -> str:
     """Extract a X.Y version string from a requires-python specifier."""
     import re

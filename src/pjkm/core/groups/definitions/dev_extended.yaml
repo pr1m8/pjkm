@@ -1,0 +1,20 @@
+id: dev_extended
+name: "Extended Development Tools"
+description: "Meta-group: dev essentials + docs + security + coverage with extra tools"
+archetypes: []
+requires_groups:
+  - dev
+  - docs
+  - security
+platform_filter: null
+
+dependencies:
+  dev-extended:
+    - "pre-commit>=4.2.0"
+    - "commitizen>=4.5.0"
+    - "tox>=4.25.0"
+    - "nox>=2025.0.0"
+    - "hatch>=1.14.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

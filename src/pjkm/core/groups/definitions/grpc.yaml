@@ -1,0 +1,18 @@
+id: grpc
+name: "gRPC"
+description: "gRPC server/client with protobuf and code generation"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  grpc:
+    - "grpcio>=1.71.0"
+    - "grpcio-tools>=1.71.0"
+    - "protobuf>=6.30.0"
+    - "grpcio-reflection>=1.71.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

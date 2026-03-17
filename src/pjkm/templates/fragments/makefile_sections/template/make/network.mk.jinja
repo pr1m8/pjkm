@@ -1,0 +1,17 @@
+# -- Network Debugging ---------------------------------------------------------
+
+NETWORK_NAME ?= {{ project_slug }}_default
+
+.PHONY: network-users clean-network
+
+network-users: guard-docker ## Show containers on project network
+	@echo "Containers on $(NETWORK_NAME):"
+	@docker ps -a --filter "network=$(NETWORK_NAME)"
+	@echo ""
+	@docker network inspect "$(NETWORK_NAME)" 2>/dev/null || echo "Network does not exist."
+
+clean-network: guard-docker ## Remove stale project network
+	@docker network inspect "$(NETWORK_NAME)" >/dev/null 2>&1 || { echo "Network does not exist."; exit 0; }
+	@ids="$$(docker ps -aq --filter "network=$(NETWORK_NAME)")"; \
+	if [ -n "$$ids" ]; then echo "Removing containers: $$ids"; docker rm -f $$ids; fi
+	@docker network rm "$(NETWORK_NAME)" || { echo "Could not remove. Run 'make network-users'."; exit 1; }

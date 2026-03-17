@@ -1,0 +1,22 @@
+# -- Diagnostics ---------------------------------------------------------------
+
+SHOW_SECRETS ?= 1
+OPEN_CMD := $(shell if command -v wslview >/dev/null 2>&1; then echo wslview; elif command -v open >/dev/null 2>&1; then echo open; else echo xdg-open; fi)
+
+.PHONY: doctor urls open
+
+doctor: guard-docker ps urls ## Health check all services
+
+urls: ## Show service URLs and credentials
+	@$(WITH_ENV); \
+	echo "Project: $(PROJECT_NAME)"; echo ""; \
+	echo "App:      http://localhost:$${APP_PORT:-8000}"; \
+	echo "Postgres: postgresql://$${POSTGRES_USER:-postgres}:****@localhost:$${POSTGRES_PORT:-5432}/$${POSTGRES_DB:-{{ project_slug }}}"; \
+	echo "Redis:    redis://localhost:$${REDIS_PORT:-6379}"; \
+	if [ "$(SHOW_SECRETS)" = "1" ]; then \
+		echo ""; echo "Credentials:"; \
+		echo "  Postgres: $${POSTGRES_USER:-postgres} / $${POSTGRES_PASSWORD:-postgres}"; \
+	fi
+
+open: ## Open app in browser
+	@$(WITH_ENV); $(OPEN_CMD) "http://localhost:$${APP_PORT:-8000}" >/dev/null 2>&1 || true

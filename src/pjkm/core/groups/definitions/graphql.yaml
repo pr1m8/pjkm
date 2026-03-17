@@ -1,0 +1,16 @@
+id: graphql
+name: "GraphQL"
+description: "Strawberry GraphQL with FastAPI integration"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  graphql:
+    - "strawberry-graphql[fastapi]>=0.262.0"
+    - "graphql-core>=3.2.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

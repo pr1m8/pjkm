@@ -1,0 +1,24 @@
+# -- Kubernetes ----------------------------------------------------------------
+
+KUBE_CONTEXT ?= docker-desktop
+KUBE_NS      ?= {{ project_slug }}
+OVERLAY      ?= dev
+
+.PHONY: k8s-apply k8s-delete k8s-status k8s-logs k8s-port-forward
+
+k8s-apply: ## Apply k8s manifests (OVERLAY=dev|prod)
+	kubectl --context $(KUBE_CONTEXT) apply -k k8s/overlays/$(OVERLAY)
+
+k8s-delete: ## Delete k8s resources
+	kubectl --context $(KUBE_CONTEXT) delete -k k8s/overlays/$(OVERLAY)
+
+k8s-status: ## Show pod status
+	kubectl --context $(KUBE_CONTEXT) -n $(KUBE_NS) get pods,svc,ing
+
+k8s-logs: ## Tail pod logs (k8s-logs pod=name)
+	@if [ -z "$(pod)" ]; then echo "Usage: make k8s-logs pod=<pod-name>"; exit 1; fi
+	kubectl --context $(KUBE_CONTEXT) -n $(KUBE_NS) logs -f "$(pod)"
+
+k8s-port-forward: ## Port-forward a service (k8s-port-forward svc=name port=8080:80)
+	@if [ -z "$(svc)" ] || [ -z "$(port)" ]; then echo "Usage: make k8s-port-forward svc=app port=8080:80"; exit 1; fi
+	kubectl --context $(KUBE_CONTEXT) -n $(KUBE_NS) port-forward "svc/$(svc)" "$(port)"

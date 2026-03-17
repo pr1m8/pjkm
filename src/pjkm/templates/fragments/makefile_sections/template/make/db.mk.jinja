@@ -1,0 +1,28 @@
+# -- Database ------------------------------------------------------------------
+
+.PHONY: db-shell db-dump db-restore db-migrate db-rollback db-reset
+
+db-shell: guard-docker ## Open psql shell
+	@$(WITH_ENV); $(DC) exec postgres psql -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-{{ project_slug }}}"
+
+db-dump: guard-docker ## Dump database to file (db-dump file=dump.sql)
+	@$(WITH_ENV); $(DC) exec postgres pg_dump -U "$${POSTGRES_USER:-postgres}" "$${POSTGRES_DB:-{{ project_slug }}}" > "$${file:-dump.sql}"
+	@echo "Dumped to $${file:-dump.sql}"
+
+db-restore: guard-docker ## Restore database from file (db-restore file=dump.sql)
+	@if [ -z "$(file)" ]; then echo "Usage: make db-restore file=dump.sql"; exit 1; fi
+	@$(WITH_ENV); $(DC) exec -T postgres psql -U "$${POSTGRES_USER:-postgres}" "$${POSTGRES_DB:-{{ project_slug }}}" < "$(file)"
+
+db-migrate: ## Run database migrations
+	pdm run alembic upgrade head
+
+db-rollback: ## Rollback last migration
+	pdm run alembic downgrade -1
+
+db-reset: guard-docker ## Reset database (destroy + recreate + migrate)
+	$(DC) stop postgres
+	$(DC) rm -f postgres
+	$(DC) up -d postgres
+	@echo "Waiting for postgres..."
+	@sleep 3
+	$(MAKE) db-migrate

@@ -1,0 +1,10 @@
+# -- Cleanup -------------------------------------------------------------------
+
+.PHONY: clean clean-all
+
+clean: ## Remove build artifacts and caches
+	rm -rf dist/ build/ *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov/
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+
+clean-all: clean down ## Clean everything (artifacts + containers + volumes)
+	docker volume prune -f

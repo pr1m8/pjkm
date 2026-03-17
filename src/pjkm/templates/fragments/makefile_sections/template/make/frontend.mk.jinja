@@ -1,0 +1,24 @@
+# -- Frontend ------------------------------------------------------------------
+
+FRONTEND_DIR ?= frontend
+PNPM := cd $(FRONTEND_DIR) && pnpm
+
+.PHONY: fe-install fe-dev fe-build fe-lint fe-test fe-clean
+
+fe-install: ## Install frontend dependencies
+	$(PNPM) install
+
+fe-dev: ## Start frontend dev server
+	$(PNPM) run dev
+
+fe-build: ## Build frontend for production
+	$(PNPM) run build
+
+fe-lint: ## Lint frontend code
+	$(PNPM) run lint
+
+fe-test: ## Run frontend tests
+	$(PNPM) run test
+
+fe-clean: ## Clean frontend build artifacts
+	rm -rf $(FRONTEND_DIR)/dist $(FRONTEND_DIR)/node_modules/.vite

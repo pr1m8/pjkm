@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+"""Example script for {{ project_name }}."""
+
+from __future__ import annotations
+
+import typer
+
+app = typer.Typer(help="{{ project_name }} scripts")
+
+
+@app.command()
+def hello(name: str = typer.Argument("world", help="Name to greet")) -> None:
+    """Say hello."""
+    typer.echo(f"Hello, {name}!")
+
+
+if __name__ == "__main__":
+    app()

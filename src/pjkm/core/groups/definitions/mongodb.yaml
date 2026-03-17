@@ -13,6 +13,9 @@ dependencies:
     - "beanie>=1.29.0"
     - "pymongo>=4.12.0"
 
-scaffolded_files: []
+scaffolded_files:
+  - template_fragment: "compose_mongodb"
+    destination: "."
+    description: "Docker Compose service definition for MongoDB"
 
 pyproject_tool_config: {}

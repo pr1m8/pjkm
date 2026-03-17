@@ -1,0 +1,26 @@
+# -- Python Development --------------------------------------------------------
+
+.PHONY: install test lint fmt typecheck check docs serve
+
+install: ## Install project dependencies
+	pdm install -G dev
+
+test: ## Run tests
+	pdm run pytest
+
+lint: ## Run linters
+	pdm run ruff check .
+
+fmt: ## Format code
+	pdm run ruff format .
+
+typecheck: ## Run type checker
+	pdm run pyright src/
+
+check: lint typecheck test ## Run all checks
+
+docs: ## Build documentation
+	pdm run sphinx-build docs/ docs/_build/html
+
+serve: ## Run development server
+	pdm run python -m {{ project_slug }}

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Sync all git submodules for {{ project_name }}
+set -euo pipefail
+
+echo "Initializing submodules..."
+git submodule update --init --recursive
+
+echo "Pulling latest changes..."
+git submodule foreach --recursive 'git checkout main 2>/dev/null || git checkout master; git pull'
+
+echo "Submodules synced."

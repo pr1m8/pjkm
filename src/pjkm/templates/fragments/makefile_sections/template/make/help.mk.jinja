@@ -1,0 +1,10 @@
+# -- Help ----------------------------------------------------------------------
+
+.PHONY: help
+
+help: ## Show this help
+	@echo "{{ project_name }} Makefile"
+	@echo ""
+	@grep -rhE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "Tip: make logs svc=postgres | make restart svc=redis | make urls SHOW_SECRETS=0"

@@ -1,0 +1,15 @@
+id: github_templates
+name: "GitHub Templates"
+description: "Issue templates, PR template, discussion templates, and CODEOWNERS"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "github_templates"
+    destination: "."
+    description: "GitHub issue/PR templates, CODEOWNERS, CONTRIBUTING.md, SECURITY.md"
+
+pyproject_tool_config: {}

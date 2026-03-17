@@ -17,6 +17,9 @@ build-backend = "pdm.backend"
 [tool.pdm]
 distribution = true
 
+[tool.pdm.scripts._.env]
+PYTHONDONTWRITEBYTECODE = "1"
+
 [tool.pdm.scripts]
 fmt = "ruff format src tests"
 lint = "ruff check src tests"
@@ -24,6 +27,12 @@ check = {composite = ["fmt", "lint"]}
 test = "pytest"
 typecheck = "pyright src"
 serve = "python -m {{ project_slug }}"
+cov = "pytest --cov --cov-report=html --cov-report=term-missing"
+docs = "sphinx-build docs/ docs/_build/html"
+docs-serve = "sphinx-autobuild docs/ docs/_build/html --port 8080"
+clean = {shell = "rm -rf dist/ build/ *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov/ docs/_build/"}
+changelog = "towncrier build --yes"
+changelog-draft = "towncrier build --draft"
 
 [tool.towncrier]
 package = "{{ project_slug }}"
@@ -107,3 +116,16 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "if __name__"]
+
+[tool.pyright]
+pythonVersion = "{{ python_version }}"
+pythonPlatform = "All"
+typeCheckingMode = "basic"
+include = ["src"]
+exclude = ["tests", "docs", "scripts"]
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]

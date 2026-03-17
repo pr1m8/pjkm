@@ -1,0 +1,22 @@
+id: docs_mkdocs
+name: "Documentation (MkDocs)"
+description: "MkDocs with Material theme, auto-generated API docs"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  docs:
+    - "mkdocs>=1.6.0"
+    - "mkdocs-material>=9.6.0"
+    - "mkdocstrings[python]>=0.27.0"
+    - "mkdocs-gen-files>=0.5.0"
+    - "mkdocs-literate-nav>=0.6.0"
+    - "mkdocs-section-index>=0.3.0"
+
+scaffolded_files:
+  - template_fragment: "docs_mkdocs"
+    destination: "."
+    description: "mkdocs.yml config and docs/ directory with Material theme"
+
+pyproject_tool_config: {}

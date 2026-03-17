@@ -1,0 +1,17 @@
+id: makefile
+name: "Modular Makefile"
+description: "Composable Makefile with include-able sections for Docker, DB, Redis, K8s, frontend"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "makefile_sections"
+    destination: "."
+    description: "make/ directory with modular .mk include files"
+
+pyproject_tool_config: {}

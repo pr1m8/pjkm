@@ -1,0 +1,48 @@
+# -- Docker / Compose ----------------------------------------------------------
+
+ENV_FILE      ?= ./.env
+COMPOSE_FILE  ?= infra/compose.yaml
+PROJECT_NAME  ?= {{ project_slug }}
+NETWORK_NAME  ?= {{ project_slug }}_default
+
+DC := docker compose --env-file "$(ENV_FILE)" -f "$(COMPOSE_FILE)" -p "$(PROJECT_NAME)"
+WITH_ENV := set -a; if [ -f "$(ENV_FILE)" ]; then source "$(ENV_FILE)"; fi; set +a
+
+.PHONY: guard-docker up up-build stop start down destroy ps logs pull restart config
+
+guard-docker:
+	@docker info >/dev/null 2>&1 || { echo "Docker daemon not running."; exit 1; }
+
+up: guard-docker ## Start infrastructure services
+	$(DC) up -d --remove-orphans
+
+up-build: guard-docker ## Rebuild and start services
+	$(DC) up -d --build --remove-orphans
+
+stop: guard-docker ## Stop services (preserving state)
+	$(DC) stop
+
+start: guard-docker ## Start stopped services
+	$(DC) start
+
+down: guard-docker ## Stop and remove services
+	$(DC) down --remove-orphans
+
+destroy: guard-docker ## Stop, remove services, and delete volumes
+	$(DC) down -v --remove-orphans
+
+ps: guard-docker ## Show running services
+	$(DC) ps
+
+logs: guard-docker ## Tail logs (logs svc=name for one service)
+	@if [ -n "$(svc)" ]; then $(DC) logs -f --tail=200 "$(svc)"; else $(DC) logs -f --tail=200; fi
+
+pull: guard-docker ## Pull latest images
+	$(DC) pull
+
+restart: guard-docker ## Restart a service (restart svc=name)
+	@if [ -z "$(svc)" ]; then echo "Usage: make restart svc=postgres"; exit 1; fi
+	$(DC) restart "$(svc)"
+
+config: guard-docker ## Show resolved Compose config
+	$(DC) config

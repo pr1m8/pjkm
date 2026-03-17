@@ -1,6 +1,6 @@
 # Examples
 
-These examples show what `pjkm` generates for each archetype.
+These examples show what `pjkm` generates for each archetype and recipe.
 
 ## Quick Start
 
@@ -8,457 +8,283 @@ These examples show what `pjkm` generates for each archetype.
 # Install pjkm
 pip install pjkm
 
-# Generate a single package
-pjkm init my-library --archetype single-package
+# Use a recipe — one command, everything configured
+pjkm init my-api --recipe fastapi-service
 
-# Generate a service with OTel observability
-pjkm init my-api --archetype service --group logging --group otel
+# Or pick groups manually
+pjkm init my-lib -a single-package -g dev -g docs -g coverage
 
-# Generate with all dev tooling
-pjkm init my-project --archetype single-package --group dev
+# Preview what you'd get without creating anything
+pjkm preview --recipe saas-backend
+
+# Browse and install community group packs
+pjkm search django
+pjkm install pjkm-django
 
 # Launch the interactive TUI
 pjkm tui
-
-# Set up defaults first (optional)
-pjkm defaults --init
 ```
 
-## Archetype: `single-package`
-
-> A standalone Python library with src layout.
+## Recipes (15 pre-configured combos)
 
 ```bash
-pjkm init my-library --archetype single-package
+pjkm init my-lib      --recipe python-lib          # publish-ready library
+pjkm init my-api      --recipe fastapi-service      # production API
+pjkm init my-agent    --recipe ai-agent             # LangChain/LangGraph agent
+pjkm init my-ml       --recipe ml-pipeline          # ML training pipeline
+pjkm init my-data     --recipe data-analysis        # notebooks + viz
+pjkm init my-cli      --recipe cli-tool             # polished CLI
+pjkm init my-app      --recipe fullstack-web        # API + Next.js frontend
+pjkm init my-mono     --recipe monorepo             # multi-package repo
+pjkm init my-scraper  --recipe scraper              # crawling pipeline
+pjkm init my-fin      --recipe fintech              # payments + compliance
+pjkm init my-micro    --recipe api-microservice     # lightweight service
+pjkm init my-bot      --recipe discord-bot          # async bot
+pjkm init my-etl      --recipe etl-pipeline         # ETL with scheduling
+pjkm init my-saas     --recipe saas-backend         # multi-tenant SaaS
+pjkm init my-docs     --recipe document-processor   # doc ingestion pipeline
 ```
 
-```
-my-library/
-├── .editorconfig
-├── .git/
-├── .gitattributes
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   ├── config.yml
-│   │   └── feature_request.md
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   ├── dependabot.yml
-│   └── workflows/
-│       ├── ci.yml
-│       └── release.yml
-├── .gitignore
-├── .gitlint
-├── .python-version
-├── .readthedocs.yaml
-├── .secrets.baseline
-├── .pre-commit-config.yaml
-├── .trunk/
-│   └── trunk.yaml
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-├── pyproject.toml
-├── src/
-│   └── my_library/
-│       ├── __init__.py
-│       └── py.typed
-└── tests/
-    ├── __init__.py
-    ├── conftest.py
-    └── test_my_library.py
-```
+## What gets generated
 
-## Archetype: `service`
+### `pjkm init my-api --recipe fastapi-service`
 
-> A deployable service with Docker Compose infrastructure, Makefile, and environment config.
-
-```bash
-pjkm init my-api --archetype service \
-    -g docker -g k8s \
-    -g api -g gateway -g database -g nginx \
-    -g logging -g otel -g monitoring -g docs \
-    -g celery -g frontend -g dev
-```
+A production-ready FastAPI service with 17 groups applied:
 
 ```
 my-api/
-├── .config/
-│   ├── .markdownlint-cli2.yaml
-│   └── yamllint.yaml
-├── .devcontainer/                 # ← from docker group
-│   └── devcontainer.json
-├── .dockerignore                  # ← from docker group
-├── .editorconfig
-├── .env.example
-├── .git/
-├── .gitattributes
+├── .env.example                          # all env vars documented
 ├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   ├── config.yml
-│   │   └── feature_request.md
-│   ├── PULL_REQUEST_TEMPLATE.md
 │   ├── dependabot.yml
+│   ├── release-drafter.yml
+│   ├── ISSUE_TEMPLATE/                   # YAML form-based templates
+│   ├── PULL_REQUEST_TEMPLATE.md
 │   └── workflows/
-│       ├── ci.yml                 # test, lint, typecheck, docs, security
-│       └── release.yml
-├── .gitignore
-├── .gitlint
-├── .pre-commit-config.yaml
-├── .python-version
-├── .readthedocs.yaml
-├── .secrets.baseline
-├── .secrets.example
-├── .trunk/
-│   └── trunk.yaml
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── Dockerfile                     # ← from docker group (multi-stage)
-├── Dockerfile.dev                 # ← from docker group (Node.js + pnpm)
-├── LICENSE
+│       ├── auto-merge.yml                # auto-merge Dependabot
+│       ├── changelog.yml                 # release notes via git-cliff
+│       ├── ci.yml                        # test, lint, typecheck, docs, security
+│       ├── codeql.yml                    # GitHub security analysis
+│       ├── dependency-review.yml         # vulnerability scanning
+│       ├── docker.yml                    # multi-arch GHCR build
+│       ├── docker-security.yml           # Hadolint + Trivy scan
+│       ├── draft-release.yml             # draft release notes
+│       ├── labeler.yml                   # auto-label PRs
+│       ├── lock.yml                      # lock stale threads
+│       ├── migration-check.yml           # Alembic CI check
+│       ├── pages.yml                     # deploy docs to GitHub Pages
+│       ├── pr-size.yml                   # PR size labels
+│       ├── release.yml                   # PyPI publish
+│       ├── scorecard.yml                 # OpenSSF security score
+│       ├── stale.yml                     # stale issue management
+│       └── test-matrix.yml              # OS + Python version matrix
+├── Dockerfile                            # multi-stage production build
+├── Dockerfile.dev                        # dev container with hot-reload
+├── .devcontainer/devcontainer.json
 ├── Makefile
-├── README.md
-├── alembic/                       # ← from database group
-│   ├── env.py
-│   ├── script.py.mako
+├── alembic/                              # database migrations
+│   ├── env.py                            # async SQLAlchemy config
 │   └── versions/
-├── alembic.ini                    # ← from database group
-├── apps/                          # ← from frontend group
-│   └── web/
-│       ├── app/
-│       │   ├── globals.css
-│       │   ├── layout.tsx
-│       │   ├── lib/
-│       │   │   ├── supabase.ts
-│       │   │   └── utils.ts
-│       │   └── page.tsx
-│       ├── components.json        # shadcn/ui config
-│       ├── next.config.ts
-│       ├── package.json
-│       ├── postcss.config.mjs
-│       └── tsconfig.json
-├── compose.dev.yaml               # ← from docker group
-├── docs/                          # ← from docs group
-│   ├── Makefile
-│   ├── _static/
-│   ├── _templates/
-│   ├── api/
-│   │   └── index.rst
-│   ├── changelog.rst
-│   ├── conf.py
-│   ├── getting-started.rst
-│   └── index.rst
-├── helm/                          # ← from k8s group
-│   ├── Chart.yaml
-│   ├── templates/
-│   │   ├── _helpers.tpl
-│   │   └── deployment.yaml
-│   └── values.yaml
+├── compose.dev.yaml
 ├── infra/
-│   ├── README.md
-│   ├── compose.celery.yaml        # ← from celery group
-│   ├── compose.nginx.yaml         # ← from nginx group
-│   ├── compose.otel.yaml          # ← from otel group
 │   ├── compose.yaml
-│   ├── grafana/
-│   │   └── provisioning/
-│   │       └── datasources/
-│   │           └── datasources.yaml
-│   ├── loki/
-│   │   └── loki.yaml
-│   ├── nginx/                     # ← from nginx group
-│   │   ├── Dockerfile
-│   │   └── nginx.conf
-│   ├── otel/
-│   │   └── collector.yaml
-│   └── prometheus/
-│       └── prometheus.yml
-├── k8s/                           # ← from k8s group
-│   ├── base/
-│   │   ├── configmap.yaml
-│   │   ├── deployment.yaml
-│   │   ├── hpa.yaml
-│   │   ├── ingress.yaml
-│   │   ├── kustomization.yaml
-│   │   └── service.yaml
-│   └── overlays/
-│       ├── dev/
-│       │   └── kustomization.yaml
-│       └── prod/
-│           └── kustomization.yaml
-├── package.json                   # ← from frontend group (turbo scripts)
-├── pnpm-workspace.yaml            # ← from frontend group
-├── pyproject.toml
-├── scripts/
+│   ├── compose.otel.yaml                 # OTel collector + Grafana + Loki
+│   ├── compose.redis.yaml
+│   └── compose.postgres.yaml
+├── pyproject.toml                        # all deps organized by group
 ├── src/
 │   └── my_api/
 │       ├── __init__.py
-│       ├── core/
+│       ├── api/                          # ← from api group
+│       │   ├── app.py                    # FastAPI factory, CORS, middleware
+│       │   ├── deps.py                   # shared dependencies (settings, DB, etc.)
+│       │   ├── middleware.py             # request ID, timing
+│       │   └── routes/
+│       │       ├── health.py             # /health + /ready endpoints
+│       │       └── v1.py                 # /api/v1/ routes
+│       ├── auth/                         # ← from auth group
 │       │   ├── __init__.py
-│       │   └── logging/           # ← from logging group
-│       │       ├── __init__.py
-│       │       └── config.py
-│       ├── py.typed
-│       └── workers/               # ← from celery group
-│           ├── __init__.py
-│           ├── beat_schedule.py
-│           ├── celery_app.py
-│           └── tasks.py
-├── tests/
-│   ├── __init__.py
-│   └── conftest.py
-└── turbo.json                     # ← from frontend group
-```
-
-## Archetype: `poly-repo`
-
-> A multi-package monorepo with shared infrastructure and tooling.
-
-```bash
-pjkm init my-platform --archetype poly-repo
-```
-
-```
-my-platform/
-├── .config/
-│   ├── .markdownlint-cli2.yaml
-│   └── yamllint.yaml
-├── .editorconfig
-├── .env.example
-├── .git/
-├── .gitattributes
-├── .github/
-│   └── ...
-├── .gitignore
-├── .gitlint
-├── .pre-commit-config.yaml
-├── .python-version
-├── .secrets.baseline
-├── .secrets.example
-├── .trunk/
-│   └── trunk.yaml
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── Makefile
-├── README.md
-├── infra/
-│   ├── compose.yaml
-│   └── README.md
-├── packages/                      # ← sub-packages go here
-├── pyproject.toml
-├── scripts/
-├── src/
-│   └── my_platform/
-│       ├── __init__.py
+│       │   ├── jwt.py                    # create/decode JWT tokens
+│       │   └── deps.py                   # get_current_user dependency
+│       ├── core/
+│       │   ├── database.py               # ← async SQLAlchemy engine + sessions
+│       │   ├── lifespan.py               # ← startup/shutdown hooks
+│       │   ├── logging/                  # ← structlog + Rich
+│       │   │   ├── __init__.py
+│       │   │   └── config.py
+│       │   ├── redis.py                  # ← async Redis client + pool
+│       │   └── settings.py               # ← Pydantic Settings + .env
+│       ├── models/                       # ← from database group
+│       │   ├── __init__.py               # import all models for Alembic
+│       │   └── mixins.py                 # timestamps, UUID PK, soft-delete
 │       └── py.typed
-├── tests/
-│   └── __init__.py
-└── tools/                         # ← dev tooling scripts
-```
-
-## Archetype: `script-tool`
-
-> A CLI tool with Typer and entry points.
-
-```bash
-pjkm init my-tool --archetype script-tool
-```
-
-```
-my-tool/
-├── .editorconfig
-├── .git/
-├── .gitattributes
-├── .github/
-│   └── ...
-├── .gitignore
-├── .gitlint
-├── .pre-commit-config.yaml
-├── .python-version
-├── .secrets.baseline
-├── .trunk/
-│   └── trunk.yaml
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-├── pyproject.toml
-├── src/
-│   └── my_tool/
-│       ├── __init__.py
-│       ├── __main__.py            # ← python -m my_tool
-│       └── cli.py                 # ← Typer CLI
 └── tests/
     ├── __init__.py
-    └── test_cli.py
+    └── conftest.py
 ```
 
-## Package Groups (28)
+### `pjkm init my-agent --recipe ai-agent`
 
-Groups add optional dependencies AND scaffolded code/config to any archetype.
-
-### Development & Quality
-
-| Group       | What it adds                                             | Requires                              | Scaffold         |
-| ----------- | -------------------------------------------------------- | ------------------------------------- | ---------------- |
-| `dev`       | Meta: linting + testing + typecheck + coverage + ipython | linting, testing, typecheck, coverage | —                |
-| `linting`   | ruff, pre-commit, commitizen                             | —                                     | —                |
-| `testing`   | pytest, pytest-cov, pytest-mock, pytest-asyncio          | —                                     | —                |
-| `typecheck` | pyright, mypy                                            | —                                     | —                |
-| `coverage`  | coverage[toml]                                           | testing                               | —                |
-| `security`  | bandit, detect-secrets                                   | —                                     | —                |
-| `docs`      | sphinx, autobuild, napoleon, RTD theme, myst-parser      | —                                     | `docs/` skeleton |
-| `jupyter`   | jupyterlab, ipykernel                                    | —                                     | —                |
-
-### Infrastructure & Containers
-
-| Group    | What it adds    | Requires | Scaffold                                                                   |
-| -------- | --------------- | -------- | -------------------------------------------------------------------------- |
-| `docker` | —               | —        | Dockerfile (multi-stage), Dockerfile.dev, .devcontainer/, compose.dev.yaml |
-| `k8s`    | kubernetes      | docker   | k8s/ Kustomize (base + dev/prod overlays), helm/ chart                     |
-| `nginx`  | — (config only) | —        | `infra/nginx/` config + Dockerfile                                         |
-
-### Backend Services
-
-| Group      | What it adds                                    | Requires | Scaffold                      |
-| ---------- | ----------------------------------------------- | -------- | ----------------------------- |
-| `api`      | FastAPI, Uvicorn, pydantic-settings             | —        | —                             |
-| `gateway`  | slowapi, tenacity, pyrate-limiter, httpx        | api      | —                             |
-| `database` | SQLAlchemy async, Alembic, asyncpg              | —        | `alembic/` migration scaffold |
-| `redis`    | redis[hiredis]                                  | —        | —                             |
-| `mongodb`  | motor, beanie, pymongo                          | —        | —                             |
-| `supabase` | supabase, postgrest, gotrue, storage3, realtime | —        | —                             |
-
-### Task Queues & Messaging
-
-| Group      | What it adds                                     | Requires | Scaffold                                                |
-| ---------- | ------------------------------------------------ | -------- | ------------------------------------------------------- |
-| `celery`   | celery[redis], flower                            | —        | workers/ (celery_app, tasks, beat), compose.celery.yaml |
-| `airflow`  | apache-airflow + celery/postgres/redis providers | —        | —                                                       |
-| `kafka`    | confluent-kafka, aiokafka, faust-streaming       | —        | —                                                       |
-| `rabbitmq` | pika, aio-pika, kombu                            | —        | —                                                       |
-
-### Observability
-
-| Group        | What it adds                                         | Requires | Scaffold               |
-| ------------ | ---------------------------------------------------- | -------- | ---------------------- |
-| `logging`    | rich, structlog                                      | —        | `core/logging/` module |
-| `otel`       | opentelemetry-distro, -api, -sdk, -exporter-otlp     | logging  | `infra/` OTel stack    |
-| `monitoring` | prometheus-client, prometheus-fastapi-instrumentator | api      | —                      |
-
-### Frontend
-
-| Group      | What it adds | Requires | Scaffold                                                                                                    |
-| ---------- | ------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
-| `frontend` | — (npm deps) | —        | apps/web/ (Next.js 15 + React 19 + Supabase SSR + Tailwind v4 + shadcn/ui), pnpm-workspace.yaml, turbo.json |
-
-### AI & Machine Learning
-
-| Group       | What it adds                                                                     | Requires | Scaffold |
-| ----------- | -------------------------------------------------------------------------------- | -------- | -------- |
-| `hf`        | Hugging Face Hub, Transformers, Datasets, Accelerate, PEFT, bitsandbytes (Linux) | —        | —        |
-| `ml`        | scikit-learn, XGBoost, LightGBM, ONNX Runtime, pandas, numpy, polars             | —        | —        |
-| `langchain` | LangChain core + community + OpenAI/Anthropic/HF providers, LangGraph            | —        | —        |
-
-### Custom Groups
-
-You can add your own groups without modifying pjkm:
+An AI agent with LangChain, vector stores, and MCP tools:
 
 ```bash
-# Create a group YAML scaffold
-pjkm group create quant-data --name "Quantitative Data"
-# -> ./.pjkm/groups/quant_data.yaml  (edit to add dependencies)
-
-# Import groups from an existing pyproject.toml
-pjkm group import ../wraquant/pyproject.toml --section market-data
-
-# Share groups via a git repo
-pjkm group source add https://github.com/org/pjkm-groups-quant.git
-
-# Validate your custom groups
-pjkm group validate
-
-# List everything (built-in + custom + remote)
-pjkm group list
+# What you get:
+# - LangChain + LangGraph + providers (OpenAI, Anthropic, HF)
+# - Vector store support (Chroma, FAISS, Qdrant, Pinecone)
+# - MCP tools (mcp, httpx-sse)
+# - Document parsing (unstructured, pdfplumber, python-docx)
+# - Search tools (DuckDuckGo, SerpAPI, Tavily)
+# - Redis for caching/sessions
+# - Structlog logging
 ```
 
-### Example Combinations
+### `pjkm init my-saas --recipe saas-backend`
+
+Multi-tenant SaaS with everything:
 
 ```bash
-# Library with full dev tooling + docs
-pjkm init my-library -a single-package -g dev -g docs
-
-# API service with full stack
-pjkm init my-api -a service \
-    -g docker -g k8s \
-    -g api -g gateway -g database -g redis \
-    -g logging -g otel -g monitoring -g nginx \
-    -g celery -g dev -g docs
-
-# Fullstack: Python API + Next.js frontend
-pjkm init my-app -a service \
-    -g docker -g api -g database -g supabase \
-    -g frontend -g dev
-
-# Event-driven microservice
-pjkm init my-service -a service \
-    -g docker -g api -g kafka -g redis -g mongodb \
-    -g logging -g otel -g dev
-
-# Data science tool
-pjkm init my-analysis -a script-tool -g jupyter -g logging -g dev
-
-# Data pipeline
-pjkm init my-pipeline -a service -g airflow -g database -g redis -g dev
-
-# Or interactively in TUI
-pjkm tui
+# Groups: api, auth, database, redis, caching, docker, logging, otel,
+#         monitoring, payments, email, websocket, scheduling,
+#         error_tracking, makefile, github_templates, ci_cd, coverage, security
+#
+# You get:
+# - JWT auth + Bearer dependency
+# - Stripe/payment integration deps
+# - Email (aiosmtplib + templates)
+# - WebSocket (real-time)
+# - Job scheduling (APScheduler)
+# - Error tracking (Sentry)
+# - Full CI/CD with deploy workflows
 ```
 
-### CI Pipeline
+## Package Groups (83 across 8 categories)
 
-The generated `.github/workflows/` directory includes **6 workflows**:
+```bash
+pjkm list groups    # see all groups organized by category
+pjkm info <group>   # detailed view of a specific group
+```
 
-**`ci.yml`** — 5 jobs in parallel:
+### Core Dev (21)
+dev, dev_extended, linting, testing, testing_extended, typecheck, coverage, security,
+code_quality, profiling, debugging, refactoring, reporting, scripts, towncrier,
+pydantic_extra, config_mgmt, cli_rich, async_tools, http_client, logging
 
-| Job         | What it does                                | Artifact             |
-| ----------- | ------------------------------------------- | -------------------- |
-| `test`      | pytest with coverage reporting              | `coverage.xml`       |
-| `lint`      | ruff check + format (GitHub annotations)    | —                    |
-| `typecheck` | pyright strict mode                         | —                    |
-| `docs`      | sphinx-build with `-W` (warnings as errors) | `docs-html/`         |
-| `security`  | bandit security scan                        | `bandit-report.json` |
+### AI / ML (16)
+langchain, langchain_providers, langgraph, hf, ml, torch, mcp_tools,
+dataviz, notebook, jupyter, search_tools, doc_parsing, vector_stores,
+translation, finance, image
 
-All jobs install only the groups they need (`-G testing`, `-G linting`, etc.) for fast, isolated checks.
+### Web & API (15)
+api, gateway, auth, graphql, grpc, web_scraping, crawling, streamlit,
+gradio, messaging, payments, error_tracking, websocket, email, pdf
 
-**Other workflows:**
+### Data & Storage (9)
+database, redis, mongodb, kafka, rabbitmq, neo4j, elasticsearch, supabase, caching
 
-| Workflow                | Trigger                                | What it does                                                                 |
-| ----------------------- | -------------------------------------- | ---------------------------------------------------------------------------- |
-| `release.yml`           | Tag push (`v*`)                        | Build + publish to PyPI via PDM                                              |
-| `docker.yml`            | Push to main, tags, Dockerfile changes | Build + push multi-arch images to GHCR                                       |
-| `codeql.yml`            | Push/PR to main + weekly               | GitHub CodeQL security analysis                                              |
-| `dependency-review.yml` | Pull requests                          | Flag high-severity dependency vulnerabilities                                |
-| `labeler.yml`           | Pull requests                          | Auto-label by changed files (python, tests, docs, ci, infra, deps, frontend) |
+### Infrastructure (14)
+docker, k8s, nginx, otel, otel_instrumentations, monitoring, celery, airflow,
+aws, google_cloud, makefile, ci_cd, task_queue, scheduling
+
+### Frontend (2)
+frontend (Next.js + pnpm), frontend_vite (Vite + React + TS)
+
+### Docs & Meta (4)
+docs, docs_mkdocs, github_templates, submodules
+
+### Platform (2)
+mac, linux
+
+## Registry — Community Group Packs
+
+```bash
+# Browse
+pjkm search                # list all packs
+pjkm search django          # search by keyword
+pjkm search ml              # search by tag
+
+# Install
+pjkm install pjkm-django    # downloads + registers group source
+pjkm installed               # see what's installed
+pjkm uninstall pjkm-django  # remove
+
+# After install, new groups appear everywhere:
+pjkm list groups             # includes installed pack groups
+pjkm init myapp -g django    # use them in projects
+```
+
+Available packs: pjkm-django, pjkm-aws-lambda, pjkm-ml-ops, pjkm-data-eng,
+pjkm-quant, pjkm-iot, pjkm-gamedev, pjkm-auth-providers, pjkm-observability, pjkm-cms
+
+## Presets
+
+```bash
+pjkm recommend service               # show all presets for an archetype
+pjkm recommend service -p minimal    # 4 groups
+pjkm recommend service -p standard   # 13 groups
+pjkm recommend service -p full       # 23 groups
+pjkm recommend service -p ai         # 19 AI-focused groups
+pjkm recommend service -p data       # 15 data science groups
+pjkm recommend service -p web        # 16 web/frontend groups
+```
+
+## CI Pipeline (15 workflows)
+
+Every generated project includes up to 15 GitHub Actions workflows:
+
+| Workflow | Trigger | What it does |
+|----------|---------|-------------|
+| ci.yml | push/PR | test, lint, typecheck, docs, security (5 parallel jobs) |
+| release.yml | tag `v*` | build + publish to PyPI |
+| docker.yml | push/PR | multi-arch Docker build + push to GHCR |
+| codeql.yml | push/PR/weekly | GitHub CodeQL security analysis |
+| dependency-review.yml | PR | flag vulnerable dependencies |
+| labeler.yml | PR | auto-label by changed files |
+| stale.yml | daily cron | auto-close stale issues/PRs |
+| changelog.yml | release | generate changelog via git-cliff |
+| pr-size.yml | PR | label PRs by size (xs/s/m/l/xl) |
+| test-matrix.yml | push/PR | OS + Python version matrix |
+| auto-merge.yml | PR | auto-merge Dependabot minor/patch |
+| draft-release.yml | push to main | draft release notes |
+| pages.yml | push (docs) | deploy docs to GitHub Pages |
+| lock.yml | weekly cron | lock stale issue threads |
+| scorecard.yml | push/weekly | OpenSSF Scorecard security |
+
+Plus group-specific workflows: docker-security, k8s-lint, migration-check, docs-preview, frontend CI, deploy-staging, deploy-prod.
 
 ## CLI Reference
 
 ```
-pjkm init NAME [-a ARCHETYPE] [-g GROUP...] [-d DIR] [--dry-run] [--author] [--email]
-pjkm tui
+# Project lifecycle
+pjkm init NAME [-a ARCHETYPE] [-g GROUP...] [--recipe NAME] [-d DIR] [--dry-run]
+pjkm add -g GROUP... [-d DIR]
+pjkm update [-d DIR] [--dry-run]
+pjkm upgrade [-g GROUP...] [--latest] [--refresh-tools] [--dry-run]
+pjkm link TOOL [-d DIR] [--dry-run]
+pjkm preview [ARCHETYPE] [-g GROUP...] [--recipe NAME]
+
+# Discovery
 pjkm list [archetypes|groups]
 pjkm info GROUP_ID
+pjkm recommend ARCHETYPE [--preset NAME]
+pjkm recipe [NAME] [--show]
 pjkm doctor
-pjkm defaults [--init] [--global]
+
+# Registry
+pjkm search [QUERY] [--refresh]
+pjkm install PACK_NAME [--no-sync]
+pjkm uninstall PACK_NAME
+pjkm installed
+
+# Group management
 pjkm group create ID [--name] [--dir]
 pjkm group import PYPROJECT [--section...] [--dir]
 pjkm group validate [PATH]
 pjkm group list
 pjkm group sync [NAME]
-pjkm group source add URL [--name] [--path] [--ref] [--sync/--no-sync]
+pjkm group source add URL [--name] [--path] [--ref]
 pjkm group source list
 pjkm group source remove NAME
+
+# Config
+pjkm defaults [--init] [--global]
+pjkm tui
 ```

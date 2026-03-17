@@ -13,6 +13,7 @@ dependencies:
 scaffolded_files:
   - template_fragment: "towncrier"
     destination: "."
+    description: "Fragment-based changelog directory with towncrier config"
 
 pyproject_tool_config:
   towncrier:

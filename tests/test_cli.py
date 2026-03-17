@@ -535,7 +535,7 @@ class TestRecipeCommand:
         assert result.exit_code != 0
         assert "Unknown recipe" in result.stdout
 
-    def test_recipe_all_15(self):
+    def test_recipe_all_18(self):
         result = runner.invoke(app, ["recipe"])
         assert result.exit_code == 0
         for name in [
@@ -543,6 +543,7 @@ class TestRecipeCommand:
             "data-analysis", "cli-tool", "fullstack-web", "monorepo",
             "scraper", "fintech", "api-microservice", "discord-bot",
             "etl-pipeline", "saas-backend", "document-processor",
+            "media-pipeline", "realtime-api", "file-service",
         ]:
             assert name in result.stdout
 

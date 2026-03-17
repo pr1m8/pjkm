@@ -1,0 +1,19 @@
+id: rate_limit
+name: "Rate Limiting"
+description: "API rate limiting with sliding window, token bucket, and Redis backend"
+category: "Web & API"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  rate_limit:
+    - "slowapi>=0.1.9"
+    - "pyrate-limiter>=3.7.0"
+    - "limits>=3.14.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

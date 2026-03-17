@@ -1,0 +1,19 @@
+id: file_utils
+name: "File System Utilities"
+description: "File metadata extraction, MIME detection, hashing, temp files, and path handling"
+category: "Core Dev"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  file_utils:
+    - "python-magic>=0.4.27"
+    - "watchfiles>=1.0.0"
+    - "send2trash>=1.8.0"
+    - "chardet>=5.2.0"
+    - "humanize>=4.11.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

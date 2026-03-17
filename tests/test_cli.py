@@ -597,3 +597,48 @@ class TestPreviewCommand:
             app, ["preview", "--recipe", "nonexistent"]
         )
         assert result.exit_code != 0
+
+
+class TestRegistryCommands:
+    """Test the registry search/install commands."""
+
+    def test_search_all(self):
+        result = runner.invoke(app, ["search"])
+        assert result.exit_code == 0
+        assert "pjkm-django" in result.stdout
+
+    def test_search_query(self):
+        result = runner.invoke(app, ["search", "django"])
+        assert result.exit_code == 0
+        assert "pjkm-django" in result.stdout
+
+    def test_search_by_tag(self):
+        result = runner.invoke(app, ["search", "ml"])
+        assert result.exit_code == 0
+        assert "pjkm-ml-ops" in result.stdout
+
+    def test_search_no_match(self):
+        result = runner.invoke(app, ["search", "zzz_nonexistent_zzz"])
+        assert result.exit_code == 0
+        assert "No packs" in result.stdout
+
+    def test_install_unknown(self):
+        result = runner.invoke(app, ["install", "nonexistent-pack"])
+        assert result.exit_code != 0
+
+    def test_installed_empty(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(
+            "pjkm.core.groups.sources.SOURCES_FILE",
+            tmp_path / "sources.yaml",
+        )
+        result = runner.invoke(app, ["installed"])
+        assert result.exit_code == 0
+        assert "No group packs" in result.stdout
+
+    def test_uninstall_not_found(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(
+            "pjkm.core.groups.sources.SOURCES_FILE",
+            tmp_path / "sources.yaml",
+        )
+        result = runner.invoke(app, ["uninstall", "nonexistent"])
+        assert result.exit_code != 0

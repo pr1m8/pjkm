@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import typer
 
-from pjkm.cli.commands import config, groups, info, project, recipes
+from pjkm.cli.commands import config, groups, info, project, recipes, registry
 
 app = typer.Typer(
     name="pjkm",
@@ -65,6 +65,12 @@ app.command()(recipes.recipe)
 # Configuration
 app.command()(config.tui)
 app.command()(config.defaults)
+
+# Registry — search and install community group packs
+app.command()(registry.search)
+app.command()(registry.install)
+app.command()(registry.uninstall)
+app.command()(registry.installed)
 
 # Group management (nested sub-app)
 app.add_typer(groups.group_app, name="group")

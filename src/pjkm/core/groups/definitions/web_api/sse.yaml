@@ -1,0 +1,18 @@
+id: sse
+name: "Server-Sent Events"
+description: "SSE streaming for real-time updates, AI token streaming, and live feeds"
+category: "Web & API"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  sse:
+    - "sse-starlette>=2.2.0"
+    - "httpx-sse>=0.4.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

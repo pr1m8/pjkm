@@ -1,0 +1,18 @@
+id: audio
+name: "Audio Processing"
+description: "Audio handling with librosa, pydub, and speech recognition"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  audio:
+    - "librosa>=0.10.0"
+    - "pydub>=0.25.1"
+    - "soundfile>=0.13.0"
+    - "openai-whisper>=20240930"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

@@ -259,6 +259,33 @@ RECIPES: dict[str, dict] = {
             "logging", "makefile",
         ],
     },
+    "media-pipeline": {
+        "description": "Video/audio/image processing pipeline with ffmpeg and ML",
+        "archetype": "service",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "video", "audio",
+            "image", "ocr", "file_utils", "s3", "database", "redis",
+            "celery", "docker", "logging", "makefile",
+        ],
+    },
+    "realtime-api": {
+        "description": "Real-time API with WebSocket, SSE, rate limiting, and streaming",
+        "archetype": "service",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "api", "auth",
+            "websocket", "sse", "rate_limit", "redis", "caching",
+            "database", "docker", "logging", "otel", "makefile",
+        ],
+    },
+    "file-service": {
+        "description": "File upload/storage service with S3, thumbnails, and metadata",
+        "archetype": "service",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "api", "auth",
+            "file_upload", "s3", "image", "file_utils", "database",
+            "redis", "docker", "logging", "makefile",
+        ],
+    },
 }
 
 

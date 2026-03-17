@@ -1,0 +1,13 @@
+"""V1 API routes."""
+
+from __future__ import annotations
+
+from fastapi import APIRouter
+
+router = APIRouter()
+
+
+@router.get("/")
+async def root() -> dict:
+    """API root — version info."""
+    return {"api": "v1", "service": "{{ project_name }}"}

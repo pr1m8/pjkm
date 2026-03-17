@@ -1,0 +1,13 @@
+"""Shared FastAPI dependencies — inject settings, DB sessions, Redis, etc."""
+
+from __future__ import annotations
+
+from functools import lru_cache
+
+from {{ project_slug }}.core.settings import Settings
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Settings dependency — use in route signatures via Depends(get_settings)."""
+    return Settings()

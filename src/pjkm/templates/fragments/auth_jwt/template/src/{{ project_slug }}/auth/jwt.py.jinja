@@ -1,0 +1,28 @@
+"""JWT token creation and verification."""
+
+from __future__ import annotations
+
+import os
+from datetime import datetime, timedelta, timezone
+
+from jose import JWTError, jwt
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-me-in-production")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "30"))
+
+
+def create_access_token(
+    data: dict,
+    expires_delta: timedelta | None = None,
+) -> str:
+    """Create a signed JWT access token."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_token(token: str) -> dict:
+    """Decode and verify a JWT token. Raises JWTError on failure."""
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

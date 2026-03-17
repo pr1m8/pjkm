@@ -15,5 +15,8 @@ dependencies:
     - "python-multipart>=0.0.20"
     - "authlib>=1.5.0"
 
-scaffolded_files: []
+scaffolded_files:
+  - template_fragment: "auth_jwt"
+    destination: "."
+    description: "JWT auth module with token creation, verification, and FastAPI deps"
 pyproject_tool_config: {}

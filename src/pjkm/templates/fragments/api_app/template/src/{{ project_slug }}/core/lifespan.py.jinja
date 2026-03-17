@@ -6,18 +6,45 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+{% if "logging" in groups %}
+
+from {{ project_slug }}.core.logging import setup_logging
+{% endif %}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Run startup/shutdown logic.
-
-    Add database pool init, Redis connections, ML model loading, etc.
-    """
+    """Run startup/shutdown logic."""
     # --- Startup ---
-    # e.g. await database.connect()
-    # e.g. app.state.redis = await aioredis.from_url(settings.redis_url)
+{% if "logging" in groups %}
+    setup_logging()
+{% endif %}
+{% if "database" in groups %}
+    from {{ project_slug }}.core.database import engine
+    from {{ project_slug }}.models import Base  # noqa: F401
+
+    from {{ project_slug }}.core.settings import get_settings
+
+    if get_settings().is_development:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+{% endif %}
+{% if "redis" in groups %}
+    from {{ project_slug }}.core import redis as redis_mod
+
+    app.state.redis = redis_mod.get_client()
+{% endif %}
+
     yield
+
     # --- Shutdown ---
-    # e.g. await database.disconnect()
-    # e.g. await app.state.redis.close()
+{% if "redis" in groups %}
+    from {{ project_slug }}.core import redis as redis_mod_shutdown
+
+    await redis_mod_shutdown.close()
+{% endif %}
+{% if "database" in groups %}
+    from {{ project_slug }}.core.database import close as close_db
+
+    await close_db()
+{% endif %}

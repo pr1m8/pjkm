@@ -26,12 +26,40 @@ class Settings(BaseSettings):
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
+{% if "database" in groups %}
 
-    # Database (populated when database group is applied)
-    database_url: str = ""
+    # Database
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/{{ project_slug }}"
+{% endif %}
+{% if "redis" in groups %}
 
-    # Redis (populated when redis group is applied)
-    redis_url: str = ""
+    # Redis
+    redis_url: str = "redis://localhost:6379/0"
+{% endif %}
+{% if "auth" in groups %}
+
+    # Auth
+    jwt_secret_key: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 30
+{% endif %}
+{% if "s3" in groups or "file_upload" in groups %}
+
+    # S3 / Object Storage
+    s3_endpoint_url: str = "http://localhost:9000"
+    s3_access_key: str = "minioadmin"
+    s3_secret_key: str = "minioadmin"
+    s3_bucket: str = "{{ project_slug }}-uploads"
+{% endif %}
+{% if "email" in groups %}
+
+    # Email
+    smtp_host: str = "localhost"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    email_from: str = "{{ project_slug }}@example.com"
+{% endif %}
 
     @property
     def is_production(self) -> bool:

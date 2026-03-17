@@ -88,10 +88,12 @@ class ApplyGroupsTask(BaseTask):
         # Render scaffolded files from group fragments
         loader = TemplateLoader()
         renderer = TemplateRenderer()
+        group_ids = [g.id for g in groups]
         data = {
             "project_name": config.project_name,
             "project_slug": config.project_slug,
             "python_version": config.python_version,
+            "groups": group_ids,
         }
 
         rendered_fragments = []

@@ -1,0 +1,64 @@
+"""Database engine, session factory, and base model."""
+
+from __future__ import annotations
+
+import os
+from collections.abc import AsyncIterator
+
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import DeclarativeBase
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+asyncpg://postgres:postgres@localhost:5432/{{ project_slug }}",
+)
+
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+    pool_size=10,
+    max_overflow=20,
+    pool_pre_ping=True,
+)
+
+async_session = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
+
+
+class Base(DeclarativeBase):
+    """Base class for all SQLAlchemy models."""
+
+
+async def get_session() -> AsyncIterator[AsyncSession]:
+    """Yield a database session — use as a FastAPI dependency."""
+    async with async_session() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+
+async def ping() -> bool:
+    """Health check — returns True if the database is reachable."""
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(
+                __import__("sqlalchemy").text("SELECT 1")
+            )
+        return True
+    except Exception:
+        return False
+
+
+async def close() -> None:
+    """Dispose engine — call during app shutdown."""
+    await engine.dispose()

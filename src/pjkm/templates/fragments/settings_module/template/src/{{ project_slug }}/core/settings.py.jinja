@@ -1,0 +1,48 @@
+"""Application settings loaded from environment variables and .env files."""
+
+from __future__ import annotations
+
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """Central configuration — reads from .env, env vars, or defaults."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    # App
+    app_name: str = "{{ project_name }}"
+    app_env: str = "development"
+    debug: bool = False
+    log_level: str = "INFO"
+    secret_key: str = "change-me-in-production"
+
+    # Server
+    host: str = "0.0.0.0"
+    port: int = 8000
+
+    # Database (populated when database group is applied)
+    database_url: str = ""
+
+    # Redis (populated when redis group is applied)
+    redis_url: str = ""
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env == "production"
+
+    @property
+    def is_development(self) -> bool:
+        return self.app_env == "development"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Cached settings singleton — call this instead of Settings() directly."""
+    return Settings()

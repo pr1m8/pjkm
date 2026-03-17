@@ -14,6 +14,12 @@ dependencies:
     - "pydantic-settings>=2.7.0"
     - "python-multipart>=0.0.20"
 
-scaffolded_files: []
+scaffolded_files:
+  - template_fragment: "settings_module"
+    destination: "."
+    description: "Core settings module with .env support and Pydantic Settings"
+  - template_fragment: "api_app"
+    destination: "."
+    description: "FastAPI app factory, routes, middleware, health checks, lifespan"
 
 pyproject_tool_config: {}

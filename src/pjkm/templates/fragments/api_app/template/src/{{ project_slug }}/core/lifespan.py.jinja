@@ -1,0 +1,23 @@
+"""Application lifespan — startup and shutdown hooks."""
+
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Run startup/shutdown logic.
+
+    Add database pool init, Redis connections, ML model loading, etc.
+    """
+    # --- Startup ---
+    # e.g. await database.connect()
+    # e.g. app.state.redis = await aioredis.from_url(settings.redis_url)
+    yield
+    # --- Shutdown ---
+    # e.g. await database.disconnect()
+    # e.g. await app.state.redis.close()

@@ -13,6 +13,9 @@ dependencies:
     - "dynaconf>=3.2.0"
     - "pyyaml>=6.0.0"
 
-scaffolded_files: []
+scaffolded_files:
+  - template_fragment: "settings_module"
+    destination: "."
+    description: "Core settings module with .env support and Pydantic Settings"
 
 pyproject_tool_config: {}

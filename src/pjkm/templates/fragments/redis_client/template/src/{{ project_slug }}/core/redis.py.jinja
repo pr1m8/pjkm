@@ -1,0 +1,58 @@
+"""Redis client — connection pool, health check, and convenience helpers."""
+
+from __future__ import annotations
+
+import os
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
+
+import redis.asyncio as aioredis
+
+
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
+_pool: aioredis.ConnectionPool | None = None
+
+
+def get_pool() -> aioredis.ConnectionPool:
+    """Get or create the global connection pool."""
+    global _pool
+    if _pool is None:
+        _pool = aioredis.ConnectionPool.from_url(
+            REDIS_URL,
+            max_connections=20,
+            decode_responses=True,
+        )
+    return _pool
+
+
+def get_client() -> aioredis.Redis:
+    """Get a Redis client using the shared connection pool."""
+    return aioredis.Redis(connection_pool=get_pool())
+
+
+@asynccontextmanager
+async def redis_session() -> AsyncIterator[aioredis.Redis]:
+    """Context manager for a Redis client — use in routes/tasks."""
+    client = get_client()
+    try:
+        yield client
+    finally:
+        await client.aclose()
+
+
+async def ping() -> bool:
+    """Health check — returns True if Redis is reachable."""
+    try:
+        client = get_client()
+        return await client.ping()
+    except Exception:
+        return False
+
+
+async def close() -> None:
+    """Close the connection pool — call during app shutdown."""
+    global _pool
+    if _pool is not None:
+        await _pool.aclose()
+        _pool = None

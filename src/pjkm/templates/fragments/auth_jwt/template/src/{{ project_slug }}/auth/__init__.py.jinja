@@ -1,0 +1,4 @@
+"""Authentication and authorization for {{ project_name }}."""
+
+from {{ project_slug }}.auth.jwt import create_access_token, decode_token  # noqa: F401
+from {{ project_slug }}.auth.deps import get_current_user  # noqa: F401

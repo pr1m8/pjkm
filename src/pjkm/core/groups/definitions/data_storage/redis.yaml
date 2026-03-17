@@ -16,5 +16,8 @@ scaffolded_files:
   - template_fragment: "compose_redis"
     destination: "."
     description: "Docker Compose service definition for Redis"
+  - template_fragment: "redis_client"
+    destination: "."
+    description: "Redis async client module with connection pool and health check"
 
 pyproject_tool_config: {}

@@ -1,0 +1,19 @@
+id: refactoring
+name: "Refactoring Tools"
+description: "Automated refactoring with rope, libcst, autoimport, and code transformation"
+archetypes: []
+requires_groups: [dev]
+platform_filter: null
+
+dependencies:
+  refactoring:
+    - "rope>=1.13.0"
+    - "libcst>=1.5.0"
+    - "autoimport>=1.5.0"
+    - "autoflake>=2.3.0"
+    - "pyupgrade>=3.19.0"
+    - "absolufy-imports>=0.3.0"
+    - "add-trailing-comma>=3.2.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

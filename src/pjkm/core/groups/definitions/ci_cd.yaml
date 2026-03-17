@@ -1,0 +1,15 @@
+id: ci_cd
+name: "CI/CD Pipelines"
+description: "GitHub Actions workflows for CI, release, deploy, and automated maintenance"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files:
+  - template_fragment: "github_actions_deploy"
+    destination: "."
+    description: "Staging and production deployment workflows"
+
+pyproject_tool_config: {}

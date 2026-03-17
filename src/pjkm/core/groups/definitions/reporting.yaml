@@ -1,0 +1,17 @@
+id: reporting
+name: "Test Reporting"
+description: "Rich test reports, coverage badges, diff-cover, and CI report generation"
+archetypes: []
+requires_groups: [testing, coverage]
+platform_filter: null
+
+dependencies:
+  reporting:
+    - "pytest-html>=4.2.0"
+    - "diff-cover>=10.2.0"
+    - "coverage-badge>=1.1.0"
+    - "allure-pytest>=2.15.0"
+    - "pytest-json-report>=1.5.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

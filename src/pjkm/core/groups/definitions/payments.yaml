@@ -1,0 +1,14 @@
+id: payments
+name: "Payment Processing"
+description: "Stripe SDK with agent toolkit for payment integration"
+archetypes: []
+requires_groups: [api]
+platform_filter: null
+
+dependencies:
+  payments:
+    - "stripe>=11.0.0"
+    - "stripe-agent-toolkit>=0.6.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

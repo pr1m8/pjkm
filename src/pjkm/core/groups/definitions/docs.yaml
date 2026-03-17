@@ -18,5 +18,8 @@ scaffolded_files:
   - template_fragment: "docs_sphinx"
     destination: "docs/"
     description: "Sphinx documentation skeleton with conf.py and index"
+  - template_fragment: "github_actions_docs"
+    destination: "."
+    description: "Docs preview workflow for PRs"
 
 pyproject_tool_config: {}

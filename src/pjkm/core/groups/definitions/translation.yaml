@@ -1,0 +1,14 @@
+id: translation
+name: "Translation"
+description: "Machine translation APIs — DeepL and Google Translate"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  translation:
+    - "deepl>=1.21.0"
+    - "googletrans>=4.0.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

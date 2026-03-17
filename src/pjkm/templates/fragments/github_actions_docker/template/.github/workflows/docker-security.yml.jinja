@@ -1,0 +1,61 @@
+name: Docker Security Scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile*"
+      - ".dockerignore"
+  pull_request:
+    paths:
+      - "Dockerfile*"
+      - ".dockerignore"
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  hadolint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3
+        with:
+          dockerfile: Dockerfile
+          format: sarif
+          output-file: hadolint-results.sarif
+          no-fail: true
+
+      - name: Upload Hadolint SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hadolint-results.sarif
+          wait-for-processing: true
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image for scanning
+        run: docker build -t {% raw %}${{ github.repository }}{% endraw %}:scan .
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: {% raw %}${{ github.repository }}{% endraw %}:scan
+          format: sarif
+          output: trivy-results.sarif
+          severity: "CRITICAL,HIGH"
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

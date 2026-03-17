@@ -1,0 +1,16 @@
+id: pydantic_extra
+name: "Pydantic Extended"
+description: "Pydantic settings, extra validators, and serialization tools"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  pydantic_extra:
+    - "pydantic>=2.12.0"
+    - "pydantic-settings>=2.13.0"
+    - "pydantic-extra-types>=2.10.0"
+    - "email-validator>=2.2.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

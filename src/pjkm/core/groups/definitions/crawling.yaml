@@ -1,0 +1,16 @@
+id: crawling
+name: "Web Crawling"
+description: "Large-scale web crawling with Scrapy and Firecrawl"
+archetypes: []
+requires_groups: [web_scraping]
+platform_filter: null
+
+dependencies:
+  crawling:
+    - "scrapy>=2.14.0"
+    - "scrapy-playwright>=0.0.46"
+    - "firecrawl-py>=4.18.0"
+    - "trafilatura>=2.0.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

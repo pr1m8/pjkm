@@ -1,0 +1,63 @@
+name: Migration Check
+
+on:
+  pull_request:
+    paths:
+      - "src/**/models/**"
+      - "src/**/models.py"
+      - "alembic/**"
+      - "migrations/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: {{ project_slug }}_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: "{{ python_version }}"
+
+      - name: Install dependencies
+        run: pdm install -G database
+
+      - name: Run migrations
+        run: pdm run alembic upgrade head
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/{{ project_slug }}_test
+
+      - name: Check for pending migrations
+        run: |
+          pdm run alembic check 2>&1 || {
+            echo "::warning::New model changes detected without a migration"
+            echo "Run 'pdm run alembic revision --autogenerate -m \"description\"' to create one"
+          }
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/{{ project_slug }}_test
+
+      - name: Test migration downgrade
+        run: |
+          pdm run alembic downgrade -1
+          pdm run alembic upgrade head
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/{{ project_slug }}_test

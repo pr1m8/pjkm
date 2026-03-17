@@ -65,7 +65,7 @@ pyproject_tool_config: # merged into [tool.*] sections via _deep_merge
 
 All fields except `id`, `name`, and `description` are optional. Defaults: `archetypes: []`, `requires_groups: []`, `platform_filter: null`, `dependencies: {}`, `scaffolded_files: []`, `pyproject_tool_config: {}`.
 
-## Current Built-in Groups (43)
+## Current Built-in Groups (83)
 
 ### Development & Quality (10)
 
@@ -231,13 +231,36 @@ k8s
 
 otel
  └── logging
+otel_instrumentations
+ └── otel
+      └── logging
+error_tracking
+ └── logging
 
-gateway / grpc / graphql / auth / monitoring
+gateway / grpc / graphql / auth / monitoring / payments
  └── api
 
 notebook
  ├── jupyter
  └── dataviz
+
+langchain_providers / langgraph / mcp_tools
+ └── langchain
+torch
+ └── ml
+finance
+ └── ml
+neo4j
+ └── database
+crawling
+ └── web_scraping
+reporting
+ ├── testing
+ └── coverage
+code_quality
+ └── linting
+refactoring / debugging / profiling
+ └── dev
 ```
 
 ## Resolution Algorithm
@@ -372,8 +395,8 @@ pjkm group validate mygroup.yaml       # validate a single file
 
 The test suite (`tests/test_templates.py` and `tests/test_group_sources.py`) verifies:
 
-- All 43 built-in groups load without errors
-- Every `scaffolded_files` fragment reference points to an existing template (21 fragments, 0 orphans)
+- All 71 built-in groups load without errors
+- Every `scaffolded_files` fragment reference points to an existing template (22 fragments, 0 orphans)
 - All group IDs are unique
 - All `requires_groups` references point to existing groups
 - Custom groups can be loaded from arbitrary directories

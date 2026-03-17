@@ -31,6 +31,7 @@ src/pjkm/templates/
           config.yml
         dependabot.yml.jinja     # pip + github-actions ecosystems
         labeler.yml.jinja        # auto-label PR rules by file path
+        release-drafter.yml.jinja  # release drafter config with categories + version resolver
         workflows/
           ci.yml.jinja           # 5 jobs: test, lint, typecheck, docs, security
           release.yml.jinja      # tag-triggered PyPI publish
@@ -38,6 +39,15 @@ src/pjkm/templates/
           codeql.yml.jinja       # GitHub CodeQL security analysis
           dependency-review.yml.jinja  # dependency vulnerability review on PRs
           labeler.yml.jinja      # auto-label PRs by changed files
+          stale.yml.jinja        # auto-close stale issues and PRs
+          changelog.yml.jinja    # generate changelog on release (git-cliff)
+          pr-size.yml.jinja      # label PRs by size (xs/s/m/l/xl)
+          test-matrix.yml.jinja  # OS + Python version matrix testing
+          auto-merge.yml.jinja   # auto-merge Dependabot minor/patch updates
+          draft-release.yml.jinja # draft release notes on push to main
+          pages.yml.jinja        # deploy docs to GitHub Pages
+          lock.yml.jinja         # lock stale issue/PR threads
+          scorecard.yml.jinja    # OpenSSF Scorecard security assessment
   single_package/                # src layout + tests + conftest + py.typed
     copier.yml
     template/
@@ -83,7 +93,7 @@ src/pjkm/templates/
       src/{{ project_slug }}/cli.py.jinja
       tests/__init__.py
       tests/test_cli.py.jinja
-  fragments/                     # composable pieces, one dir per fragment
+  fragments/                     # composable pieces, one dir per fragment (28 total)
     logging_structlog/           # structlog + Rich logging module
     infra_otel/                  # OTel collector, Prometheus, Grafana, Loki, Jaeger
     docs_sphinx/                 # Sphinx docs with autodoc, napoleon, autobuild
@@ -105,6 +115,13 @@ src/pjkm/templates/
     compose_kafka/               # Docker Compose service for Kafka
     compose_mongodb/             # Docker Compose service for MongoDB
     compose_rabbitmq/            # Docker Compose service for RabbitMQ
+    towncrier/                   # Towncrier changelog fragment management
+    github_actions_docs/         # Docs preview workflow for PRs
+    github_actions_docker/       # Docker security scan (Hadolint + Trivy)
+    github_actions_k8s/          # Kubernetes manifest + Helm chart linting
+    github_actions_frontend/     # Frontend CI (lint, typecheck, build, test via pnpm)
+    github_actions_deploy/       # Staging + production deployment workflows
+    github_actions_db/           # Database migration check workflow
 ```
 
 ## Copier Template Format

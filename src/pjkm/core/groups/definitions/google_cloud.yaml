@@ -1,0 +1,17 @@
+id: google_cloud
+name: "Google Cloud"
+description: "Google Cloud Platform APIs, auth, and AI services"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  google_cloud:
+    - "google-api-python-client>=2.163.0"
+    - "google-auth-httplib2>=0.2.0"
+    - "google-auth-oauthlib>=1.2.0"
+    - "google-cloud-storage>=2.19.0"
+    - "google-cloud-bigquery>=3.27.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

@@ -1,0 +1,20 @@
+id: doc_parsing
+name: "Document Parsing"
+description: "PDF, Office, HTML, and Markdown document extraction and conversion"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  doc_parsing:
+    - "pdfplumber>=0.11.0"
+    - "pymupdf>=1.25.0"
+    - "markdownify>=1.1.0"
+    - "html2text>=2024.2.0"
+    - "openpyxl>=3.1.0"
+    - "python-docx>=1.1.0"
+    - "unstructured>=0.17.0"
+    - "lxml>=5.3.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

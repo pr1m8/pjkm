@@ -1,0 +1,18 @@
+id: async_tools
+name: "Async Utilities"
+description: "Async helpers: anyio, tenacity retries, async caching, rate limiting"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  async_tools:
+    - "anyio>=4.8.0"
+    - "tenacity>=9.0.0"
+    - "aiocache>=0.12.3"
+    - "aiolimiter>=1.2.1"
+    - "asyncer>=0.1.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

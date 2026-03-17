@@ -13,5 +13,8 @@ scaffolded_files:
   - template_fragment: "frontend_next"
     destination: "."
     description: "apps/web/ Next.js app, pnpm-workspace.yaml, turbo.json, root package.json"
+  - template_fragment: "github_actions_frontend"
+    destination: "."
+    description: "Frontend CI workflow (lint, typecheck, build, test via pnpm)"
 
 pyproject_tool_config: {}

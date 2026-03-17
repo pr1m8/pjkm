@@ -1,0 +1,15 @@
+id: image
+name: "Image Processing"
+description: "Image handling with Pillow, OpenCV headless, and image optimization"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  image:
+    - "pillow>=11.0.0"
+    - "opencv-python-headless>=4.10.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

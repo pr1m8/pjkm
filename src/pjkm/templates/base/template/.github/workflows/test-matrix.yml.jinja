@@ -1,0 +1,48 @@
+name: Test Matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["{{ python_version }}", "3.13"]
+        exclude:
+          - os: macos-latest
+            python-version: "3.13"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
+
+      - name: Install dependencies
+        run: pdm install -G testing -G coverage
+
+      - name: Run tests
+        run: pdm run pytest --tb=short -q
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: {% raw %}test-results-${{ matrix.os }}-${{ matrix.python-version }}{% endraw %}
+          path: |
+            .pytest_cache/
+            coverage.xml

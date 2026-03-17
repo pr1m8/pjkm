@@ -1,0 +1,28 @@
+id: otel_instrumentations
+name: "OTel Instrumentations"
+description: "Extended OpenTelemetry auto-instrumentation for FastAPI, SQLAlchemy, Redis, gRPC, and more"
+archetypes: []
+requires_groups: [otel]
+platform_filter: null
+
+dependencies:
+  otel_instrumentations:
+    - "opentelemetry-instrumentation-fastapi>=0.52b1"
+    - "opentelemetry-instrumentation-starlette>=0.52b1"
+    - "opentelemetry-instrumentation-asgi>=0.52b1"
+    - "opentelemetry-instrumentation-wsgi>=0.52b1"
+    - "opentelemetry-instrumentation-sqlalchemy>=0.52b1"
+    - "opentelemetry-instrumentation-asyncpg>=0.52b1"
+    - "opentelemetry-instrumentation-psycopg2>=0.52b1"
+    - "opentelemetry-instrumentation-redis>=0.52b1"
+    - "opentelemetry-instrumentation-pymongo>=0.52b1"
+    - "opentelemetry-instrumentation-grpc>=0.52b1"
+    - "opentelemetry-instrumentation-httpx>=0.52b1"
+    - "opentelemetry-instrumentation-requests>=0.52b1"
+    - "opentelemetry-instrumentation-logging>=0.52b1"
+    - "opentelemetry-instrumentation-system-metrics>=0.52b1"
+    - "opentelemetry-exporter-prometheus>=0.52b1"
+    - "opentelemetry-exporter-richconsole>=0.52b1"
+
+scaffolded_files: []
+pyproject_tool_config: {}

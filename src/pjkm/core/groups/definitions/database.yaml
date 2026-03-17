@@ -21,5 +21,8 @@ scaffolded_files:
   - template_fragment: "compose_postgres"
     destination: "."
     description: "Docker Compose service definition for PostgreSQL"
+  - template_fragment: "github_actions_db"
+    destination: "."
+    description: "Migration check workflow (runs + validates Alembic on PRs)"
 
 pyproject_tool_config: {}

@@ -1,0 +1,30 @@
+# Changelog Fragments
+
+Drop changelog fragments here. Towncrier will collect them on release.
+
+## Fragment types
+
+| Type          | Filename pattern    | Description              |
+|---------------|---------------------|--------------------------|
+| `feature`     | `123.feature.md`    | New features             |
+| `bugfix`      | `123.bugfix.md`     | Bug fixes                |
+| `improvement` | `123.improvement.md`| Enhancements             |
+| `deprecation` | `123.deprecation.md`| Deprecated functionality |
+| `breaking`    | `123.breaking.md`   | Breaking changes         |
+| `security`    | `123.security.md`   | Security fixes           |
+| `docs`        | `123.docs.md`       | Documentation updates    |
+| `dev`         | `123.dev.md`        | Development changes      |
+| `misc`        | `123.misc.md`       | Miscellaneous            |
+
+## Usage
+
+```bash
+# Create a fragment
+echo "Added widget support" > changes/42.feature.md
+
+# Preview changelog
+towncrier build --draft
+
+# Build changelog (on release)
+towncrier build --version 1.2.0
+```

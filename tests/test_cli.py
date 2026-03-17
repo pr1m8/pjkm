@@ -41,8 +41,9 @@ class TestListCommand:
         result = runner.invoke(app, ["list", "groups"])
         assert result.exit_code == 0
         assert "Requires" in result.stdout
-        assert "Archetypes" in result.stdout
         assert "Scaffold" in result.stdout
+        # Groups are categorized (Core Dev, AI / ML, etc.)
+        assert "Core Dev" in result.stdout
 
     def test_list_invalid(self):
         result = runner.invoke(app, ["list", "invalid"])
@@ -106,6 +107,31 @@ class TestInitCommand:
             ],
         )
         assert result.exit_code == 0
+
+    def test_init_with_recipe(self, tmp_path):
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                "test-proj",
+                "--recipe",
+                "python-lib",
+                "--dir",
+                str(tmp_path),
+                "--dry-run",
+            ],
+        )
+        assert result.exit_code == 0
+        assert "python-lib" in result.stdout
+        assert "single_package" in result.stdout
+
+    def test_init_with_unknown_recipe(self):
+        result = runner.invoke(
+            app,
+            ["init", "test-proj", "--recipe", "nonexistent", "--dry-run"],
+        )
+        assert result.exit_code != 0
+        assert "Unknown recipe" in result.stdout
 
 
 class TestInfoCommand:
@@ -430,3 +456,144 @@ class TestGroupSourceCommands:
         result = runner.invoke(app, ["group", "source", "remove", "nope"])
         assert result.exit_code != 0
         assert "not found" in result.stdout
+
+
+class TestRecommendCommand:
+    """Test the recommend command."""
+
+    def test_recommend_no_preset(self):
+        result = runner.invoke(app, ["recommend", "service"])
+        assert result.exit_code == 0
+        assert "Presets for archetype" in result.stdout
+        assert "minimal" in result.stdout
+        assert "standard" in result.stdout
+
+    def test_recommend_with_preset(self):
+        result = runner.invoke(
+            app, ["recommend", "service", "--preset", "standard"]
+        )
+        assert result.exit_code == 0
+        assert "pjkm init" in result.stdout
+        assert "-g api" in result.stdout
+
+    def test_recommend_preset_minimal(self):
+        result = runner.invoke(
+            app, ["recommend", "single-package", "--preset", "minimal"]
+        )
+        assert result.exit_code == 0
+        assert "dev" in result.stdout
+        assert "linting" in result.stdout
+
+    def test_recommend_preset_ai(self):
+        result = runner.invoke(
+            app, ["recommend", "service", "--preset", "ai"]
+        )
+        assert result.exit_code == 0
+        assert "langchain" in result.stdout
+
+    def test_recommend_unknown_preset(self):
+        result = runner.invoke(
+            app, ["recommend", "service", "--preset", "nonexistent"]
+        )
+        assert result.exit_code != 0
+        assert "Unknown preset" in result.stdout
+
+    def test_recommend_all_presets(self):
+        for preset in ["minimal", "standard", "full", "ai", "data", "web"]:
+            result = runner.invoke(
+                app, ["recommend", "service", "--preset", preset]
+            )
+            assert result.exit_code == 0, f"Preset {preset} failed"
+
+
+class TestRecipeCommand:
+    """Test the recipe command."""
+
+    def test_recipe_list(self):
+        result = runner.invoke(app, ["recipe"])
+        assert result.exit_code == 0
+        assert "python-lib" in result.stdout
+        assert "fastapi-service" in result.stdout
+        assert "ai-agent" in result.stdout
+
+    def test_recipe_show(self):
+        result = runner.invoke(app, ["recipe", "python-lib", "--show"])
+        assert result.exit_code == 0
+        assert "single-package" in result.stdout
+        assert "dev" in result.stdout
+        assert "towncrier" in result.stdout
+
+    def test_recipe_generate(self):
+        result = runner.invoke(app, ["recipe", "fastapi-service"])
+        assert result.exit_code == 0
+        assert "pjkm init" in result.stdout
+        assert "-a service" in result.stdout
+        assert "-g api" in result.stdout
+
+    def test_recipe_unknown(self):
+        result = runner.invoke(app, ["recipe", "nonexistent"])
+        assert result.exit_code != 0
+        assert "Unknown recipe" in result.stdout
+
+    def test_recipe_all_15(self):
+        result = runner.invoke(app, ["recipe"])
+        assert result.exit_code == 0
+        for name in [
+            "python-lib", "fastapi-service", "ai-agent", "ml-pipeline",
+            "data-analysis", "cli-tool", "fullstack-web", "monorepo",
+            "scraper", "fintech", "api-microservice", "discord-bot",
+            "etl-pipeline", "saas-backend", "document-processor",
+        ]:
+            assert name in result.stdout
+
+    def test_recipe_new_saas(self):
+        result = runner.invoke(app, ["recipe", "saas-backend"])
+        assert result.exit_code == 0
+        assert "pjkm init" in result.stdout
+        assert "-g auth" in result.stdout
+        assert "-g payments" in result.stdout
+
+    def test_recipe_new_microservice(self):
+        result = runner.invoke(app, ["recipe", "api-microservice", "--show"])
+        assert result.exit_code == 0
+        assert "caching" in result.stdout
+        assert "async_tools" in result.stdout
+
+
+class TestPreviewCommand:
+    """Test the preview command."""
+
+    def test_preview_basic(self):
+        result = runner.invoke(
+            app, ["preview", "single-package"]
+        )
+        assert result.exit_code == 0
+        assert "Preview" in result.stdout
+
+    def test_preview_with_groups(self):
+        result = runner.invoke(
+            app, ["preview", "service", "-g", "api", "-g", "docker"]
+        )
+        assert result.exit_code == 0
+        assert "service" in result.stdout
+
+    def test_preview_with_recipe(self):
+        result = runner.invoke(
+            app, ["preview", "--recipe", "fastapi-service"]
+        )
+        assert result.exit_code == 0
+        assert "fastapi-service" in result.stdout
+
+    def test_preview_invalid_archetype(self):
+        result = runner.invoke(app, ["preview", "invalid"])
+        assert result.exit_code != 0
+
+    def test_preview_no_args(self):
+        result = runner.invoke(app, ["preview"])
+        assert result.exit_code != 0
+
+    def test_preview_invalid_recipe(self):
+        result = runner.invoke(
+            app, ["preview", "--recipe", "nonexistent"]
+        )
+        assert result.exit_code != 0

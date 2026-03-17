@@ -1,0 +1,18 @@
+id: debugging
+name: "Debugging Tools"
+description: "Enhanced debuggers and introspection — ipdb, icecream, devtools, rich tracebacks"
+archetypes: []
+requires_groups: [dev]
+platform_filter: null
+
+dependencies:
+  debugging:
+    - "ipdb>=0.13.0"
+    - "icecream>=2.1.0"
+    - "devtools>=0.12.0"
+    - "pysnooper>=1.2.0"
+    - "hunter>=3.8.0"
+    - "stackprinter>=0.2.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

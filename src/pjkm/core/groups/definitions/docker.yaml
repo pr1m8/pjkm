@@ -13,5 +13,8 @@ scaffolded_files:
   - template_fragment: "docker_python"
     destination: "."
     description: "Dockerfile (multi-stage), .dockerignore, devcontainer.json, compose.dev.yml"
+  - template_fragment: "github_actions_docker"
+    destination: "."
+    description: "Docker security scan workflow (Hadolint + Trivy)"
 
 pyproject_tool_config: {}

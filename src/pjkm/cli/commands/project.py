@@ -258,13 +258,6 @@ def add(
     )
     tool_config = pyproject.setdefault("tool", {})
 
-    def _deep_merge(target: dict, dotted_key: str, value: dict) -> None:
-        parts = dotted_key.split(".")
-        current = target
-        for part in parts[:-1]:
-            current = current.setdefault(part, {})
-        current.setdefault(parts[-1], {}).update(value)
-
     for g in new_groups:
         for group_name, deps in g.dependencies.items():
             existing = optional_deps.get(group_name, [])
@@ -272,7 +265,9 @@ def add(
             optional_deps[group_name] = merged
 
         for tool_name, tool_conf in g.pyproject_tool_config.items():
-            _deep_merge(tool_config, tool_name, tool_conf)
+            from pjkm.core.utils import deep_merge
+
+            deep_merge(tool_config, tool_name, tool_conf)
 
     loader = TemplateLoader()
     renderer = TemplateRenderer()

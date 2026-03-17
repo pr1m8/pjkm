@@ -1,0 +1,19 @@
+id: profiling
+name: "Performance Profiling"
+description: "CPU, memory, and line-level profiling tools for performance optimization"
+category: "Core Dev"
+archetypes: []
+requires_groups: [dev]
+platform_filter: null
+
+dependencies:
+  profiling:
+    - "pyinstrument>=5.0.0"
+    - "memray>=1.17.0"
+    - "line-profiler>=5.0.0"
+    - "scalene>=1.5.0"
+    - "snakeviz>=2.2.0"
+    - "py-spy>=0.4.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

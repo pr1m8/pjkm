@@ -1,0 +1,20 @@
+id: redis
+name: "Redis"
+description: "Redis async client for caching, sessions, and rate limit backends"
+category: "Data & Storage"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  redis:
+    - "redis[hiredis]>=5.2.0"
+
+scaffolded_files:
+  - template_fragment: "compose_redis"
+    destination: "."
+    description: "Docker Compose service definition for Redis"
+
+pyproject_tool_config: {}

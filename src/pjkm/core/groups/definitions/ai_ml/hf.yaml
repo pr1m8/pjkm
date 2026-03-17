@@ -1,0 +1,26 @@
+id: hf
+name: "Hugging Face"
+description: "Hugging Face Hub, Transformers, Datasets, Sentence-Transformers, and local inference support"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  hf:
+    - "huggingface-hub>=0.36.2"
+    - "transformers>=4.57.0"
+    - "datasets>=4.6.0"
+    - "accelerate>=1.13.0"
+    - "sentence-transformers>=5.2.0"
+    - "sentencepiece>=0.2.1"
+    - "safetensors>=0.7.0"
+    - "tokenizers>=0.22.0"
+    - "hf-transfer>=0.1.9"
+    - "hf-xet>=1.3.0"
+    - "peft>=0.18.0"
+  hf-quantization:
+    - 'bitsandbytes>=0.49.0; sys_platform == "linux" and platform_machine == "x86_64"'
+
+scaffolded_files: []
+pyproject_tool_config: {}

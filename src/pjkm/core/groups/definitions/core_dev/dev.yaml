@@ -1,0 +1,18 @@
+id: dev
+name: "Development Essentials"
+description: "Meta-group: linting + testing + typecheck + coverage"
+category: "Core Dev"
+archetypes: []
+requires_groups:
+  - linting
+  - testing
+  - typecheck
+  - coverage
+platform_filter: null
+
+dependencies:
+  dev:
+    - "ipython>=9.0.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

@@ -20,6 +20,7 @@ class PackageGroup(BaseModel):
     id: str
     name: str
     description: str = ""
+    category: str = "Core Dev"
     archetypes: list[str] = Field(default_factory=list)
     requires_groups: list[str] = Field(default_factory=list)
     platform_filter: str | None = None

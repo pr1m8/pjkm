@@ -1,0 +1,26 @@
+id: docs
+name: "Documentation"
+description: "Sphinx with autodoc, napoleon, autobuild, and RTD theme"
+category: "Docs & Meta"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  docs:
+    - "sphinx>=8.0.0"
+    - "sphinx-autobuild>=2024.10.0"
+    - "sphinx-autodoc-typehints>=3.0.0"
+    - "sphinx-rtd-theme>=3.0.0"
+    - "myst-parser>=4.0.0"
+    - "towncrier>=24.8.0"
+
+scaffolded_files:
+  - template_fragment: "docs_sphinx"
+    destination: "docs/"
+    description: "Sphinx documentation skeleton with conf.py and index"
+  - template_fragment: "github_actions_docs"
+    destination: "."
+    description: "Docs preview workflow for PRs"
+
+pyproject_tool_config: {}

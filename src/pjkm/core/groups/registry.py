@@ -28,7 +28,7 @@ class GroupRegistry:
         """Load all YAML group definitions from the built-in definitions directory."""
         if not DEFINITIONS_DIR.exists():
             return
-        for path in sorted(DEFINITIONS_DIR.glob("*.yaml")):
+        for path in sorted(DEFINITIONS_DIR.rglob("*.yaml")):
             self.load_file(path)
 
     def load_custom(self) -> list[Path]:
@@ -40,7 +40,7 @@ class GroupRegistry:
         loaded_dirs: list[Path] = []
         for group_dir in CUSTOM_GROUP_PATHS:
             if group_dir.is_dir():
-                for path in sorted(group_dir.glob("*.yaml")):
+                for path in sorted(group_dir.rglob("*.yaml")):
                     self.load_file(path)
                 loaded_dirs.append(group_dir)
         return loaded_dirs
@@ -106,7 +106,7 @@ class GroupRegistry:
         count = 0
         if not directory.is_dir():
             return count
-        for path in sorted(directory.glob("*.yaml")):
+        for path in sorted(directory.rglob("*.yaml")):
             self.load_file(path)
             count += 1
         return count
@@ -176,6 +176,7 @@ class GroupRegistry:
                 "id": group_id,
                 "name": _section_to_name(section),
                 "description": f"Imported from {project_name} [{section}]",
+                "category": "Core Dev",
                 "archetypes": [],
                 "requires_groups": [],
                 "platform_filter": None,

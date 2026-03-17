@@ -1,0 +1,19 @@
+id: auth
+name: "Authentication"
+description: "OAuth2, JWT, and session-based auth with passlib"
+category: "Web & API"
+archetypes:
+  - service
+requires_groups:
+  - api
+platform_filter: null
+
+dependencies:
+  auth:
+    - "python-jose[cryptography]>=3.4.0"
+    - "passlib[bcrypt]>=1.7.4"
+    - "python-multipart>=0.0.20"
+    - "authlib>=1.5.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

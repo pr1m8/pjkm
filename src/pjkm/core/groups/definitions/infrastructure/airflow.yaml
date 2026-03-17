@@ -1,0 +1,20 @@
+id: airflow
+name: "Apache Airflow"
+description: "Airflow DAG orchestration with local executor and webserver"
+category: "Infrastructure"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  airflow:
+    - "apache-airflow>=2.10.0"
+    - "apache-airflow-providers-celery>=3.8.0"
+    - "apache-airflow-providers-postgres>=5.13.0"
+    - "apache-airflow-providers-redis>=3.8.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

@@ -1,0 +1,19 @@
+id: cli_rich
+name: "Rich CLI Toolkit"
+description: "Rich terminal output, Click/Typer CLI, progress bars, and prompts"
+category: "Core Dev"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  cli_rich:
+    - "typer[all]>=0.15.0"
+    - "rich>=13.9.0"
+    - "click>=8.1.0"
+    - "questionary>=2.1.0"
+    - "shellingham>=1.5.4"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

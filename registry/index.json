@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "updated": "2026-03-17",
+  "packs": [
+    {
+      "name": "pjkm-django",
+      "description": "Django project scaffolding with settings, apps, middleware, and management commands",
+      "url": "https://github.com/pr1m8/pjkm-pack-django.git",
+      "author": "pr1m8",
+      "tags": ["django", "web", "orm", "admin"],
+      "groups": ["django", "django_rest", "django_admin", "django_celery"]
+    },
+    {
+      "name": "pjkm-aws-lambda",
+      "description": "AWS Lambda functions with SAM templates, layers, and API Gateway",
+      "url": "https://github.com/pr1m8/pjkm-pack-aws-lambda.git",
+      "author": "pr1m8",
+      "tags": ["aws", "lambda", "serverless", "sam"],
+      "groups": ["lambda_function", "lambda_layer", "api_gateway", "dynamodb"]
+    },
+    {
+      "name": "pjkm-ml-ops",
+      "description": "MLOps pipeline with DVC, MLflow, model serving, and feature stores",
+      "url": "https://github.com/pr1m8/pjkm-pack-mlops.git",
+      "author": "pr1m8",
+      "tags": ["ml", "mlops", "dvc", "mlflow", "serving"],
+      "groups": ["dvc", "mlflow", "model_serving", "feature_store"]
+    },
+    {
+      "name": "pjkm-data-eng",
+      "description": "Data engineering with dbt, Great Expectations, Dagster, and data contracts",
+      "url": "https://github.com/pr1m8/pjkm-pack-data-eng.git",
+      "author": "pr1m8",
+      "tags": ["data", "dbt", "dagster", "quality"],
+      "groups": ["dbt", "great_expectations", "dagster", "data_contracts"]
+    },
+    {
+      "name": "pjkm-quant",
+      "description": "Quantitative finance with backtesting, market data, and risk models",
+      "url": "https://github.com/pr1m8/pjkm-pack-quant.git",
+      "author": "pr1m8",
+      "tags": ["quant", "finance", "trading", "backtest"],
+      "groups": ["backtest", "market_data", "risk", "portfolio"]
+    },
+    {
+      "name": "pjkm-iot",
+      "description": "IoT device management with MQTT, time-series DB, and edge computing",
+      "url": "https://github.com/pr1m8/pjkm-pack-iot.git",
+      "author": "pr1m8",
+      "tags": ["iot", "mqtt", "timeseries", "edge"],
+      "groups": ["mqtt", "timescaledb", "edge_agent", "device_registry"]
+    },
+    {
+      "name": "pjkm-gamedev",
+      "description": "Game backend with matchmaking, leaderboards, inventory, and real-time sync",
+      "url": "https://github.com/pr1m8/pjkm-pack-gamedev.git",
+      "author": "pr1m8",
+      "tags": ["game", "matchmaking", "leaderboard", "realtime"],
+      "groups": ["matchmaking", "leaderboard", "inventory", "realtime_sync"]
+    },
+    {
+      "name": "pjkm-auth-providers",
+      "description": "OAuth2 providers — Google, GitHub, Apple, SAML, with multi-tenant support",
+      "url": "https://github.com/pr1m8/pjkm-pack-auth-providers.git",
+      "author": "pr1m8",
+      "tags": ["auth", "oauth2", "saml", "sso"],
+      "groups": ["oauth_google", "oauth_github", "oauth_apple", "saml", "multi_tenant"]
+    },
+    {
+      "name": "pjkm-observability",
+      "description": "Full observability stack — Datadog, PagerDuty, Sentry, custom dashboards",
+      "url": "https://github.com/pr1m8/pjkm-pack-observability.git",
+      "author": "pr1m8",
+      "tags": ["observability", "datadog", "sentry", "pagerduty"],
+      "groups": ["datadog", "pagerduty", "sentry_sdk", "dashboards"]
+    },
+    {
+      "name": "pjkm-cms",
+      "description": "Headless CMS with content models, media pipeline, and API endpoints",
+      "url": "https://github.com/pr1m8/pjkm-pack-cms.git",
+      "author": "pr1m8",
+      "tags": ["cms", "content", "media", "headless"],
+      "groups": ["content_models", "media_pipeline", "cms_api", "webhooks"]
+    }
+  ]
+}

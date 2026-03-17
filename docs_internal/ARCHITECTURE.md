@@ -47,7 +47,7 @@ src/pjkm/
       registry.py                # GroupRegistry (auto-discovers YAML + custom + remote sources)
       resolver.py                # GroupResolver (transitive deps, cycle detection)
       sources.py                 # GroupSourceManager (git clone/pull/cache for remote repos)
-      definitions/               # 43 YAML group files
+      definitions/               # 91 YAML group files in 8 category subdirectories
     platform/
       detect.py                  # OS, arch, available tools
       groups.py                  # Platform-specific adjustments
@@ -163,7 +163,7 @@ See [TEMPLATES.md](TEMPLATES.md) for full reference.
 
 ## Package Groups
 
-43 built-in YAML groups in `core/groups/definitions/`, extensible via:
+91 built-in YAML groups in `core/groups/definitions/` (organized in 8 category subdirectories), extensible via:
 
 - **Local custom groups** in `~/.pjkm/groups/` and `./.pjkm/groups/` (auto-loaded)
 - **Remote group sources** — git repos registered via `pjkm group source add` or `.pjkmrc.yaml`
@@ -252,9 +252,13 @@ pjkm group source remove NAME
 ## Key Statistics
 
 - **4** archetypes: single_package, service, poly_repo, script_tool
-- **43** built-in package groups (extensible via custom + remote sources + entry point plugins)
+- **91** built-in package groups in 8 category subdirectories
+- **33** template fragments (5 generate Python source code with group-aware wiring)
+- **18** recipes (pre-configured archetype + group combos)
+- **22** GitHub Actions workflows (15 base + 7 fragment)
+- **10** community registry packs
 - **9** built-in tasks across 4 phases
-- **21** template fragments with scaffolded code/config
-- **18** CLI commands/subcommands
+- **28** CLI commands/subcommands
+- **176** tests
 - **5** TUI screens
 - **133** tests

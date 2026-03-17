@@ -45,6 +45,9 @@ dev = [
   "ruff>=0.15.0",
 ]
 
+[project.entry-points."pjkm.groups"]
+[project.entry-points."pjkm.tasks"]
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"

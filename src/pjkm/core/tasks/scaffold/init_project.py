@@ -47,6 +47,35 @@ class InitProjectTask(BaseTask):
 
         ctx.extra["applied_templates"] = applied
 
+        # Record archetype in [tool.pjkm] so `pjkm update` can find it later
+        if not config.dry_run:
+            self._record_archetype(dest, config.archetype.value)
+
         return self.success_result(
             message=f"Applied templates: {', '.join(applied)}",
         )
+
+    @staticmethod
+    def _record_archetype(dest: "Path", archetype: str) -> None:  # noqa: F821
+        """Write the archetype into [tool.pjkm] in pyproject.toml."""
+        from pathlib import Path
+
+        try:
+            import tomllib
+        except ImportError:
+            import tomli as tomllib  # type: ignore[no-redef]
+
+        import tomli_w
+
+        pyproject_path = Path(dest) / "pyproject.toml"
+        if not pyproject_path.exists():
+            return
+
+        with open(pyproject_path, "rb") as f:
+            pyproject = tomllib.load(f)
+
+        pjkm_config = pyproject.setdefault("tool", {}).setdefault("pjkm", {})
+        pjkm_config["archetype"] = archetype
+
+        with open(pyproject_path, "wb") as f:
+            tomli_w.dump(pyproject, f)

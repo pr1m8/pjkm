@@ -83,6 +83,11 @@ class ApplyGroupsTask(BaseTask):
             for tool_name, tool_conf in group.pyproject_tool_config.items():
                 _deep_merge(tool_config, tool_name, tool_conf)
 
+        # Track applied groups for `pjkm add`
+        pjkm_config = pyproject.setdefault("tool", {}).setdefault("pjkm", {})
+        existing_groups = pjkm_config.get("groups", [])
+        pjkm_config["groups"] = sorted(set(existing_groups + [g.id for g in groups]))
+
         # Write back (skip if dry run)
         if not config.dry_run:
             with open(pyproject_path, "wb") as f:

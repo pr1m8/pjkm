@@ -75,11 +75,28 @@ class GroupRegistry:
                 loaded.append((name, count))
         return loaded
 
+    def load_plugins(self) -> list[tuple[str, int]]:
+        """Load groups from installed plugins via entry points."""
+        from importlib.metadata import entry_points
+
+        loaded = []
+        for ep in entry_points(group="pjkm.groups"):
+            try:
+                groups_dir = ep.load()()
+                if isinstance(groups_dir, Path) and groups_dir.is_dir():
+                    count = self.load_directory(groups_dir)
+                    if count > 0:
+                        loaded.append((ep.name, count))
+            except Exception:
+                pass  # Skip broken plugins silently
+        return loaded
+
     def load_all(self) -> None:
-        """Load all groups: built-in + custom local + remote sources."""
+        """Load all groups: built-in + custom local + remote sources + plugins."""
         self.load_builtin()
         self.load_custom()
         self.load_sources()
+        self.load_plugins()
 
     def load_directory(self, directory: Path) -> int:
         """Load all YAML group definitions from an arbitrary directory.

@@ -176,6 +176,382 @@ def init(
 
 
 @app.command()
+def add(
+    group: list[str] = typer.Option(
+        ...,
+        "--group",
+        "-g",
+        help="Package group(s) to add (repeatable)",
+    ),
+    directory: str = typer.Option(
+        "",
+        "--dir",
+        "-d",
+        help="Project directory containing pyproject.toml (default: cwd)",
+    ),
+) -> None:
+    """Add package groups to an existing project.
+
+    Reads the existing pyproject.toml, resolves the requested groups
+    (including transitive dependencies), merges new dependencies and
+    tool config, renders scaffolded files, and updates [tool.pjkm.groups].
+    """
+    import re
+    from pathlib import Path
+
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib  # type: ignore[no-redef]
+
+    import tomli_w
+    from rich.console import Console
+
+    from pjkm.core.groups.registry import GroupRegistry
+    from pjkm.core.groups.resolver import GroupResolver
+    from pjkm.core.models.platform import PlatformInfo
+    from pjkm.core.templates.loader import TemplateLoader, TemplateNotFoundError
+    from pjkm.core.templates.renderer import TemplateRenderer
+
+    console = Console()
+    project_dir = Path(directory).resolve() if directory else Path.cwd()
+    pyproject_path = project_dir / "pyproject.toml"
+
+    # ------------------------------------------------------------------
+    # 1. Find pyproject.toml
+    # ------------------------------------------------------------------
+    if not pyproject_path.exists():
+        console.print(
+            f"[red]pyproject.toml not found in {project_dir}[/red]"
+        )
+        raise typer.Exit(1)
+
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+
+    # ------------------------------------------------------------------
+    # 2. Read existing optional-dependencies and [tool.pjkm.groups]
+    # ------------------------------------------------------------------
+    pjkm_config = pyproject.get("tool", {}).get("pjkm", {})
+    already_applied: list[str] = pjkm_config.get("groups", [])
+
+    # ------------------------------------------------------------------
+    # 3. Load registry and validate requested group IDs
+    # ------------------------------------------------------------------
+    registry = GroupRegistry()
+    registry.load_all()
+
+    valid_ids = set(registry.group_ids)
+    invalid = [g for g in group if g not in valid_ids]
+    if invalid:
+        console.print(
+            f"[red]Unknown group(s): {', '.join(sorted(invalid))}[/red]"
+        )
+        console.print(
+            f"Valid groups: {', '.join(sorted(valid_ids))}"
+        )
+        raise typer.Exit(1)
+
+    # ------------------------------------------------------------------
+    # 4. Resolve transitively, filter out already-applied groups
+    # ------------------------------------------------------------------
+    resolver = GroupResolver({g.id: g for g in registry.list_all()})
+    platform = PlatformInfo()
+
+    try:
+        all_resolved = resolver.resolve(group, platform=platform)
+    except Exception as exc:
+        console.print(f"[red]Group resolution failed: {exc}[/red]")
+        raise typer.Exit(1)
+
+    new_groups = [g for g in all_resolved if g.id not in already_applied]
+
+    if not new_groups:
+        console.print("[dim]All requested groups are already applied.[/dim]")
+        raise typer.Exit(0)
+
+    # ------------------------------------------------------------------
+    # 5. Merge new group deps into pyproject.toml
+    # ------------------------------------------------------------------
+    optional_deps = pyproject.setdefault("project", {}).setdefault(
+        "optional-dependencies", {}
+    )
+    tool_config = pyproject.setdefault("tool", {})
+
+    def _deep_merge(target: dict, dotted_key: str, value: dict) -> None:
+        parts = dotted_key.split(".")
+        current = target
+        for part in parts[:-1]:
+            current = current.setdefault(part, {})
+        current.setdefault(parts[-1], {}).update(value)
+
+    for g in new_groups:
+        for group_name, deps in g.dependencies.items():
+            existing = optional_deps.get(group_name, [])
+            merged = list(dict.fromkeys(existing + deps))
+            optional_deps[group_name] = merged
+
+        for tool_name, tool_conf in g.pyproject_tool_config.items():
+            _deep_merge(tool_config, tool_name, tool_conf)
+
+    # ------------------------------------------------------------------
+    # 6. Render scaffolded files for new groups
+    # ------------------------------------------------------------------
+    loader = TemplateLoader()
+    renderer = TemplateRenderer()
+
+    # Derive project_slug from pyproject metadata
+    project_name = pyproject.get("project", {}).get("name", project_dir.name)
+    project_slug = re.sub(r"[^a-zA-Z0-9]", "_", project_name).lower().strip("_")
+    python_version = "3.13"  # fallback
+    requires_python = pyproject.get("project", {}).get("requires-python", "")
+    if requires_python:
+        m = re.search(r"(\d+\.\d+)", requires_python)
+        if m:
+            python_version = m.group(1)
+
+    data = {
+        "project_name": project_name,
+        "project_slug": project_slug,
+        "python_version": python_version,
+    }
+
+    rendered_fragments: list[str] = []
+    for g in new_groups:
+        for sf in g.scaffolded_files:
+            try:
+                frag_path = loader.resolve(f"fragments/{sf.template_fragment}")
+                dest = project_dir / sf.destination
+                dest.mkdir(parents=True, exist_ok=True)
+                renderer.render(
+                    template_path=frag_path,
+                    dest=dest,
+                    data={**data, **sf.conditions},
+                    overwrite=True,
+                )
+                rendered_fragments.append(sf.template_fragment)
+            except TemplateNotFoundError:
+                pass  # Fragment not yet created — skip silently
+
+    # ------------------------------------------------------------------
+    # 7. Update [tool.pjkm.groups] with full set of applied group IDs
+    # ------------------------------------------------------------------
+    pjkm_tool = pyproject.setdefault("tool", {}).setdefault("pjkm", {})
+    pjkm_tool["groups"] = sorted(set(already_applied + [g.id for g in new_groups]))
+
+    # ------------------------------------------------------------------
+    # 8. Write back pyproject.toml
+    # ------------------------------------------------------------------
+    with open(pyproject_path, "wb") as f:
+        tomli_w.dump(pyproject, f)
+
+    # ------------------------------------------------------------------
+    # 9. Print summary
+    # ------------------------------------------------------------------
+    console.print(
+        f"[bold green]Added {len(new_groups)} group(s) to {pyproject_path}[/bold green]"
+    )
+    for g in new_groups:
+        dep_count = sum(len(deps) for deps in g.dependencies.values())
+        console.print(f"  [cyan]{g.id}[/cyan] — {dep_count} dep(s)")
+    if rendered_fragments:
+        console.print()
+        console.print("[dim]Scaffolded files:[/dim]")
+        for frag in rendered_fragments:
+            console.print(f"  [green]{frag}[/green]")
+    console.print()
+    console.print("[dim]Next: run `pdm install` to install new dependencies.[/dim]")
+
+
+@app.command()
+def update(
+    directory: str = typer.Option(
+        "",
+        "--dir",
+        "-d",
+        help="Project directory to update (default: current directory)",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show what would be done without making changes",
+    ),
+) -> None:
+    """Re-render templates on an existing project.
+
+    Reads [tool.pjkm] from pyproject.toml to find the archetype and
+    applied groups, then re-renders the base and archetype templates.
+    Useful after updating pjkm to pick up new CI workflows, gitignore
+    improvements, etc.
+
+    If .copier-answers.yml exists, uses Copier's update mechanism.
+    Otherwise, falls back to re-rendering with overwrite.
+    """
+    import re
+    from pathlib import Path
+
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib  # type: ignore[no-redef]
+
+    from rich.console import Console
+
+    from pjkm.core.templates.loader import TemplateLoader
+    from pjkm.core.templates.renderer import TemplateRenderer
+
+    console = Console()
+
+    # Resolve target directory
+    project_dir = Path(directory).resolve() if directory else Path.cwd()
+
+    # Check for pyproject.toml
+    pyproject_path = project_dir / "pyproject.toml"
+    if not pyproject_path.exists():
+        console.print(f"[red]No pyproject.toml found in {project_dir}[/red]")
+        console.print(
+            "[dim]Run this command from a pjkm-generated project directory, "
+            "or use --dir to specify one.[/dim]"
+        )
+        raise typer.Exit(1)
+
+    # Read [tool.pjkm] metadata
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+
+    pjkm_meta = pyproject.get("tool", {}).get("pjkm", {})
+    archetype = pjkm_meta.get("archetype", "")
+    groups = pjkm_meta.get("groups", [])
+
+    if not archetype:
+        console.print(
+            "[yellow]No [tool.pjkm] archetype found in pyproject.toml.[/yellow]"
+        )
+        console.print(
+            "[dim]This project may not have been created by pjkm, "
+            "or was created before archetype tracking was added.[/dim]"
+        )
+        console.print("[dim]Continuing with base template only.[/dim]")
+
+    # Gather template data from pyproject.toml
+    project_meta = pyproject.get("project", {})
+    project_name = project_meta.get("name", project_dir.name)
+    project_slug = re.sub(r"[^a-zA-Z0-9]", "_", project_name).lower().strip("_")
+
+    authors = project_meta.get("authors", [{}])
+    first_author = authors[0] if authors else {}
+
+    data = {
+        "project_name": project_name,
+        "project_slug": project_slug,
+        "description": project_meta.get("description", ""),
+        "author_name": first_author.get("name", ""),
+        "author_email": first_author.get("email", ""),
+        "python_version": _extract_python_version(
+            project_meta.get("requires-python", ">=3.13")
+        ),
+        "license": _extract_license(project_meta.get("license", {})),
+    }
+
+    if dry_run:
+        console.print("[bold]Dry run:[/bold] would update templates in-place")
+        console.print(f"  Project:   {project_name}")
+        console.print(f"  Directory: {project_dir}")
+        console.print(f"  Archetype: {archetype or '(none)'}")
+        console.print(f"  Groups:    {', '.join(groups) or '(none)'}")
+        raise typer.Exit(0)
+
+    # Check for .copier-answers.yml
+    copier_answers = project_dir / ".copier-answers.yml"
+    use_copier_update = copier_answers.exists()
+
+    renderer = TemplateRenderer()
+    loader = TemplateLoader()
+    applied: list[str] = []
+
+    if use_copier_update:
+        # Use Copier's native update which reads .copier-answers.yml
+        console.print(
+            "[dim]Found .copier-answers.yml — using Copier update.[/dim]"
+        )
+        try:
+            renderer.update(
+                template_path=loader.resolve("base"),
+                dest=project_dir,
+                data=data,
+                pretend=False,
+            )
+            applied.append("base (copier update)")
+        except Exception as exc:
+            console.print(
+                f"[yellow]Copier update failed ({exc}), "
+                f"falling back to overwrite.[/yellow]"
+            )
+            use_copier_update = False
+
+    if not use_copier_update:
+        # Fallback: re-render base + archetype with overwrite=True
+        console.print("[dim]Re-rendering templates with overwrite.[/dim]")
+
+        # 1. Base template
+        base_path = loader.resolve("base")
+        renderer.render(
+            template_path=base_path,
+            dest=project_dir,
+            data=data,
+            overwrite=True,
+            pretend=False,
+        )
+        applied.append("base")
+
+        # 2. Archetype template (if known)
+        if archetype:
+            try:
+                arch_path = loader.resolve(archetype)
+                renderer.render(
+                    template_path=arch_path,
+                    dest=project_dir,
+                    data=data,
+                    overwrite=True,
+                    pretend=False,
+                )
+                applied.append(archetype)
+            except Exception as exc:
+                console.print(
+                    f"[yellow]Could not render archetype "
+                    f"template '{archetype}': {exc}[/yellow]"
+                )
+
+    # Print summary
+    console.print()
+    console.print(
+        f"[bold green]Updated {project_name} in {project_dir}[/bold green]"
+    )
+    console.print(f"  Templates applied: {', '.join(applied)}")
+    if groups:
+        console.print(f"  Groups in project: {', '.join(groups)}")
+        console.print(
+            "[dim]  Note: group dependencies/configs were not re-applied. "
+            "Use 'pjkm add' to modify groups.[/dim]"
+        )
+
+
+def _extract_python_version(requires_python: str) -> str:
+    """Extract a X.Y version string from a requires-python specifier."""
+    import re
+
+    m = re.search(r"(\d+\.\d+)", requires_python)
+    return m.group(1) if m else "3.13"
+
+
+def _extract_license(license_field: dict | str) -> str:
+    """Extract a license string from pyproject.toml's license field."""
+    if isinstance(license_field, dict):
+        return license_field.get("text", "MIT")
+    return str(license_field) if license_field else "MIT"
+
+
+@app.command()
 def tui() -> None:
     """Launch the interactive TUI wizard."""
     from pjkm.tui.app import run as run_tui
@@ -731,9 +1107,24 @@ def group_sync(
             console.print(f"  [red]Failed:[/red] {src.name} — {msg}")
 
 
+FIX_HINTS: dict[str, str] = {
+    "git": "brew install git (macOS) / apt install git (Linux)",
+    "python": "brew install python@3.13 / pyenv install 3.13",
+    "pdm": "pipx install pdm / brew install pdm",
+    "docker": "https://docs.docker.com/get-docker/",
+    "node": "https://nodejs.org/ or brew install node@22",
+    "pnpm": "corepack enable && corepack prepare pnpm@latest",
+    "gh": "brew install gh / https://cli.github.com/",
+    "git-lfs": "brew install git-lfs / apt install git-lfs",
+    "pre-commit": "pipx install pre-commit",
+    "trunk": "curl https://get.trunk.io -fsSL | bash",
+}
+
+
 @app.command()
 def doctor() -> None:
     """Check the local environment for required and optional tools."""
+    import re
     import shutil
     import subprocess
 
@@ -750,55 +1141,91 @@ def doctor() -> None:
     optional_tools: list[tuple[str, list[str]]] = [
         ("pre-commit", ["pre-commit", "--version"]),
         ("trunk", ["trunk", "--version"]),
+        ("docker", ["docker", "--version"]),
+        ("node", ["node", "--version"]),
+        ("pnpm", ["pnpm", "--version"]),
+        ("gh", ["gh", "--version"]),
+        ("git-lfs", ["git-lfs", "--version"]),
     ]
 
-    missing_required = False
+    required_found = 0
+    required_total = len(required_tools)
+    optional_found = 0
+    optional_total = len(optional_tools)
 
+    def _get_version(cmd: list[str]) -> str | None:
+        """Run a version command and return trimmed output, or None."""
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=10,
+            )
+            return (result.stdout.strip() or result.stderr.strip()) or None
+        except Exception:
+            return None
+
+    def _print_hint(name: str) -> None:
+        hint = FIX_HINTS.get(name)
+        if hint:
+            console.print(f"         [dim]fix: {hint}[/dim]")
+
+    # --- Required tools ---
     console.print("[bold underline]Required[/bold underline]")
     for name, version_cmd in required_tools:
         if shutil.which(version_cmd[0]) is None:
             console.print(f"  [red]\u2718[/red] {name} — not found")
-            missing_required = True
+            _print_hint(name)
             continue
-        try:
-            result = subprocess.run(
-                version_cmd,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            version = result.stdout.strip() or result.stderr.strip()
+        version = _get_version(version_cmd)
+        if version:
             console.print(f"  [green]\u2714[/green] {name} — {version}")
-        except Exception:
+            required_found += 1
+            # Python version check: warn if < 3.13
+            if name == "python":
+                m = re.search(r"(\d+)\.(\d+)", version)
+                if m:
+                    major, minor = int(m.group(1)), int(m.group(2))
+                    if (major, minor) < (3, 13):
+                        console.print(
+                            f"         [yellow]\u26a0 Python {major}.{minor} detected; "
+                            "3.13+ is recommended[/yellow]"
+                        )
+        else:
             console.print(
                 f"  [red]\u2718[/red] {name} — found but could not get version"
             )
-            missing_required = True
+            _print_hint(name)
 
+    # --- Optional tools ---
     console.print()
     console.print("[bold underline]Optional[/bold underline]")
     for name, version_cmd in optional_tools:
         if shutil.which(version_cmd[0]) is None:
             console.print(f"  [yellow]![/yellow] {name} — not installed")
+            _print_hint(name)
             continue
-        try:
-            result = subprocess.run(
-                version_cmd,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            version = result.stdout.strip() or result.stderr.strip()
+        version = _get_version(version_cmd)
+        if version:
             console.print(f"  [green]\u2714[/green] {name} — {version}")
-        except Exception:
+            optional_found += 1
+        else:
             console.print(
                 f"  [yellow]![/yellow] {name} — found but could not get version"
             )
 
+    # --- Summary ---
     console.print()
-    if missing_required:
+    req_color = "green" if required_found == required_total else "red"
+    opt_color = "green" if optional_found == optional_total else "yellow"
+    console.print(
+        f"[{req_color}]{required_found}/{required_total} required[/{req_color}], "
+        f"[{opt_color}]{optional_found}/{optional_total} optional[/{opt_color}]"
+    )
+    console.print()
+
+    if required_found < required_total:
         console.print(
-            "[bold red]Some required tools are missing. Install them before using pjkm.[/bold red]"
+            "[bold red]Some required tools are missing. "
+            "Install them before using pjkm.[/bold red]"
         )
         raise typer.Exit(1)
     else:

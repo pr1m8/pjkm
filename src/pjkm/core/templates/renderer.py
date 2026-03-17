@@ -1,4 +1,4 @@
-"""Template renderer: wraps Copier's run_copy for project generation."""
+"""Template renderer: wraps Copier's run_copy / run_update for project generation."""
 
 from __future__ import annotations
 
@@ -41,4 +41,38 @@ class TemplateRenderer:
             quiet=True,
             unsafe=True,
             skip_tasks=True,
+        )
+
+    def update(
+        self,
+        template_path: Path,
+        dest: Path,
+        data: dict[str, Any] | None = None,
+        pretend: bool = False,
+    ) -> None:
+        """Re-render a template that was previously applied to the destination.
+
+        Attempts ``copier.run_update`` which reads ``.copier-answers.yml`` from
+        *dest* to determine the original template.  If that file is missing the
+        caller should fall back to :meth:`render` with ``overwrite=True``.
+
+        Args:
+            template_path: Path to the Copier template directory (unused when
+                ``run_update`` reads the answers file, but kept for API symmetry
+                with :meth:`render`).
+            dest: Destination directory containing the previously-generated project.
+            data: Answers/data overrides for template variables.
+            pretend: If True, don't actually write files.
+        """
+        from copier import run_update
+
+        run_update(
+            dst_path=dest,
+            data=data or {},
+            defaults=True,
+            pretend=pretend,
+            quiet=True,
+            unsafe=True,
+            skip_tasks=True,
+            overwrite=True,
         )

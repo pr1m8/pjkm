@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pjkm.core.tasks.configure.apply_groups import ApplyGroupsTask
 from pjkm.core.tasks.configure.configure_linting import ConfigureLintingTask
+from pjkm.core.tasks.configure.setup_git_lfs import SetupGitLfsTask
 from pjkm.core.tasks.install.pdm_install import PdmInstallTask
 from pjkm.core.tasks.install.pre_commit_install import PreCommitInstallTask
 from pjkm.core.tasks.registry import TaskRegistry
@@ -25,6 +26,7 @@ def create_default_registry() -> TaskRegistry:
     # Configure phase
     registry.register(ApplyGroupsTask())
     registry.register(ConfigureLintingTask())
+    registry.register(SetupGitLfsTask())
 
     # Install phase
     registry.register(PdmInstallTask())
@@ -32,5 +34,18 @@ def create_default_registry() -> TaskRegistry:
 
     # Verify phase
     registry.register(VerifyStructureTask())
+
+    # Load plugin tasks
+    from importlib.metadata import entry_points
+
+    from pjkm.core.tasks.base import BaseTask
+
+    for ep in entry_points(group="pjkm.tasks"):
+        try:
+            task = ep.load()()
+            if isinstance(task, BaseTask):
+                registry.register(task)
+        except Exception:
+            pass  # Skip broken plugins silently
 
     return registry

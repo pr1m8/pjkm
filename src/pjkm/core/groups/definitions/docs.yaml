@@ -12,6 +12,7 @@ dependencies:
     - "sphinx-autodoc-typehints>=3.0.0"
     - "sphinx-rtd-theme>=3.0.0"
     - "myst-parser>=4.0.0"
+    - "towncrier>=24.8.0"
 
 scaffolded_files:
   - template_fragment: "docs_sphinx"

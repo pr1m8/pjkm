@@ -1,0 +1,36 @@
+import "./App.css";
+
+function App() {
+  return (
+    <main className="app">
+      <h1>{{ project_name }}</h1>
+      <p>Vite + React + TypeScript</p>
+      <div className="card-grid">
+        <a href="/api/health" className="card">
+          <h2>API Health</h2>
+          <p>Check backend status</p>
+        </a>
+        <a
+          href="https://vite.dev/guide/"
+          className="card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h2>Vite Docs</h2>
+          <p>Learn Vite</p>
+        </a>
+        <a
+          href="https://react.dev"
+          className="card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h2>React Docs</h2>
+          <p>Learn React</p>
+        </a>
+      </div>
+    </main>
+  );
+}
+
+export default App;

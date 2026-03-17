@@ -1,0 +1,15 @@
+id: linux
+name: "Linux Platform"
+description: "Linux-specific tools and system integration"
+archetypes: []
+requires_groups: []
+platform_filter: linux
+
+dependencies:
+  linux:
+    - "inotify-simple>=1.3.5"
+    - "python-systemd>=235; sys_platform == 'linux'"
+    - "setproctitle>=1.3.0"
+
+scaffolded_files: []
+pyproject_tool_config: {}

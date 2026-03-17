@@ -8,3 +8,6 @@ project_name:
 project_slug:
   type: str
   help: "Python package slug"
+groups:
+  type: json
+  default: []

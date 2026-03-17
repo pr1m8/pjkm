@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import typer
 
+from pjkm.cli.commands import adopt as adopt_mod
 from pjkm.cli.commands import config, groups, info, project, recipes, registry
 
 app = typer.Typer(
@@ -65,6 +66,10 @@ app.command()(recipes.recipe)
 # Configuration
 app.command()(config.tui)
 app.command()(config.defaults)
+
+# Adopt existing projects
+app.command()(adopt_mod.adopt)
+app.command()(adopt_mod.status)
 
 # Registry — search and install community group packs
 app.command()(registry.search)

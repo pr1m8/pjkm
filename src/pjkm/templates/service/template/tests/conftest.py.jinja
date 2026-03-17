@@ -1,1 +1,50 @@
 """Shared test fixtures for {{ project_name }}."""
+
+from __future__ import annotations
+
+import pytest
+{% if "api" in groups %}
+
+
+@pytest.fixture
+def app():
+    """Create a test FastAPI application."""
+    from {{ project_slug }}.api.app import create_app
+
+    return create_app()
+
+
+@pytest.fixture
+async def client(app):
+    """Async HTTP test client."""
+    from httpx import ASGITransport, AsyncClient
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        yield ac
+{% endif %}
+{% if "database" in groups %}
+
+
+@pytest.fixture
+async def db_session():
+    """Yield a test database session (rolls back after each test)."""
+    from {{ project_slug }}.core.database import async_session
+
+    async with async_session() as session:
+        yield session
+        await session.rollback()
+{% endif %}
+{% if "redis" in groups %}
+
+
+@pytest.fixture
+async def redis_client():
+    """Yield a test Redis client."""
+    from {{ project_slug }}.core.redis import redis_session
+
+    async with redis_session() as client:
+        yield client
+{% endif %}

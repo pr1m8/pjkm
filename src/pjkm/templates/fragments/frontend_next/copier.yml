@@ -5,3 +5,6 @@ project_name:
   type: str
 project_slug:
   type: str
+groups:
+  type: json
+  default: []

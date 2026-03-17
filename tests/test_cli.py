@@ -643,3 +643,75 @@ class TestRegistryCommands:
         )
         result = runner.invoke(app, ["uninstall", "nonexistent"])
         assert result.exit_code != 0
+
+
+class TestUpdateCommand:
+    """Test the update command."""
+
+    def test_update_no_pyproject(self, tmp_path):
+        result = runner.invoke(app, ["update", "--dir", str(tmp_path)])
+        assert result.exit_code != 0
+        assert "pyproject.toml" in result.stdout
+
+    def test_update_dry_run(self, tmp_path):
+        # Create a minimal pyproject.toml
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n\n[tool.pjkm]\narchetype = "single_package"\ngroups = []\n'
+        )
+        result = runner.invoke(app, ["update", "--dir", str(tmp_path), "--dry-run"])
+        assert result.exit_code == 0
+        assert "Dry run" in result.stdout or "dry run" in result.stdout.lower()
+
+
+class TestUpgradeCommand:
+    """Test the upgrade command."""
+
+    def test_upgrade_no_pyproject(self, tmp_path):
+        result = runner.invoke(app, ["upgrade", "--dir", str(tmp_path)])
+        assert result.exit_code != 0
+        assert "pyproject.toml" in result.stdout
+
+    def test_upgrade_no_groups(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n'
+        )
+        result = runner.invoke(app, ["upgrade", "--dir", str(tmp_path)])
+        assert result.exit_code != 0
+        assert "No groups" in result.stdout
+
+    def test_upgrade_dry_run(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n\n[project.optional-dependencies]\nlogging = ["structlog>=24.0.0"]\n\n[tool.pjkm]\ngroups = ["logging"]\n'
+        )
+        result = runner.invoke(
+            app, ["upgrade", "--dir", str(tmp_path), "--dry-run"]
+        )
+        assert result.exit_code == 0
+
+
+class TestLinkCommand:
+    """Test the link command."""
+
+    def test_link_no_pyproject(self, tmp_path):
+        result = runner.invoke(
+            app, ["link", "ruff", "--dir", str(tmp_path)]
+        )
+        assert result.exit_code != 0
+
+    def test_link_no_groups(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n'
+        )
+        result = runner.invoke(
+            app, ["link", "ruff", "--dir", str(tmp_path)]
+        )
+        assert result.exit_code != 0
+
+    def test_link_unknown_tool(self, tmp_path):
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\nname = "test"\n\n[tool.pjkm]\ngroups = ["logging"]\n'
+        )
+        result = runner.invoke(
+            app, ["link", "nonexistent_tool", "--dir", str(tmp_path)]
+        )
+        assert result.exit_code != 0

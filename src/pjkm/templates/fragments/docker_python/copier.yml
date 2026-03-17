@@ -8,3 +8,6 @@ project_slug:
 python_version:
   type: str
   default: "3.13"
+groups:
+  type: json
+  default: []

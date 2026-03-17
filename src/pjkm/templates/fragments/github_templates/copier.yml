@@ -13,3 +13,6 @@ author_name:
   type: str
   help: "Author name"
   default: ""
+groups:
+  type: json
+  default: []

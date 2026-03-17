@@ -13,3 +13,6 @@ python_version:
   type: str
   help: "Python version"
   default: "3.13"
+groups:
+  type: json
+  default: []

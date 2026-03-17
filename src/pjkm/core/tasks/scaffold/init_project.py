@@ -35,6 +35,7 @@ class InitProjectTask(BaseTask):
             "author_email": config.author_email,
             "python_version": config.python_version,
             "license": config.license,
+            "groups": list(config.selected_groups),
         }
 
         composer = TemplateComposer()

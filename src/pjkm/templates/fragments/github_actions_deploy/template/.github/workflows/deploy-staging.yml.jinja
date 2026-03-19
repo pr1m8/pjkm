@@ -45,6 +45,6 @@ jobs:
           echo "Deploy to staging environment"
           echo "Override this step with your deployment command"
           # Examples:
-          # kubectl set image deployment/{{ project_slug }} app=ghcr.io/${{ github.repository }}:staging
-          # flyctl deploy --image ghcr.io/${{ github.repository }}:staging
+          # kubectl set image deployment/{{ project_slug }} app=ghcr.io/{% raw %}${{ github.repository }}{% endraw %}:staging
+          # flyctl deploy --image ghcr.io/{% raw %}${{ github.repository }}{% endraw %}:staging
           # ssh deploy@staging 'docker pull ... && docker compose up -d'

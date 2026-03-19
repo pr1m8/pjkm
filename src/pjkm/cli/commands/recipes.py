@@ -286,6 +286,27 @@ RECIPES: dict[str, dict] = {
             "redis", "docker", "logging", "makefile",
         ],
     },
+    "scraper-full": {
+        "description": "Full scraping platform with MinIO, Postgres, Celery, frontend, Prometheus",
+        "archetype": "service",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "coverage", "security",
+            "api", "auth", "database", "redis", "caching", "s3",
+            "web_scraping", "crawling", "doc_parsing", "file_utils",
+            "celery", "docker", "logging", "otel", "monitoring",
+            "frontend", "makefile", "github_templates", "ci_cd",
+            "error_tracking",
+        ],
+    },
+    "tui-app": {
+        "description": "Terminal UI application with Textual, rich widgets, and async support",
+        "archetype": "script-tool",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "coverage",
+            "textual_tui", "cli_rich", "async_tools", "config_mgmt",
+            "http_client", "logging", "docs", "github_templates",
+        ],
+    },
 }
 
 

@@ -13,7 +13,7 @@ dependencies:
 
 scaffolded_files:
   - template_fragment: "logging_structlog"
-    destination: "src/{{ project_slug }}/core/logging/"
+    destination: "."
     description: "Structlog + Rich logging configuration module"
 
 pyproject_tool_config: {}

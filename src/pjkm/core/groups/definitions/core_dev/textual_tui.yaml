@@ -1,0 +1,18 @@
+id: textual_tui
+name: "Textual TUI"
+description: "Terminal UI with Textual, rich widgets, CSS styling, and hot-reload"
+category: "Core Dev"
+archetypes: []
+requires_groups:
+  - cli_rich
+platform_filter: null
+
+dependencies:
+  textual_tui:
+    - "textual>=1.0.0"
+    - "textual-dev>=1.7.0"
+    - "textual-plotext>=0.2.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

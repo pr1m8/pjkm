@@ -1,0 +1,15 @@
+id: terraform
+name: "Terraform IaC"
+description: "Terraform infrastructure as code with AWS/GCP modules and state management"
+category: "Infrastructure"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

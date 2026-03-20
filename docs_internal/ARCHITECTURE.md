@@ -252,13 +252,12 @@ pjkm group source remove NAME
 ## Key Statistics
 
 - **4** archetypes: single_package, service, poly_repo, script_tool
-- **91** built-in package groups in 8 category subdirectories
-- **33** template fragments (5 generate Python source code with group-aware wiring)
-- **18** recipes (pre-configured archetype + group combos)
+- **105** built-in package groups in 8 category subdirectories
+- **34** template fragments (6 generate Python source code with group-aware wiring)
+- **22** recipes + 6 presets + 5 workspace blueprints
 - **22** GitHub Actions workflows (15 base + 7 fragment)
 - **10** community registry packs
 - **9** built-in tasks across 4 phases
-- **28** CLI commands/subcommands
-- **176** tests
+- **30** CLI commands/subcommands
+- **197** tests (including 17 integration tests)
 - **5** TUI screens
-- **133** tests

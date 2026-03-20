@@ -93,7 +93,7 @@ src/pjkm/templates/
       src/{{ project_slug }}/cli.py.jinja
       tests/__init__.py
       tests/test_cli.py.jinja
-  fragments/                     # composable pieces, one dir per fragment (28 total)
+  fragments/                     # composable pieces, one dir per fragment (34 total)
     logging_structlog/           # structlog + Rich logging module
     infra_otel/                  # OTel collector, Prometheus, Grafana, Loki, Jaeger
     docs_sphinx/                 # Sphinx docs with autodoc, napoleon, autobuild
@@ -122,6 +122,12 @@ src/pjkm/templates/
     github_actions_frontend/     # Frontend CI (lint, typecheck, build, test via pnpm)
     github_actions_deploy/       # Staging + production deployment workflows
     github_actions_db/           # Database migration check workflow
+    settings_module/             # Pydantic Settings + .env.example (group-aware)
+    api_app/                     # FastAPI app factory, routes, middleware, lifespan, deps (group-aware)
+    redis_client/                # Async Redis client with connection pool + health check
+    db_models/                   # SQLAlchemy engine, session, Base model, mixins
+    auth_jwt/                    # JWT create/decode + FastAPI Bearer auth dependency
+    agent_app/                   # LangGraph agent with graph, state, tools, prompts
 ```
 
 ## Copier Template Format

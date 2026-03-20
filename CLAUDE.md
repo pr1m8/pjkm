@@ -12,17 +12,18 @@ src/pjkm/
       project.py                # init, add, update, upgrade, link, preview
       info.py                   # list, info, doctor
       groups.py                 # group create/import/validate/list/sync + source subcommands
-      recipes.py                # recommend (6 presets), recipe (18 recipes)
+      recipes.py                # recommend (6 presets), recipe (22 recipes)
       config.py                 # defaults, tui
       registry.py               # search, install, uninstall, installed
       adopt.py                  # adopt, status
+      workspace.py              # workspace (multi-repo platform scaffolding)
   core/
     models/
       group.py                  # PackageGroup model (id, name, category, deps, scaffolded_files, etc.)
       project.py                # ProjectConfig, Archetype enum
       task.py                   # TaskEvent, Phase, TaskResult
     groups/
-      definitions/              # 91 YAML group definitions in 8 category subdirectories
+      definitions/              # 105 YAML group definitions in 8 category subdirectories
         core_dev/               # dev, linting, testing, typecheck, coverage, ...
         ai_ml/                  # langchain, ml, torch, vector_stores, ...
         web_api/                # api, auth, websocket, payments, ...
@@ -50,7 +51,7 @@ src/pjkm/
     service/                    # + infra, Makefile, .env, .secrets
     poly_repo/                  # + packages/, tools/
     script_tool/                # + __main__.py, cli.py
-    fragments/                  # 33 composable template fragments
+    fragments/                  # 34 composable template fragments
   tui/                          # Textual TUI wizard
 ```
 

@@ -260,3 +260,177 @@ class TestFullProjectGeneration:
                 errors.append(f"{py_file.relative_to(project)}: {e}")
 
         assert not errors, f"Syntax errors in generated files:\n" + "\n".join(errors)
+
+
+class TestAgentGeneration:
+    """Test AI agent project generation end-to-end."""
+
+    def test_ai_agent_recipe(self, tmp_path):
+        """Full ai-agent recipe — generates agent scaffolding."""
+        result = runner.invoke(
+            app,
+            ["init", "my-agent", "--recipe", "ai-agent", "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+
+        src = tmp_path / "my-agent" / "src" / "my_agent"
+
+        # Agent module scaffolded
+        assert (src / "agent" / "__init__.py").exists()
+        assert (src / "agent" / "graph.py").exists()
+        assert (src / "agent" / "state.py").exists()
+        assert (src / "agent" / "tools.py").exists()
+        assert (src / "agent" / "prompts.py").exists()
+
+        # Graph has real LangGraph code
+        graph = (src / "agent" / "graph.py").read_text()
+        assert "StateGraph" in graph
+        assert "ToolNode" in graph
+        assert "create_agent" in graph
+        assert "run_agent" in graph
+
+        # State has TypedDict
+        state = (src / "agent" / "state.py").read_text()
+        assert "AgentState" in state
+        assert "add_messages" in state
+
+        # Tools has group-aware search
+        tools = (src / "agent" / "tools.py").read_text()
+        assert "get_all_tools" in tools
+        assert "DuckDuckGoSearchRun" in tools  # search_tools group is in recipe
+
+        # pyproject has agent deps
+        pyproject = (tmp_path / "my-agent" / "pyproject.toml").read_text()
+        assert "langgraph" in pyproject
+        assert "langchain" in pyproject
+        assert "langsmith" in pyproject
+
+    def test_ai_agent_syntax_valid(self, tmp_path):
+        """Every .py in the agent project compiles."""
+        result = runner.invoke(
+            app,
+            ["init", "agent-check", "--recipe", "ai-agent", "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+
+        errors = []
+        for py_file in (tmp_path / "agent-check").rglob("*.py"):
+            try:
+                compile(py_file.read_text(), str(py_file), "exec")
+            except SyntaxError as e:
+                errors.append(f"{py_file.name}: {e}")
+        assert not errors, "\n".join(errors)
+
+    def test_rag_service_recipe(self, tmp_path):
+        """RAG service recipe generates API + agent + vector store."""
+        result = runner.invoke(
+            app,
+            ["init", "my-rag", "--recipe", "rag-service", "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+
+        src = tmp_path / "my-rag" / "src" / "my_rag"
+        assert (src / "api" / "app.py").exists()
+        assert (src / "agent" / "graph.py").exists()
+        assert (src / "core" / "database.py").exists()
+        assert (src / "core" / "redis.py").exists()
+        assert (src / "__main__.py").exists()
+
+    def test_agent_platform_recipe(self, tmp_path):
+        """Agent platform — full stack with monitoring."""
+        result = runner.invoke(
+            app,
+            ["init", "my-platform", "--recipe", "agent-platform", "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+
+        project = tmp_path / "my-platform"
+        src = project / "src" / "my_platform"
+        assert (src / "agent" / "graph.py").exists()
+        assert (src / "api" / "app.py").exists()
+        assert (project / "Dockerfile").exists()
+
+
+class TestAllRecipes:
+    """Verify every single recipe generates without errors."""
+
+    @pytest.fixture
+    def all_recipes(self):
+        from pjkm.cli.commands.recipes import RECIPES
+        return list(RECIPES.keys())
+
+    def test_every_recipe_inits(self, tmp_path, all_recipes):
+        """Init every recipe with --dry-run (fast) to verify they parse."""
+        failures = []
+        for recipe_name in all_recipes:
+            result = runner.invoke(
+                app,
+                ["init", f"test-{recipe_name[:10]}", "--recipe", recipe_name,
+                 "--dir", str(tmp_path), "--dry-run"],
+            )
+            if result.exit_code != 0:
+                failures.append(f"{recipe_name}: {result.stdout[-200:]}")
+        assert not failures, "Recipe failures:\n" + "\n".join(failures)
+
+    def test_every_recipe_full_init(self, tmp_path, all_recipes):
+        """Actually init every recipe (not dry-run) — verifies template rendering."""
+        failures = []
+        for recipe_name in all_recipes:
+            sub = tmp_path / recipe_name
+            sub.mkdir()
+            # Use recipe name with hyphens replaced to avoid invalid package names
+            proj_name = recipe_name.replace("-", "")[:12] + "proj"
+            result = runner.invoke(
+                app,
+                ["init", proj_name, "--recipe", recipe_name,
+                 "--dir", str(sub)],
+            )
+            if result.exit_code != 0:
+                failures.append(f"{recipe_name}: exit={result.exit_code}")
+        assert not failures, "Recipe init failures:\n" + "\n".join(failures)
+
+
+class TestWorkspaceE2E:
+    """Test workspace generation end-to-end."""
+
+    def test_microservices_blueprint(self, tmp_path):
+        """Microservices blueprint generates all services."""
+        result = runner.invoke(
+            app,
+            ["workspace", "my-plat", "--blueprint", "microservices",
+             "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+
+        ws = tmp_path / "my-plat"
+        assert (ws / "my-plat.code-workspace").exists()
+        assert (ws / "docker-compose.yml").exists()
+        assert (ws / "Makefile").exists()
+        assert (ws / ".github" / "workflows" / "ci.yml").exists()
+        assert (ws / "api").is_dir()
+        assert (ws / "jobs").is_dir()
+        assert (ws / "site").is_dir()
+        assert (ws / "shared").is_dir()
+
+        # VS Code workspace has all folders
+        import json
+        ws_config = json.loads((ws / "my-plat.code-workspace").read_text())
+        folder_names = [f["path"] for f in ws_config["folders"]]
+        assert "api" in folder_names
+        assert "jobs" in folder_names
+        assert "site" in folder_names
+        assert "shared" in folder_names
+
+    def test_workspace_services_have_pyproject(self, tmp_path):
+        """Each service in workspace is a real pjkm project."""
+        result = runner.invoke(
+            app,
+            ["workspace", "ws-test", "-s", "api:api", "-s", "lib:lib",
+             "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+
+        ws = tmp_path / "ws-test"
+        assert (ws / "api" / "pyproject.toml").exists()
+        assert (ws / "lib" / "pyproject.toml").exists()
+        assert (ws / "api" / "src" / "api" / "api" / "app.py").exists()

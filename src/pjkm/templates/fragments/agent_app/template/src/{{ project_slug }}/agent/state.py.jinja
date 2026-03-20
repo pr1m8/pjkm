@@ -1,0 +1,31 @@
+"""Agent state — the data that flows through the graph."""
+
+from __future__ import annotations
+
+from typing import Annotated
+
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from pydantic import BaseModel, Field
+from typing_extensions import TypedDict
+
+
+class AgentState(TypedDict):
+    """State passed between nodes in the agent graph.
+
+    - messages: conversation history (auto-appended by add_messages reducer)
+    - context: retrieved context for RAG (optional)
+    - tool_calls_count: track tool usage to prevent loops
+    """
+
+    messages: Annotated[list[BaseMessage], add_messages]
+    context: str
+    tool_calls_count: int
+
+
+class AgentOutput(BaseModel):
+    """Structured output from the agent — extend with your fields."""
+
+    answer: str = Field(description="The agent's response")
+    confidence: float = Field(default=1.0, ge=0, le=1, description="Confidence 0-1")
+    sources: list[str] = Field(default_factory=list, description="Sources used")

@@ -1,0 +1,16 @@
+id: langsmith
+name: "LangSmith Observability"
+description: "LangSmith tracing, evaluation, datasets, and prompt management"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  langsmith:
+    - "langsmith>=0.7.0"
+    - "langchain-core>=0.3.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

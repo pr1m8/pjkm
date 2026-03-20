@@ -1,0 +1,17 @@
+id: guardrails
+name: "LLM Guardrails"
+description: "Output validation, content filtering, and safety checks for LLM apps"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  guardrails:
+    - "guardrails-ai>=0.5.0"
+    - "nemoguardrails>=0.11.0"
+    - "pydantic>=2.11.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

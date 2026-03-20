@@ -1,0 +1,21 @@
+id: rag
+name: "RAG Pipeline"
+description: "Retrieval-augmented generation with vector stores, chunking, and reranking"
+category: "AI / ML"
+archetypes: []
+requires_groups:
+  - langchain
+  - vector_stores
+  - embeddings
+platform_filter: null
+
+dependencies:
+  rag:
+    - "langchain>=0.3.0"
+    - "langchain-core>=0.3.0"
+    - "unstructured>=0.17.0"
+    - "langchain-text-splitters>=0.3.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

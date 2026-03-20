@@ -1,0 +1,39 @@
+"""Prompt templates — system prompts, few-shot examples, output formats."""
+
+from __future__ import annotations
+
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+# --- Base agent prompt ---
+AGENT_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """\
+You are a helpful AI assistant for {{ project_name }}.
+You have access to tools. Use them when needed.
+
+{context}
+
+Current task: Answer the user's question accurately and concisely.
+"""),
+    MessagesPlaceholder(variable_name="messages"),
+])
+
+# --- RAG prompt ---
+RAG_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """\
+You are a helpful assistant. Answer based on the provided context.
+If the context doesn't contain the answer, say so.
+
+Context:
+{context}
+"""),
+    MessagesPlaceholder(variable_name="messages"),
+])
+
+# --- Structured output prompt ---
+STRUCTURED_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """\
+Extract structured information from the user's input.
+Respond with valid JSON matching the requested schema.
+"""),
+    MessagesPlaceholder(variable_name="messages"),
+])

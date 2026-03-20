@@ -140,12 +140,34 @@ RECIPES: dict[str, dict] = {
         ],
     },
     "ai-agent": {
-        "description": "LangChain/LangGraph AI agent with vector store and tools",
+        "description": "LangGraph agent with tools, memory, structured output, and MCP",
         "archetype": "single-package",
         "groups": [
-            "dev", "linting", "testing", "typecheck", "langchain",
-            "langchain_providers", "langgraph", "mcp_tools", "vector_stores",
-            "search_tools", "doc_parsing", "redis", "logging",
+            "dev", "linting", "testing", "typecheck", "agents",
+            "langchain", "langchain_providers", "langgraph", "mcp_tools",
+            "llm_providers", "vector_stores", "embeddings", "search_tools",
+            "doc_parsing", "redis", "logging", "eval",
+        ],
+    },
+    "rag-service": {
+        "description": "RAG API service with vector store, embeddings, and document ingestion",
+        "archetype": "service",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "api", "auth",
+            "agents", "langchain", "langgraph", "rag", "vector_stores",
+            "embeddings", "llm_providers", "doc_parsing", "database",
+            "redis", "docker", "logging", "otel", "makefile",
+        ],
+    },
+    "agent-platform": {
+        "description": "Multi-agent platform with tools, evaluation, and observability",
+        "archetype": "service",
+        "groups": [
+            "dev", "linting", "testing", "typecheck", "coverage",
+            "agents", "langchain", "langchain_providers", "langgraph",
+            "mcp_tools", "llm_providers", "vector_stores", "embeddings",
+            "search_tools", "eval", "api", "database", "redis",
+            "docker", "logging", "otel", "monitoring", "makefile",
         ],
     },
     "ml-pipeline": {

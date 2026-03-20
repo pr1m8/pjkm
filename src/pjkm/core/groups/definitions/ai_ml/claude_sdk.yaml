@@ -1,0 +1,17 @@
+id: claude_sdk
+name: "Claude / Anthropic SDK"
+description: "Anthropic SDK with Claude API, tool use, batches, and streaming"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  claude_sdk:
+    - "anthropic>=0.52.0"
+    - "httpx>=0.28.0"
+    - "pydantic>=2.11.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

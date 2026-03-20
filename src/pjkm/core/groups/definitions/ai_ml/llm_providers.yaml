@@ -1,0 +1,20 @@
+id: llm_providers
+name: "LLM Providers (Direct)"
+description: "Direct API clients for OpenAI, Anthropic, Google, and local models"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  llm_providers:
+    - "openai>=1.82.0"
+    - "anthropic>=0.52.0"
+    - "google-genai>=1.19.0"
+    - "ollama>=0.5.0"
+    - "litellm>=1.72.0"
+    - "instructor>=1.8.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

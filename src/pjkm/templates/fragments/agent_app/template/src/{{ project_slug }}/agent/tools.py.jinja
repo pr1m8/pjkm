@@ -1,0 +1,51 @@
+"""Agent tools — functions the agent can call.
+
+Add your custom tools here. Each tool is a function decorated with @tool.
+The agent can call these during its reasoning loop.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+from langchain_core.tools import tool
+{% if "search_tools" in groups %}
+from langchain_community.tools import DuckDuckGoSearchRun
+{% endif %}
+
+
+@tool
+def get_current_time() -> str:
+    """Get the current UTC time. Useful for time-sensitive queries."""
+    return datetime.now(timezone.utc).isoformat()
+
+
+@tool
+def calculate(expression: str) -> str:
+    """Evaluate a math expression. Input should be a valid Python math expression.
+
+    Examples: "2 + 2", "100 * 0.15", "2 ** 10"
+    """
+    try:
+        result = eval(expression, {"__builtins__": {}}, {})  # noqa: S307
+        return str(result)
+    except Exception as e:
+        return f"Error: {e}"
+{% if "search_tools" in groups %}
+
+
+@tool
+def web_search(query: str) -> str:
+    """Search the web for current information."""
+    search = DuckDuckGoSearchRun()
+    return search.run(query)
+{% endif %}
+
+
+def get_all_tools() -> list:
+    """Return all available tools for the agent."""
+    tools = [get_current_time, calculate]
+{% if "search_tools" in groups %}
+    tools.append(web_search)
+{% endif %}
+    return tools

@@ -1,0 +1,109 @@
+"""Agent graph — LangGraph workflow with tool calling and routing."""
+
+from __future__ import annotations
+
+import os
+
+from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.graph import END, StateGraph
+from langgraph.prebuilt import ToolNode
+
+from {{ project_slug }}.agent.state import AgentState
+from {{ project_slug }}.agent.tools import get_all_tools
+
+# Max tool calls before forcing a response (prevents infinite loops)
+MAX_TOOL_CALLS = 10
+
+SYSTEM_PROMPT = """\
+You are a helpful AI assistant for {{ project_name }}.
+You have access to tools. Use them when needed to answer questions accurately.
+Be concise and direct in your responses.
+"""
+
+
+def _get_model():
+    """Get the LLM — defaults to Anthropic, falls back to OpenAI."""
+    provider = os.getenv("LLM_PROVIDER", "anthropic")
+
+    if provider == "anthropic":
+        from langchain_anthropic import ChatAnthropic
+
+        return ChatAnthropic(
+            model=os.getenv("LLM_MODEL", "claude-sonnet-4-20250514"),
+            temperature=0,
+        )
+    elif provider == "openai":
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=os.getenv("LLM_MODEL", "gpt-4o"),
+            temperature=0,
+        )
+    else:
+        raise ValueError(f"Unknown LLM_PROVIDER: {provider}")
+
+
+def _call_model(state: AgentState) -> dict:
+    """Invoke the LLM with tools bound."""
+    tools = get_all_tools()
+    model = _get_model().bind_tools(tools)
+
+    messages = [SystemMessage(content=SYSTEM_PROMPT)] + state["messages"]
+    response = model.invoke(messages)
+
+    return {
+        "messages": [response],
+        "tool_calls_count": state.get("tool_calls_count", 0)
+        + (1 if response.tool_calls else 0),
+    }
+
+
+def _should_continue(state: AgentState) -> str:
+    """Route: continue to tools, or end."""
+    last = state["messages"][-1]
+
+    # Stop if max tool calls reached
+    if state.get("tool_calls_count", 0) >= MAX_TOOL_CALLS:
+        return "end"
+
+    # If the model wants to call tools, route to tool node
+    if hasattr(last, "tool_calls") and last.tool_calls:
+        return "tools"
+
+    return "end"
+
+
+def create_agent() -> StateGraph:
+    """Build the agent graph."""
+    tools = get_all_tools()
+    tool_node = ToolNode(tools)
+
+    graph = StateGraph(AgentState)
+
+    # Nodes
+    graph.add_node("agent", _call_model)
+    graph.add_node("tools", tool_node)
+
+    # Edges
+    graph.set_entry_point("agent")
+    graph.add_conditional_edges("agent", _should_continue, {"tools": "tools", "end": END})
+    graph.add_edge("tools", "agent")
+
+    return graph.compile()
+
+
+async def run_agent(query: str, context: str = "") -> dict:
+    """Run the agent with a query and optional context.
+
+    Returns the final state including all messages.
+    """
+    agent = create_agent()
+
+    initial_state: AgentState = {
+        "messages": [HumanMessage(content=query)],
+        "context": context,
+        "tool_calls_count": 0,
+    }
+
+    result = await agent.ainvoke(initial_state)
+    return result

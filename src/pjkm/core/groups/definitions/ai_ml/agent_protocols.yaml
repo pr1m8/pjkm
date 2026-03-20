@@ -1,0 +1,19 @@
+id: agent_protocols
+name: "Agent Protocols (A2A/ACP/MCP)"
+description: "Agent-to-agent communication, tool protocols, and interop standards"
+category: "AI / ML"
+archetypes: []
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  agent_protocols:
+    - "mcp>=1.10.0"
+    - "langchain-mcp-adapters>=0.1.8"
+    - "httpx-sse>=0.4.0"
+    - "pydantic>=2.11.0"
+    - "sse-starlette>=2.2.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

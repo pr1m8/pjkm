@@ -717,6 +717,51 @@ class TestLinkCommand:
         assert result.exit_code != 0
 
 
+class TestWorkspaceCommand:
+    """Test the workspace command."""
+
+    def test_workspace_list_templates(self):
+        result = runner.invoke(app, ["workspace", "test"])
+        assert result.exit_code == 0
+        assert "api" in result.stdout
+        assert "worker" in result.stdout
+        assert "web" in result.stdout
+
+    def test_workspace_dry_run(self):
+        result = runner.invoke(
+            app,
+            ["workspace", "my-platform", "-s", "api:api", "-s", "jobs:worker",
+             "--dry-run"],
+        )
+        assert result.exit_code == 0
+        assert "api" in result.stdout
+        assert "jobs" in result.stdout
+
+    def test_workspace_unknown_template(self):
+        result = runner.invoke(
+            app,
+            ["workspace", "test", "-s", "svc:nonexistent"],
+        )
+        assert result.exit_code != 0
+        assert "Unknown template" in result.stdout
+
+    def test_workspace_creates_files(self, tmp_path):
+        result = runner.invoke(
+            app,
+            ["workspace", "my-plat", "-s", "api:api", "-s", "shared:lib",
+             "--dir", str(tmp_path)],
+        )
+        assert result.exit_code == 0, result.stdout
+        ws = tmp_path / "my-plat"
+        assert ws.is_dir()
+        assert (ws / "my-plat.code-workspace").exists()
+        assert (ws / "docker-compose.yml").exists()
+        assert (ws / "Makefile").exists()
+        assert (ws / ".github" / "workflows" / "ci.yml").exists()
+        assert (ws / "api").is_dir()
+        assert (ws / "shared").is_dir()
+
+
 class TestAdoptCommand:
     """Test the adopt command."""
 

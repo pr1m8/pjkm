@@ -1,0 +1,19 @@
+id: pulumi
+name: "Pulumi IaC"
+description: "Pulumi infrastructure as code in Python — AWS, GCP, K8s providers"
+category: "Infrastructure"
+archetypes:
+  - service
+  - poly_repo
+requires_groups: []
+platform_filter: null
+
+dependencies:
+  pulumi:
+    - "pulumi>=3.140.0"
+    - "pulumi-aws>=6.60.0"
+    - "pulumi-docker>=4.5.0"
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

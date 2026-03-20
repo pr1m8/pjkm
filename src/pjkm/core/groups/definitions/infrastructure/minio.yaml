@@ -1,0 +1,16 @@
+id: minio
+name: "MinIO Object Storage"
+description: "MinIO S3-compatible object storage for local development"
+category: "Infrastructure"
+archetypes:
+  - service
+  - poly_repo
+requires_groups:
+  - s3
+platform_filter: null
+
+dependencies: {}
+
+scaffolded_files: []
+
+pyproject_tool_config: {}

@@ -25,7 +25,7 @@ pjkm install pjkm-django
 pjkm tui
 ```
 
-## Recipes (15 pre-configured combos)
+## Recipes (22 pre-configured combos)
 
 ```bash
 pjkm init my-lib      --recipe python-lib          # publish-ready library
@@ -43,6 +43,13 @@ pjkm init my-bot      --recipe discord-bot          # async bot
 pjkm init my-etl      --recipe etl-pipeline         # ETL with scheduling
 pjkm init my-saas     --recipe saas-backend         # multi-tenant SaaS
 pjkm init my-docs     --recipe document-processor   # doc ingestion pipeline
+pjkm init my-media    --recipe media-pipeline       # video/audio/image processing
+pjkm init my-rt       --recipe realtime-api         # WebSocket + SSE + rate limiting
+pjkm init my-files    --recipe file-service         # S3 uploads + thumbnails
+pjkm init my-crawler  --recipe scraper-full         # full scraping platform
+pjkm init my-tui      --recipe tui-app              # Textual terminal UI
+pjkm init my-rag      --recipe rag-service          # RAG API with vector store
+pjkm init my-agents   --recipe agent-platform       # multi-agent with eval
 ```
 
 ## What gets generated
@@ -156,33 +163,37 @@ Multi-tenant SaaS with everything:
 # - Full CI/CD with deploy workflows
 ```
 
-## Package Groups (83 across 8 categories)
+## Package Groups (105 across 8 categories)
 
 ```bash
 pjkm list groups    # see all groups organized by category
 pjkm info <group>   # detailed view of a specific group
 ```
 
-### Core Dev (21)
+### Core Dev (23)
 dev, dev_extended, linting, testing, testing_extended, typecheck, coverage, security,
 code_quality, profiling, debugging, refactoring, reporting, scripts, towncrier,
-pydantic_extra, config_mgmt, cli_rich, async_tools, http_client, logging
+pydantic_extra, config_mgmt, cli_rich, async_tools, http_client, logging,
+textual_tui, file_utils
 
-### AI / ML (16)
-langchain, langchain_providers, langgraph, hf, ml, torch, mcp_tools,
-dataviz, notebook, jupyter, search_tools, doc_parsing, vector_stores,
-translation, finance, image
+### AI / ML (29)
+langchain, langchain_providers, langgraph, hf, ml, torch, mcp_tools, agents,
+dataviz, notebook, jupyter, search_tools, doc_parsing, vector_stores, embeddings,
+rag, eval, langsmith, llm_providers, claude_sdk, openai_sdk, agent_protocols,
+guardrails, translation, finance, image, video, audio, ocr
 
-### Web & API (15)
+### Web & API (18)
 api, gateway, auth, graphql, grpc, web_scraping, crawling, streamlit,
-gradio, messaging, payments, error_tracking, websocket, email, pdf
+gradio, messaging, payments, error_tracking, websocket, email, pdf,
+file_upload, rate_limit, sse
 
 ### Data & Storage (9)
 database, redis, mongodb, kafka, rabbitmq, neo4j, elasticsearch, supabase, caching
 
-### Infrastructure (14)
+### Infrastructure (18)
 docker, k8s, nginx, otel, otel_instrumentations, monitoring, celery, airflow,
-aws, google_cloud, makefile, ci_cd, task_queue, scheduling
+aws, google_cloud, makefile, ci_cd, task_queue, scheduling, s3, minio,
+terraform, pulumi
 
 ### Frontend (2)
 frontend (Next.js + pnpm), frontend_vite (Vite + React + TS)
@@ -225,6 +236,23 @@ pjkm recommend service -p ai         # 19 AI-focused groups
 pjkm recommend service -p data       # 15 data science groups
 pjkm recommend service -p web        # 16 web/frontend groups
 ```
+
+## Workspace — Multi-Service Platforms
+
+```bash
+# Use a blueprint
+pjkm workspace my-platform --blueprint microservices    # api + worker + web + shared
+pjkm workspace my-platform --blueprint data-platform    # 8 services
+pjkm workspace my-platform --blueprint fullstack        # api + worker + web + integrations + shared
+
+# Or pick services
+pjkm workspace my-platform -s api:api -s scraper:scraper -s site:web -s shared:lib
+
+# Generates: VS Code workspace, docker-compose, Makefile, GitHub Actions CI
+# Then: code my-platform.code-workspace && make install && make up
+```
+
+Blueprints: microservices, data-platform, scraping-platform, ml-platform, fullstack
 
 ## CI Pipeline (15 workflows)
 
@@ -283,6 +311,13 @@ pjkm group sync [NAME]
 pjkm group source add URL [--name] [--path] [--ref]
 pjkm group source list
 pjkm group source remove NAME
+
+# Adopt existing projects
+pjkm adopt [--dir DIR] [--apply]
+pjkm status [--dir DIR]
+
+# Workspace (multi-service platforms)
+pjkm workspace NAME [-s name:template...] [--blueprint NAME] [--dry-run]
 
 # Config
 pjkm defaults [--init] [--global]

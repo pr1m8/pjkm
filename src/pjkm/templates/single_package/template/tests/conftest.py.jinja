@@ -1,1 +1,27 @@
 """Shared test fixtures for {{ project_name }}."""
+
+from __future__ import annotations
+
+import pytest
+{% if "api" in groups %}
+
+
+@pytest.fixture
+def app():
+    """Create a test FastAPI application."""
+    from {{ project_slug }}.api.app import create_app
+
+    return create_app()
+
+
+@pytest.fixture
+async def client(app):
+    """Async HTTP test client."""
+    from httpx import ASGITransport, AsyncClient
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        yield ac
+{% endif %}

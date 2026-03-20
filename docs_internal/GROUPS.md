@@ -65,7 +65,7 @@ pyproject_tool_config: # merged into [tool.*] sections via _deep_merge
 
 All fields except `id`, `name`, and `description` are optional. Defaults: `archetypes: []`, `requires_groups: []`, `platform_filter: null`, `dependencies: {}`, `scaffolded_files: []`, `pyproject_tool_config: {}`.
 
-## Current Built-in Groups (83)
+## Current Built-in Groups (105)
 
 ### Development & Quality (10)
 

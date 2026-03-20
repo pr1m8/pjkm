@@ -4,8 +4,9 @@ Python project scaffolder with composable templates, 91 package groups, and a co
 
 ## Features
 
-- **91 package groups** across 8 categories — API, database, Redis, auth, ML, LangChain, Docker, K8s, and more
-- **18 recipes** — one command to scaffold a FastAPI service, AI agent, SaaS backend, ML pipeline, etc.
+- **105 package groups** across 8 categories — API, database, Redis, auth, ML, LangChain, Docker, K8s, and more
+- **22 recipes** — one command to scaffold a FastAPI service, AI agent, SaaS backend, ML pipeline, etc.
+- **Workspace command** — scaffold multi-service platforms with shared infra, VS Code workspace, docker-compose
 - **Group-aware templates** — fragments auto-wire based on what you select (DB + Redis + auth = fully connected app)
 - **Source code scaffolding** — generates real Python modules, not just dependency lists
 - **Community registry** — `pjkm search django` / `pjkm install pjkm-django`
@@ -68,6 +69,10 @@ pjkm init myapp --recipe <name>
 | `media-pipeline` | Video/audio/image processing with ffmpeg |
 | `realtime-api` | WebSocket + SSE + rate limiting |
 | `file-service` | S3 uploads with thumbnails and metadata |
+| `scraper-full` | Full scraping platform with MinIO, Celery, Prometheus |
+| `tui-app` | Textual terminal UI with async + config |
+| `rag-service` | RAG API with vector store, embeddings, doc ingestion |
+| `agent-platform` | Multi-agent with eval, observability, monitoring |
 
 ## What gets generated
 
@@ -116,10 +121,10 @@ pjkm info <group>   # detailed view
 
 | Category | Groups | Examples |
 |----------|--------|---------|
-| Core Dev (22) | dev, linting, testing, typecheck, coverage, security, ... | code quality, profiling, CLI toolkit |
-| AI / ML (19) | langchain, ml, torch, hf, vector_stores, ... | video, audio, OCR, image |
+| Core Dev (23) | dev, linting, testing, typecheck, coverage, security, ... | code quality, profiling, Textual TUI |
+| AI / ML (29) | langchain, langgraph, agents, hf, ml, torch, ... | RAG, eval, embeddings, guardrails, MCP |
 | Web & API (18) | api, auth, websocket, sse, rate_limit, ... | payments, email, file upload |
-| Infrastructure (15) | docker, k8s, otel, celery, ci_cd, s3, ... | scheduling, task queue |
+| Infrastructure (18) | docker, k8s, otel, celery, ci_cd, s3, ... | terraform, pulumi, MinIO |
 | Data & Storage (9) | database, redis, mongodb, kafka, elasticsearch, ... | caching, neo4j |
 | Docs & Meta (4) | docs, docs_mkdocs, github_templates, submodules | |
 | Frontend (2) | frontend (Next.js), frontend_vite (Vite+React) | |
@@ -190,6 +195,10 @@ pjkm install PACK
 pjkm uninstall PACK
 pjkm installed
 
+pjkm adopt [--dir DIR] [--apply]
+pjkm status [--dir DIR]
+pjkm workspace NAME [-s name:template...] [--blueprint NAME]
+
 pjkm group create|import|validate|list|sync
 pjkm group source add|list|remove
 
@@ -203,7 +212,7 @@ pjkm tui
 git clone https://github.com/pr1m8/pjkm
 cd pjkm
 pdm install -G dev
-pdm run pytest        # 176 tests
+pdm run pytest        # 197 tests
 pdm run ruff check .
 ```
 
@@ -213,8 +222,8 @@ See [`docs_internal/`](docs_internal/) and [`CLAUDE.md`](CLAUDE.md) for internal
 
 - [ARCHITECTURE.md](docs_internal/ARCHITECTURE.md) — package layout, execution flow
 - [TASKS.md](docs_internal/TASKS.md) — DAG task system, 9 built-in tasks
-- [GROUPS.md](docs_internal/GROUPS.md) — group schema, 91 groups
-- [TEMPLATES.md](docs_internal/TEMPLATES.md) — template layers, 33 fragments
+- [GROUPS.md](docs_internal/GROUPS.md) — group schema, 105 groups
+- [TEMPLATES.md](docs_internal/TEMPLATES.md) — template layers, 34 fragments
 - [PACK_AUTHORING.md](docs_internal/PACK_AUTHORING.md) — create and publish group packs
 
 ## License

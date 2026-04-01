@@ -1,0 +1,34 @@
+"""Health endpoint tests."""
+
+from __future__ import annotations
+
+import pytest
+
+
+@pytest.mark.asyncio
+async def test_health(client):
+    """GET /health returns 200."""
+    response = await client.get("/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+
+@pytest.mark.asyncio
+async def test_ready(client):
+    """GET /ready returns 200 with checks dict."""
+    response = await client.get("/ready")
+    assert response.status_code == 200
+    data = response.json()
+    assert "status" in data
+    assert "checks" in data
+
+
+@pytest.mark.asyncio
+async def test_v1_root(client):
+    """GET /api/v1/ returns API info."""
+    response = await client.get("/api/v1/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["api"] == "v1"
+    assert data["service"] == "{{ project_name }}"

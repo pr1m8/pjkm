@@ -1,0 +1,42 @@
+# pjkm defaults — loaded automatically by `pjkm init`
+# Place at ~/.pjkmrc.yaml (global) or ./.pjkmrc.yaml (project-local)
+# Local overrides global. CLI flags override both.
+#
+# Create with: pjkm defaults --init
+# View current: pjkm defaults
+
+# --- Author info (used in pyproject.toml, LICENSE, CONTRIBUTING) ---
+author_name: "Your Name"
+author_email: "you@example.com"
+license: "MIT"
+
+# --- Python version (used in pyproject.toml, CI workflows, Dockerfile) ---
+python_version: "3.13"
+
+# --- Default archetype (if not specified on CLI) ---
+archetype: "single-package"
+
+# --- Default groups (always applied unless overridden) ---
+groups:
+  - dev
+  - linting
+  - testing
+  - typecheck
+
+# --- Target directory for new projects ---
+target_dir: "."
+
+# --- GitHub integration ---
+github:
+  org: "mycompany"               # GitHub org (used in URLs, CODEOWNERS)
+  visibility: "private"           # "public" or "private"
+  remote: ""                      # custom GitHub Enterprise URL (blank = github.com)
+  create_repo: false              # auto-create repo with `gh repo create`
+  default_branch: "main"
+
+# --- Remote group sources (loaded alongside built-in groups) ---
+# group_sources:
+#   - url: https://github.com/team/shared-groups.git
+#     name: team-groups
+#     path: groups                # subdirectory with YAML files
+#     ref: main                   # branch/tag to track

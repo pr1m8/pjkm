@@ -137,6 +137,7 @@ RECIPES: dict[str, dict] = {
             "dev", "linting", "testing", "typecheck", "coverage", "security",
             "api", "auth", "database", "redis", "docker", "logging", "otel",
             "monitoring", "makefile", "github_templates", "error_tracking",
+            "docs",
         ],
     },
     "ai-agent": {
@@ -147,6 +148,7 @@ RECIPES: dict[str, dict] = {
             "langchain", "langchain_providers", "langgraph", "mcp_tools",
             "llm_providers", "vector_stores", "embeddings", "search_tools",
             "doc_parsing", "redis", "logging", "eval",
+            "docs",
         ],
     },
     "rag-service": {
@@ -157,6 +159,7 @@ RECIPES: dict[str, dict] = {
             "agents", "langchain", "langgraph", "rag", "vector_stores",
             "embeddings", "llm_providers", "doc_parsing", "database",
             "redis", "docker", "logging", "otel", "makefile",
+            "docs",
         ],
     },
     "agent-platform": {
@@ -168,6 +171,7 @@ RECIPES: dict[str, dict] = {
             "mcp_tools", "llm_providers", "vector_stores", "embeddings",
             "search_tools", "eval", "api", "database", "redis",
             "docker", "logging", "otel", "monitoring", "makefile",
+            "docs",
         ],
     },
     "ml-pipeline": {
@@ -203,6 +207,7 @@ RECIPES: dict[str, dict] = {
             "api", "auth", "gateway", "database", "redis", "docker", "nginx",
             "logging", "otel", "monitoring", "frontend", "frontend_vite",
             "makefile", "github_templates",
+            "docs",
         ],
     },
     "monorepo": {
@@ -232,6 +237,7 @@ RECIPES: dict[str, dict] = {
             "api", "auth", "database", "redis", "docker", "logging", "otel",
             "monitoring", "finance", "payments", "error_tracking", "makefile",
             "github_templates",
+            "docs",
         ],
     },
     "api-microservice": {
@@ -270,6 +276,7 @@ RECIPES: dict[str, dict] = {
             "otel", "monitoring", "payments", "email", "websocket",
             "scheduling", "error_tracking", "makefile", "github_templates",
             "ci_cd",
+            "docs",
         ],
     },
     "document-processor": {
@@ -318,6 +325,7 @@ RECIPES: dict[str, dict] = {
             "celery", "docker", "logging", "otel", "monitoring",
             "frontend", "makefile", "github_templates", "ci_cd",
             "error_tracking",
+            "docs",
         ],
     },
     "tui-app": {

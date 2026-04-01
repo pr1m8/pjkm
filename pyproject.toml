@@ -1,6 +1,6 @@
 [project]
 name = "pjkm"
-version = "0.1.0"
+version = "0.1.1"
 description = "Standardized Python project scaffolding for humans and AI agents — 105 composable groups, group-aware templates, MCP server, and a community registry"
 authors = [{ name = "Will", email = "will@pr1m8.dev" }]
 dependencies = [

@@ -313,6 +313,104 @@ def get_registry_resource() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Prompts
+# ---------------------------------------------------------------------------
+
+
+@mcp.prompt()
+def project_advisor(description: str) -> str:
+    """Recommend the best pjkm recipe and groups for a project.
+
+    Given a description of what the user wants to build, analyze the requirements
+    and suggest the optimal recipe, archetype, and groups.
+    """
+    from pjkm.cli.commands.recipes import RECIPES
+
+    recipe_list = "\n".join(
+        f"- {name} ({r['archetype']}, {len(r['groups'])} groups): {r['description']}"
+        for name, r in RECIPES.items()
+    )
+
+    return (
+        f"The user wants to build: {description}\n\n"
+        f"Available recipes:\n{recipe_list}\n\n"
+        f"Available group categories: Core Dev (23), AI/ML (29), Web & API (18), "
+        f"Infrastructure (18), Data & Storage (9), Frontend (2), Docs & Meta (4), Platform (2)\n\n"
+        f"Based on the description, recommend:\n"
+        f"1. The best matching recipe (or 'custom' if none fit)\n"
+        f"2. Any additional groups to add beyond the recipe\n"
+        f"3. The archetype if going custom\n"
+        f"4. Whether a workspace with multiple services would be better\n\n"
+        f"Use list_groups() and get_group_info() to explore specifics. "
+        f"Use preview_project() to show the user what they'd get before creating."
+    )
+
+
+@mcp.prompt()
+def architecture_advisor(requirements: str) -> str:
+    """Design a multi-service architecture using pjkm workspace blueprints.
+
+    Given system requirements, suggest a workspace layout with services,
+    shared libraries, and infrastructure.
+    """
+    return (
+        f"System requirements: {requirements}\n\n"
+        f"Available workspace blueprints:\n"
+        f"- microservices: api + worker + web + shared lib\n"
+        f"- data-platform: api + ingestion + warehouse + orchestration + quality + dashboards + events + shared\n"
+        f"- scraping-platform: api + scraper + worker + web + storage + shared\n"
+        f"- ml-platform: api + ml-service + worker + data + dashboards + shared + db-models\n"
+        f"- fullstack: api + worker + web + integrations + shared + db-pkg + observability\n\n"
+        f"Available service templates: api, worker, web, scraper, ml, integration, "
+        f"ingestion, warehouse, orchestration, quality, dashboards, analytics-events, "
+        f"lib, db-models, storage, observability, cli, tui\n\n"
+        f"Based on the requirements:\n"
+        f"1. Recommend a blueprint or custom service combination\n"
+        f"2. Explain the role of each service\n"
+        f"3. Describe the shared infrastructure (Postgres, Redis, etc.)\n"
+        f"4. Suggest which groups each service should have beyond defaults"
+    )
+
+
+@mcp.prompt()
+def agent_scaffold(agent_type: str = "general") -> str:
+    """Guide for scaffolding an AI agent project.
+
+    Provides step-by-step instructions for creating an agent with
+    the right groups, tools, and configuration.
+    """
+    return (
+        f"Agent type requested: {agent_type}\n\n"
+        f"Available AI/ML groups (29):\n"
+        f"- agents: LangGraph orchestration with tools + memory\n"
+        f"- langchain: LangChain core + providers\n"
+        f"- langgraph: LangGraph SDK + prebuilt + checkpointer\n"
+        f"- llm_providers: OpenAI, Anthropic, Google, Ollama, LiteLLM\n"
+        f"- claude_sdk / openai_sdk: Direct SDKs\n"
+        f"- mcp_tools: MCP protocol + adapters\n"
+        f"- agent_protocols: MCP + A2A/ACP interop\n"
+        f"- rag: Retrieval-augmented generation\n"
+        f"- vector_stores: Qdrant, Chroma, pgvector, FAISS\n"
+        f"- embeddings: sentence-transformers, tiktoken, Cohere\n"
+        f"- search_tools: Tavily, DuckDuckGo, SerpAPI\n"
+        f"- eval: LangSmith + ragas + deepeval\n"
+        f"- guardrails: output validation + safety\n"
+        f"- doc_parsing: PDF, DOCX, HTML parsing\n\n"
+        f"Relevant recipes:\n"
+        f"- ai-agent: single-package with LangGraph agent scaffolding\n"
+        f"- rag-service: API service with vector store + embeddings\n"
+        f"- agent-platform: multi-agent with eval + monitoring\n\n"
+        f"Steps:\n"
+        f"1. Use list_groups('AI / ML') to see all available groups\n"
+        f"2. Use preview_project(recipe='ai-agent') to see the output\n"
+        f"3. Use init_project() to create the project\n"
+        f"4. The agent scaffolding generates: graph.py (LangGraph), state.py (TypedDict), "
+        f"tools.py (@tool functions), prompts.py (ChatPromptTemplate)\n"
+        f"5. Set LLM_PROVIDER=anthropic and ANTHROPIC_API_KEY in .env"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 

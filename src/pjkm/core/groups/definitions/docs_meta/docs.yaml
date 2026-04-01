@@ -25,6 +25,7 @@ dependencies:
     - "myst-parser>=4.0.0"
     - "towncrier>=24.8.0"
     - "furo>=2024.8.0"
+    - "sphinx-autoapi>=3.4.0"
 
 scaffolded_files:
   - template_fragment: "docs_sphinx"

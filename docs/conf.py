@@ -1,15 +1,13 @@
 # Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import datetime
 
 # -- Project information -----------------------------------------------------
 
-project = "{{ project_name }}"
-author = "{{ author_name }}"
+project = "pjkm"
+author = "pr1m8"
 copyright = f"{datetime.datetime.now().year}, {author}"
+release = "0.1.0"
 
 # -- General configuration ---------------------------------------------------
 
@@ -28,10 +26,21 @@ extensions = [
     "myst_parser",
 ]
 
+# -- AutoAPI settings --------------------------------------------------------
+
+autoapi_type = "python"
+autoapi_dirs = ["../src/pjkm"]
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "imported-members",
+]
+autoapi_keep_files = True
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-
-# -- Source settings ---------------------------------------------------------
 
 source_suffix = {
     ".rst": "restructuredtext",
@@ -43,37 +52,17 @@ source_suffix = {
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = True
-napoleon_include_private_with_doc = True
-napoleon_include_special_with_doc = True
 
 # -- Autodoc settings --------------------------------------------------------
 
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
-autodoc_class_signature = "separated"
 
 # -- Intersphinx settings ----------------------------------------------------
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/{{ python_version }}", None),
+    "python": ("https://docs.python.org/3.13", None),
 }
-
-# -- Todo settings -----------------------------------------------------------
-
-todo_include_todos = True
-
-# -- HTML output -------------------------------------------------------------
-
-# -- AutoAPI settings --------------------------------------------------------
-
-autoapi_type = "python"
-autoapi_dirs = ["../src/{{ project_slug }}"]
-autoapi_options = [
-    "members",
-    "undoc-members",
-    "show-inheritance",
-    "show-module-summary",
-]
 
 # -- MyST settings -----------------------------------------------------------
 
@@ -86,6 +75,10 @@ myst_enable_extensions = [
 # -- HTML output -------------------------------------------------------------
 
 html_theme = "furo"
-html_theme_options = {}
+html_title = "pjkm"
+html_theme_options = {
+    "source_repository": "https://github.com/pr1m8/pjkm",
+    "source_branch": "main",
+    "source_directory": "docs/",
+}
 html_static_path = ["_static"]
-html_css_files = []

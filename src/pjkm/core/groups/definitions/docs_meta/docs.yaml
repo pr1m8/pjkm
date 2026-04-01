@@ -14,9 +14,17 @@ dependencies:
     - "sphinx-rtd-theme>=3.0.0"
     - "sphinx-copybutton>=0.5.0"
     - "sphinx-design>=0.6.0"
+    - "sphinx-inline-tabs>=2023.4.0"
+    - "sphinx-togglebutton>=0.3.0"
+    - "sphinx-favicon>=1.0.0"
+    - "sphinx-last-updated-by-git>=0.3.0"
+    - "sphinx-notfound-page>=1.0.0"
     - "sphinxcontrib-mermaid>=1.0.0"
+    - "sphinxcontrib-programoutput>=0.18"
+    - "sphinxext-opengraph>=0.9.0"
     - "myst-parser>=4.0.0"
     - "towncrier>=24.8.0"
+    - "furo>=2024.8.0"
 
 scaffolded_files:
   - template_fragment: "docs_sphinx"

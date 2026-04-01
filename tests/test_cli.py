@@ -561,6 +561,40 @@ class TestRecipeCommand:
         assert "async_tools" in result.stdout
 
 
+class TestRecipeCreateCommand:
+    """Test the recipe-create command."""
+
+    def test_recipe_create(self, tmp_path):
+        result = runner.invoke(
+            app,
+            [
+                "recipe-create", "my-stack",
+                "-a", "service",
+                "-g", "api", "-g", "database",
+                "-o", str(tmp_path / "my_stack.yaml"),
+            ],
+        )
+        assert result.exit_code == 0
+        assert "Created recipe" in result.stdout
+        assert (tmp_path / "my_stack.yaml").exists()
+
+    def test_recipe_create_no_groups(self):
+        result = runner.invoke(
+            app, ["recipe-create", "empty-recipe"],
+        )
+        assert result.exit_code != 0
+        assert "At least one group" in result.stdout
+
+    def test_recipe_create_default_dir(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        result = runner.invoke(
+            app,
+            ["recipe-create", "test-recipe", "-g", "api", "-g", "docker"],
+        )
+        assert result.exit_code == 0
+        assert (tmp_path / ".pjkm" / "recipes" / "test_recipe.yaml").exists()
+
+
 class TestPreviewCommand:
     """Test the preview command."""
 

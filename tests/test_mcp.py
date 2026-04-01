@@ -77,3 +77,47 @@ class TestMCPToolFunctions:
         from pjkm.mcp.server import mcp
 
         assert mcp.name == "pjkm"
+
+    def test_adopt_project_empty(self, tmp_path):
+        from pjkm.mcp.server import adopt_project
+
+        result = adopt_project(directory=str(tmp_path))
+        assert "No recognizable" in result
+
+    def test_project_status_no_project(self, tmp_path):
+        from pjkm.mcp.server import project_status
+
+        result = project_status(directory=str(tmp_path))
+        assert "pyproject.toml" in result
+
+    def test_add_groups_no_project(self, tmp_path):
+        from pjkm.mcp.server import add_groups
+
+        result = add_groups(groups=["api"], directory=str(tmp_path))
+        assert "pyproject.toml" in result
+
+    def test_preview_custom(self):
+        from pjkm.mcp.server import preview_project
+
+        result = preview_project(archetype="single-package", groups=["dev"])
+        assert "Preview" in result or "single" in result
+
+    def test_resources(self):
+        from pjkm.mcp.server import (
+            get_recipes_resource, get_groups_resource,
+            get_registry_resource, get_group_resource,
+        )
+
+        assert "fastapi-service" in get_recipes_resource()
+        assert "Core Dev" in get_groups_resource()
+        assert "pjkm-django" in get_registry_resource()
+        assert "fastapi" in get_group_resource("api").lower()
+
+    def test_prompts(self):
+        from pjkm.mcp.server import (
+            project_advisor, architecture_advisor, agent_scaffold,
+        )
+
+        assert "recipe" in project_advisor("a REST API").lower()
+        assert "blueprint" in architecture_advisor("microservices").lower()
+        assert "LangGraph" in agent_scaffold("rag")

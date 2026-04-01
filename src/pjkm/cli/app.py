@@ -62,6 +62,7 @@ app.command()(info.doctor)
 # Discovery / recipes
 app.command()(recipes.recommend)
 app.command()(recipes.recipe)
+app.command(name="recipe-create")(recipes.recipe_create)
 
 # Configuration
 app.command()(config.tui)

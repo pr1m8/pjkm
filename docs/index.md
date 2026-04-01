@@ -11,6 +11,7 @@ Build fully configured, production-ready Python projects in one command. 105 com
 quickstart
 recipes
 presets
+agents
 ```
 
 ```{toctree}

@@ -2,7 +2,10 @@
 
 # pjkm
 
-**Python project scaffolder with composable templates, 105 package groups, and a community registry.**
+**Standardized Python project scaffolding for humans and AI agents.**
+
+Create production-ready Python projects in one command — with real source code, not skeletons.
+105 composable groups, 22 recipes, an MCP server, and group-aware templates that auto-wire.
 
 [![CI](https://github.com/pr1m8/pjkm/actions/workflows/ci.yml/badge.svg)](https://github.com/pr1m8/pjkm/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/pr1m8/pjkm/graph/badge.svg)](https://codecov.io/gh/pr1m8/pjkm)
@@ -11,7 +14,7 @@
 [![License](https://img.shields.io/github/license/pr1m8/pjkm)](LICENSE)
 [![Docs](https://readthedocs.org/projects/pjkm/badge/?version=latest)](https://pjkm.readthedocs.io)
 
-[Quick Start](#quick-start) · [Recipes](#recipes-22) · [Groups](#package-groups-105) · [Workspace](#workspace) · [Docs](https://pjkm.readthedocs.io)
+[Quick Start](#quick-start) · [AI Agents](#for-ai-agents) · [Recipes](#recipes-22) · [Groups](#package-groups-105) · [MCP Server](#mcp-server) · [Docs](https://pjkm.readthedocs.io)
 
 </div>
 
@@ -19,14 +22,98 @@
 
 ## Why pjkm?
 
-Most project generators give you a skeleton. pjkm gives you a **running application**.
+Most scaffolders generate empty skeletons. pjkm generates **wired, running applications** — and it works for both humans and AI agents.
 
-Pick `api + database + redis + auth` and you get a FastAPI app where the lifespan connects your DB, health checks ping Redis, settings read from `.env`, and test fixtures match your stack. Not placeholder comments — real wired code.
+Pick `api + database + redis + auth` and you get a FastAPI app where the lifespan connects your DB, health checks ping Redis, settings read from `.env`, and test fixtures match your stack. Not placeholder comments — real code.
 
 ```bash
+pip install pjkm
 pjkm init my-api --recipe fastapi-service
 cd my-api && python -m my_api   # → http://localhost:8000/docs
 ```
+
+## For AI Agents
+
+pjkm is designed as **infrastructure for AI coding agents**. It provides the standardized project structures that agents need to operate in sandboxes:
+
+- **Predictable layout** — agents know where code goes (`src/*/api/app.py`, `src/*/core/settings.py`)
+- **Known entry points** — `python -m <project>` always starts the app
+- **Typed configuration** — Pydantic Settings, not raw env vars
+- **Health checks** — `/health` and `/ready` for sandbox orchestration
+- **Test fixtures** — `conftest.py` with async client, DB session, Redis client
+- **Reproducible** — same recipe = same output, every time
+
+### MCP Server
+
+pjkm exposes its full engine as an MCP server. AI agents can scaffold projects programmatically:
+
+```bash
+pip install pjkm[mcp]
+python -m pjkm.mcp        # stdio server for Claude Desktop
+pjkm-mcp                  # same thing
+```
+
+**Claude Desktop** — add to config:
+```json
+{"mcpServers": {"pjkm": {"command": "python", "args": ["-m", "pjkm.mcp"]}}}
+```
+
+**LangChain / LangGraph**:
+```python
+from langchain_mcp_adapters import MultiServerMCPClient
+
+async with MultiServerMCPClient(
+    {"pjkm": {"command": "python", "args": ["-m", "pjkm.mcp"]}}
+) as client:
+    tools = client.get_tools()
+    # Agent can now: init_project, list_recipes, add_groups, preview, adopt
+```
+
+**10 MCP tools**: `init_project`, `add_groups`, `preview_project`, `list_recipes`, `list_groups`, `get_group_info`, `search_registry`, `adopt_project`, `project_status`, `create_recipe`
+
+**7 MCP resources**: `pjkm://recipes`, `pjkm://groups`, `pjkm://groups/{id}`, `pjkm://registry`, `pjkm://archetypes`, `pjkm://blueprints`, `pjkm://categories`
+
+**3 MCP prompts**: `project_advisor`, `architecture_advisor`, `agent_scaffold`
+
+### Agent Recipes
+
+```bash
+pjkm init my-agent    --recipe ai-agent          # LangGraph agent with tools + memory
+pjkm init my-rag      --recipe rag-service        # RAG API with vector store + embeddings
+pjkm init my-platform --recipe agent-platform     # multi-agent with eval + monitoring
+```
+
+The `ai-agent` recipe generates a complete LangGraph agent:
+
+```
+src/my_agent/agent/
+├── graph.py       # StateGraph with tool calling, routing, loop protection
+├── state.py       # TypedDict state with message history
+├── tools.py       # @tool functions (auto-includes search if selected)
+└── prompts.py     # ChatPromptTemplate collection
+```
+
+### 29 AI/ML Groups
+
+| Group | What it provides |
+|-------|-----------------|
+| `agents` | LangGraph agent orchestration with tools + memory |
+| `langchain` | LangChain core + OpenAI/Anthropic/HF providers |
+| `langgraph` | LangGraph SDK + prebuilt + checkpointer + langmem |
+| `llm_providers` | OpenAI, Anthropic, Google, Ollama, LiteLLM, Instructor |
+| `claude_sdk` | Anthropic SDK with tool use, batches, streaming |
+| `openai_sdk` | OpenAI SDK with assistants, structured outputs |
+| `mcp_tools` | MCP protocol + langchain adapters |
+| `agent_protocols` | MCP + A2A/ACP + SSE for agent interop |
+| `rag` | Retrieval-augmented generation pipeline |
+| `vector_stores` | Qdrant, Chroma, pgvector, FAISS, BM25 |
+| `embeddings` | sentence-transformers, tiktoken, Cohere, Voyage |
+| `search_tools` | Tavily, DuckDuckGo, SerpAPI, Wikipedia, arXiv |
+| `eval` | LangSmith + ragas + deepeval |
+| `guardrails` | Guardrails AI + NeMo Guardrails |
+| `hf` | HuggingFace Hub, Transformers, Datasets, PEFT |
+| `torch` | PyTorch + torchvision + torchaudio |
+| `ml` | scikit-learn, XGBoost, LightGBM, ONNX, pandas, polars |
 
 ## Features
 
@@ -35,19 +122,12 @@ cd my-api && python -m my_api   # → http://localhost:8000/docs
 | **105 groups** | Composable dependency + code bundles across 8 categories |
 | **22 recipes** | One command → fully configured project |
 | **Group-aware templates** | Fragments auto-wire based on selection |
-| **Real source code** | API routes, DB models, auth, Redis client — not stubs |
+| **Real source code** | API routes, DB models, auth, Redis, LangGraph agent — not stubs |
+| **MCP server** | AI agents scaffold projects via Model Context Protocol |
 | **22 CI workflows** | Test, lint, Docker, CodeQL, deploy, auto-merge |
 | **Community registry** | `pjkm search` / `pjkm install` |
 | **Workspace** | Multi-service platforms with shared infra |
 | **Adopt** | Scan existing projects, suggest groups |
-| **18 Sphinx extensions** | AutoAPI, Furo, mermaid, copybutton |
-| **CLI + TUI** | Typer CLI and Textual interactive wizard |
-
-## Install
-
-```bash
-pip install pjkm
-```
 
 ## Quick Start
 
@@ -74,6 +154,7 @@ pjkm tui
 pjkm recipe                          # browse all
 pjkm recipe ai-agent --show          # details
 pjkm init myapp --recipe <name>      # create
+pjkm recipe-create my-stack -g api -g database -g redis   # save custom recipe
 ```
 
 <details>
@@ -211,28 +292,34 @@ github:
   create_repo: true
 ```
 
+## CLI Reference
+
+```
+pjkm init NAME [-a ARCH] [-g GROUP...] [--recipe NAME] [--dry-run]
+pjkm add -g GROUP... [-d DIR]
+pjkm update | upgrade | link TOOL
+pjkm preview [ARCH] [-g GROUP...] [--recipe NAME]
+pjkm adopt [--apply] | status
+pjkm workspace NAME [--blueprint NAME | -s name:template...]
+pjkm list [archetypes|groups] | info GROUP | doctor
+pjkm recipe [NAME] [--show] | recipe-create NAME -g GROUP...
+pjkm recommend ARCH [--preset NAME]
+pjkm search [QUERY] | install PACK | uninstall PACK | installed
+pjkm group create|import|validate|list|sync
+pjkm group source add|list|remove
+pjkm defaults [--init] | tui
+```
+
 ## Development
 
 ```bash
 git clone https://github.com/pr1m8/pjkm
 cd pjkm
-pdm install -G dev -G docs
-pdm run pytest                    # 197 tests
+pdm install -G dev -G mcp -G docs
+pdm run pytest                    # 231 tests
 pdm run ruff check src tests
 pdm run sphinx-build docs/ docs/_build/html
 ```
-
-## Documentation
-
-Full docs at [**pjkm.readthedocs.io**](https://pjkm.readthedocs.io):
-
-- [Quick Start](https://pjkm.readthedocs.io/en/latest/quickstart.html)
-- [Recipes](https://pjkm.readthedocs.io/en/latest/recipes.html)
-- [Groups](https://pjkm.readthedocs.io/en/latest/groups.html)
-- [Templates](https://pjkm.readthedocs.io/en/latest/templates.html)
-- [Workspace](https://pjkm.readthedocs.io/en/latest/workspace.html)
-- [Pack Authoring](https://pjkm.readthedocs.io/en/latest/pack-authoring.html)
-- [API Reference](https://pjkm.readthedocs.io/en/latest/autoapi/index.html)
 
 ## License
 

@@ -20,9 +20,23 @@ Create production-ready Python projects in one command — with real source code
 
 ---
 
+## Why Standardization Matters
+
+Every team reinvents project structure. Every agent guesses where files go. The result: inconsistent repos, broken assumptions, wasted time.
+
+pjkm solves this with **composable, standardized templates** that produce the same predictable structure every time — whether a human runs `pjkm init` or an AI agent calls the MCP server.
+
+**What standardization gives you:**
+
+- **Every project works the same way** — `python -m <project>` starts it, `pdm run test` tests it, `GET /health` checks it
+- **Teams onboard instantly** — new repo, same patterns, same tools, same CI
+- **AI agents can navigate code** — `src/*/api/app.py` is always the FastAPI factory, `src/*/core/settings.py` is always Pydantic Settings
+- **Composable, not rigid** — pick only the groups you need; templates adapt to your selection
+- **One source of truth** — group definitions are YAML, not scattered configs across repos
+
 ## Why pjkm?
 
-Most scaffolders generate empty skeletons. pjkm generates **wired, running applications** — and it works for both humans and AI agents.
+Most scaffolders generate empty skeletons. pjkm generates **wired, running applications**.
 
 Pick `api + database + redis + auth` and you get a FastAPI app where the lifespan connects your DB, health checks ping Redis, settings read from `.env`, and test fixtures match your stack. Not placeholder comments — real code.
 
@@ -34,7 +48,7 @@ cd my-api && python -m my_api   # → http://localhost:8000/docs
 
 ## For AI Agents
 
-pjkm is designed as **infrastructure for AI coding agents**. It provides the standardized project structures that agents need to operate in sandboxes:
+pjkm is designed as **infrastructure for AI coding agents**. It provides the standardized project structures that agents need to operate reliably in sandboxes:
 
 - **Predictable layout** — agents know where code goes (`src/*/api/app.py`, `src/*/core/settings.py`)
 - **Known entry points** — `python -m <project>` always starts the app

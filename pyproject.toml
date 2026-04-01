@@ -1,7 +1,7 @@
 [project]
 name = "pjkm"
 version = "0.1.0"
-description = "Python project builder with DAG-based task system, Copier templates, and Textual TUI"
+description = "Standardized Python project scaffolding for humans and AI agents — 105 composable groups, group-aware templates, MCP server, and a community registry"
 authors = [{ name = "Will", email = "will@pr1m8.dev" }]
 dependencies = [
   "pydantic>=2.12.5",
@@ -17,14 +17,26 @@ dependencies = [
 requires-python = ">=3.13"
 readme = "README.md"
 license = { text = "MIT" }
-keywords = ["scaffolding", "project-builder", "copier", "template", "cli"]
+keywords = [
+  "scaffolding",
+  "project-template",
+  "code-generation",
+  "copier",
+  "mcp",
+  "ai-agents",
+  "langchain",
+  "langgraph",
+  "fastapi",
+  "standardization",
+]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Environment :: Console",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
   "Typing :: Typed",
 ]
 
@@ -35,8 +47,9 @@ pjkm-mcp = "pjkm.mcp.server:main"
 [project.urls]
 Homepage = "https://github.com/pr1m8/pjkm"
 Repository = "https://github.com/pr1m8/pjkm"
+Documentation = "https://pjkm.readthedocs.io"
 Issues = "https://github.com/pr1m8/pjkm/issues"
-Documentation = "https://github.com/pr1m8/pjkm/tree/main/docs_internal"
+PyPI = "https://pypi.org/project/pjkm/"
 
 [project.optional-dependencies]
 dev = [

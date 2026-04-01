@@ -846,7 +846,7 @@ files = [
 
 [[package]]
 name = "langsmith"
-version = "0.7.23"
+version = "0.7.24"
 summary = ""
 dependencies = [
     "httpx",
@@ -860,8 +860,8 @@ dependencies = [
     "zstandard",
 ]
 files = [
-    {file = "langsmith-0.7.23-py3-none-any.whl", hash = "sha256:3d2ea8f973f7f01c8d89bb5f02b14a906e75ee893739bf4b19d74f7f26a510c3"},
-    {file = "langsmith-0.7.23.tar.gz", hash = "sha256:38581c4cb35794ad37df9d20912e0dd740f4ba619534971eee2e8419efede50d"},
+    {file = "langsmith-0.7.24-py3-none-any.whl", hash = "sha256:495077a1c8a31a903b65805d9d5943ccfd297c78d5dd360db377006b65dde033"},
+    {file = "langsmith-0.7.24.tar.gz", hash = "sha256:44ecd36b2dc8f36bc922d3eadf7f0ca5686ecc0e212d8fca85b2a306695a7376"},
 ]
 
 [[package]]

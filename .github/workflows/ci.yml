@@ -16,22 +16,16 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install PDM
-        run: pip install pdm
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: "3.13"
 
       - name: Install dependencies
-        run: pdm install -G dev
+        run: pdm install -G dev -G mcp
 
       - name: Run tests with coverage
         run: pdm run pytest --cov --cov-report=xml --cov-report=term-missing
@@ -42,24 +36,15 @@ jobs:
           file: coverage.xml
           fail_ci_if_error: false
 
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage.xml
-
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install PDM
+        uses: pdm-project/setup-pdm@v4
         with:
           python-version: "3.13"
-
-      - name: Install PDM
-        run: pip install pdm
 
       - name: Install dependencies
         run: pdm install -G dev
@@ -75,13 +60,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install PDM
+        uses: pdm-project/setup-pdm@v4
         with:
           python-version: "3.13"
-
-      - name: Install PDM
-        run: pip install pdm
 
       - name: Install dependencies
         run: pdm install -G dev -G docs

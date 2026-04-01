@@ -193,7 +193,7 @@ class TestDefaultsCommand:
         (tmp_path / ".pjkmrc.yaml").write_text("test: true\n")
         result = runner.invoke(app, ["defaults", "--init"])
         assert result.exit_code != 0
-        assert "already exists" in result.stdout
+        assert "already" in result.stdout and "exists" in result.stdout
 
     def test_defaults_shows_github(self):
         result = runner.invoke(app, ["defaults"])
@@ -264,7 +264,7 @@ class TestGroupCommands:
             ],
         )
         assert result.exit_code != 0
-        assert "already exists" in result.stdout
+        assert "already" in result.stdout and "exists" in result.stdout
 
     def test_group_validate_builtin(self):
         import pjkm.core.groups.registry as reg

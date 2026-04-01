@@ -1,0 +1,27 @@
+"""Settings tests."""
+
+from __future__ import annotations
+
+from {{ project_slug }}.core.settings import Settings, get_settings
+
+
+def test_settings_defaults():
+    """Settings loads with defaults."""
+    settings = Settings()
+    assert settings.app_name == "{{ project_name }}"
+    assert settings.port == 8000
+    assert settings.log_level == "INFO"
+
+
+def test_settings_is_development():
+    """Development mode by default."""
+    settings = Settings()
+    assert settings.is_development
+    assert not settings.is_production
+
+
+def test_get_settings_cached():
+    """get_settings returns same instance (cached)."""
+    s1 = get_settings()
+    s2 = get_settings()
+    assert s1 is s2

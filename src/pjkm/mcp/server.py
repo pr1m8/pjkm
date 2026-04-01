@@ -249,6 +249,41 @@ def search_registry(query: str = "") -> str:
 
 
 @mcp.tool
+def create_recipe(
+    name: str,
+    archetype: str,
+    groups: list[str],
+    description: str = "",
+    directory: str = ".",
+) -> str:
+    """Create a custom recipe YAML file for reuse.
+
+    Saves a recipe definition that can be shared via git or group sources.
+
+    Args:
+        name: Recipe name (e.g. "my-stack")
+        archetype: single-package, service, poly-repo, or script-tool
+        groups: List of group IDs to include
+        description: Human-readable description
+        directory: Where to save (default: .pjkm/recipes/)
+    """
+    from typer.testing import CliRunner
+    from pjkm.cli.app import app
+
+    runner = CliRunner()
+    args = ["recipe-create", name, "-a", archetype]
+    for g in groups:
+        args.extend(["-g", g])
+    if description:
+        args.extend(["-d", description])
+    if directory != ".":
+        args.extend(["-o", f"{directory}/{name.replace('-', '_')}.yaml"])
+
+    result = runner.invoke(app, args)
+    return result.stdout
+
+
+@mcp.tool
 def adopt_project(directory: str = ".") -> str:
     """Scan an existing project and suggest pjkm groups to adopt.
 
@@ -310,6 +345,54 @@ def get_group_resource(group_id: str) -> str:
 def get_registry_resource() -> str:
     """Community group pack registry."""
     return search_registry()
+
+
+@mcp.resource("pjkm://archetypes")
+def get_archetypes_resource() -> str:
+    """Available project archetypes."""
+    return (
+        "## Archetypes\n\n"
+        "- **single-package**: Standalone Python library with src layout, tests, py.typed\n"
+        "- **service**: Deployable service with Docker, Makefile, infra/, .env, .secrets\n"
+        "- **poly-repo**: Multi-package monorepo with packages/, tools/, shared infra\n"
+        "- **script-tool**: CLI tool with Typer, __main__.py, entry points\n"
+    )
+
+
+@mcp.resource("pjkm://blueprints")
+def get_blueprints_resource() -> str:
+    """Workspace blueprints for multi-service platforms."""
+    from pjkm.cli.commands.workspace import PLATFORM_BLUEPRINTS, SERVICE_TEMPLATES
+
+    lines = ["## Workspace Blueprints\n"]
+    for bp_name, bp_services in PLATFORM_BLUEPRINTS.items():
+        svc_names = [s.split(":")[0] for s in bp_services]
+        lines.append(f"### {bp_name}\nServices: {', '.join(svc_names)}\n")
+
+    lines.append("\n## Service Templates\n")
+    for tname, tdata in SERVICE_TEMPLATES.items():
+        lines.append(f"- **{tname}** ({tdata['archetype']}): {tdata['description']}")
+
+    return "\n".join(lines)
+
+
+@mcp.resource("pjkm://categories")
+def get_categories_resource() -> str:
+    """Group categories with counts."""
+    from pjkm.core.groups.registry import GroupRegistry
+
+    registry = GroupRegistry()
+    registry.load_all()
+
+    cats: dict[str, int] = {}
+    for g in registry.list_all():
+        cats[g.category] = cats.get(g.category, 0) + 1
+
+    lines = ["## Group Categories\n"]
+    for cat, count in sorted(cats.items(), key=lambda x: -x[1]):
+        lines.append(f"- **{cat}**: {count} groups")
+    lines.append(f"\n**Total: {sum(cats.values())} groups**")
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------

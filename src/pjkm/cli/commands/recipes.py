@@ -495,3 +495,69 @@ def recipe(
     console.print(
         f"  pjkm init my-project -a {archetype} {groups_str}"
     )
+
+
+def recipe_create(
+    name: str = typer.Argument(help="Recipe name (e.g. my-stack)"),
+    archetype: str = typer.Option(
+        "service", "--archetype", "-a",
+        help="Archetype: single-package, service, poly-repo, script-tool",
+    ),
+    group: list[str] = typer.Option(
+        [], "--group", "-g",
+        help="Groups to include (repeatable)",
+    ),
+    description: str = typer.Option(
+        "", "--description", "-d",
+        help="Recipe description",
+    ),
+    output: str = typer.Option(
+        "", "--output", "-o",
+        help="Output file (default: .pjkm/recipes/<name>.yaml)",
+    ),
+) -> None:
+    """Create a custom recipe and save it for reuse.
+
+    Custom recipes are saved to .pjkm/recipes/ and loaded alongside
+    built-in recipes. Share them via git or group sources.
+
+    Examples:
+
+      pjkm recipe-create my-stack -a service -g api -g database -g redis -g docker
+      pjkm recipe-create ai-rag -a service -g agents -g rag -g vector_stores -g api
+    """
+    from pathlib import Path
+
+    import yaml
+    from rich.console import Console
+
+    console = Console()
+
+    if not group:
+        console.print("[red]At least one group is required (use -g)[/red]")
+        raise typer.Exit(1)
+
+    recipe_data = {
+        "name": name,
+        "description": description or f"Custom recipe: {name}",
+        "archetype": archetype,
+        "groups": list(group),
+    }
+
+    if output:
+        out_path = Path(output)
+    else:
+        out_path = Path.cwd() / ".pjkm" / "recipes" / f"{name.replace('-', '_')}.yaml"
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as f:
+        yaml.dump(recipe_data, f, default_flow_style=False, sort_keys=False)
+
+    console.print(f"[green]Created recipe: {out_path}[/green]")
+    console.print(f"  Name: [cyan]{name}[/cyan]")
+    console.print(f"  Archetype: {archetype}")
+    console.print(f"  Groups ({len(group)}): {', '.join(group)}")
+    console.print()
+    console.print("[dim]Use it:[/dim]")
+    groups_str = " ".join(f"-g {g}" for g in group)
+    console.print(f"  pjkm init my-project -a {archetype} {groups_str}")

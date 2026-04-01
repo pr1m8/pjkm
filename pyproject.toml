@@ -104,9 +104,16 @@ exclude = ["tests", "docs"]
 [tool.coverage.run]
 source = ["src/pjkm"]
 branch = true
+omit = [
+  "src/pjkm/templates/*",
+  "src/pjkm/tui/*",
+  "src/pjkm/__main__.py",
+  "src/pjkm/mcp/__main__.py",
+]
 
 [tool.coverage.report]
 show_missing = true
+fail_under = 78
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "if __name__"]
 
 [tool.ruff.format]

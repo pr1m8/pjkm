@@ -6,8 +6,14 @@ import typer
 
 # Display order for group categories (category is now a field in each group YAML)
 CATEGORY_ORDER = [
-    "Core Dev", "AI / ML", "Web & API", "Data & Storage",
-    "Infrastructure", "Frontend", "Docs & Meta", "Platform",
+    "Core Dev",
+    "AI / ML",
+    "Web & API",
+    "Data & Storage",
+    "Infrastructure",
+    "Frontend",
+    "Docs & Meta",
+    "Platform",
 ]
 
 FIX_HINTS: dict[str, str] = {
@@ -44,9 +50,7 @@ def list_cmd(
         table.add_column("Description")
         table.add_row("single_package", "Standalone Python package with src layout")
         table.add_row("service", "Service repo with infra, Docker Compose, Makefile")
-        table.add_row(
-            "poly_repo", "Multi-package repo with submodules and shared infra"
-        )
+        table.add_row("poly_repo", "Multi-package repo with submodules and shared infra")
         table.add_row("script_tool", "Lightweight CLI tool or script")
         console.print(table)
     elif what == "groups":
@@ -100,9 +104,7 @@ def info(
         console.print(f"Available: {', '.join(sorted(registry.group_ids))}")
         raise typer.Exit(1)
 
-    console.print(
-        Panel(f"[bold]{group.name}[/bold]\n{group.description}", title=group.id)
-    )
+    console.print(Panel(f"[bold]{group.name}[/bold]\n{group.description}", title=group.id))
     console.print()
 
     if group.archetypes:
@@ -177,9 +179,7 @@ def doctor() -> None:
 
     def _get_version(cmd: list[str]) -> str:
         try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=5
-            )
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
             return result.stdout.strip() or result.stderr.strip()
         except Exception:
             return ""
@@ -209,9 +209,7 @@ def doctor() -> None:
                             "3.13+ is recommended[/yellow]"
                         )
         else:
-            console.print(
-                f"  [red]\u2718[/red] {name} — found but could not get version"
-            )
+            console.print(f"  [red]\u2718[/red] {name} — found but could not get version")
             _print_hint(name)
 
     console.print()
@@ -226,9 +224,7 @@ def doctor() -> None:
             console.print(f"  [green]\u2714[/green] {name} — {version}")
             optional_found += 1
         else:
-            console.print(
-                f"  [yellow]![/yellow] {name} — found but could not get version"
-            )
+            console.print(f"  [yellow]![/yellow] {name} — found but could not get version")
 
     console.print()
     req_color = "green" if required_found == required_total else "red"
@@ -241,11 +237,8 @@ def doctor() -> None:
 
     if required_found < required_total:
         console.print(
-            "[bold red]Some required tools are missing. "
-            "Install them before using pjkm.[/bold red]"
+            "[bold red]Some required tools are missing. Install them before using pjkm.[/bold red]"
         )
         raise typer.Exit(1)
     else:
-        console.print(
-            "[bold green]All required tools found. You're good to go![/bold green]"
-        )
+        console.print("[bold green]All required tools found. You're good to go![/bold green]")

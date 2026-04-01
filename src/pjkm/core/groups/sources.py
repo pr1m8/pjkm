@@ -117,17 +117,13 @@ class GroupSourceManager:
         """Persist the source list to ~/.pjkm/sources.yaml."""
         SOURCES_FILE.parent.mkdir(parents=True, exist_ok=True)
         data = {"sources": [s.to_dict() for s in self._sources]}
-        SOURCES_FILE.write_text(
-            yaml.dump(data, default_flow_style=False, sort_keys=False)
-        )
+        SOURCES_FILE.write_text(yaml.dump(data, default_flow_style=False, sort_keys=False))
 
     @property
     def sources(self) -> list[SourceEntry]:
         return list(self._sources)
 
-    def add(
-        self, url: str, name: str = "", path: str = "", ref: str = ""
-    ) -> SourceEntry:
+    def add(self, url: str, name: str = "", path: str = "", ref: str = "") -> SourceEntry:
         """Register a new group source."""
         entry = SourceEntry(url=url, name=name, path=path, ref=ref)
         # Replace if same name exists
@@ -163,11 +159,7 @@ class GroupSourceManager:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         results: list[tuple[SourceEntry, bool, str]] = []
 
-        targets = (
-            self._sources
-            if name is None
-            else [s for s in self._sources if s.name == name]
-        )
+        targets = self._sources if name is None else [s for s in self._sources if s.name == name]
 
         for source in targets:
             try:

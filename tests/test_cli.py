@@ -469,40 +469,30 @@ class TestRecommendCommand:
         assert "standard" in result.stdout
 
     def test_recommend_with_preset(self):
-        result = runner.invoke(
-            app, ["recommend", "service", "--preset", "standard"]
-        )
+        result = runner.invoke(app, ["recommend", "service", "--preset", "standard"])
         assert result.exit_code == 0
         assert "pjkm init" in result.stdout
         assert "-g api" in result.stdout
 
     def test_recommend_preset_minimal(self):
-        result = runner.invoke(
-            app, ["recommend", "single-package", "--preset", "minimal"]
-        )
+        result = runner.invoke(app, ["recommend", "single-package", "--preset", "minimal"])
         assert result.exit_code == 0
         assert "dev" in result.stdout
         assert "linting" in result.stdout
 
     def test_recommend_preset_ai(self):
-        result = runner.invoke(
-            app, ["recommend", "service", "--preset", "ai"]
-        )
+        result = runner.invoke(app, ["recommend", "service", "--preset", "ai"])
         assert result.exit_code == 0
         assert "langchain" in result.stdout
 
     def test_recommend_unknown_preset(self):
-        result = runner.invoke(
-            app, ["recommend", "service", "--preset", "nonexistent"]
-        )
+        result = runner.invoke(app, ["recommend", "service", "--preset", "nonexistent"])
         assert result.exit_code != 0
         assert "Unknown preset" in result.stdout
 
     def test_recommend_all_presets(self):
         for preset in ["minimal", "standard", "full", "ai", "data", "web"]:
-            result = runner.invoke(
-                app, ["recommend", "service", "--preset", preset]
-            )
+            result = runner.invoke(app, ["recommend", "service", "--preset", preset])
             assert result.exit_code == 0, f"Preset {preset} failed"
 
 
@@ -539,11 +529,24 @@ class TestRecipeCommand:
         result = runner.invoke(app, ["recipe"])
         assert result.exit_code == 0
         for name in [
-            "python-lib", "fastapi-service", "ai-agent", "ml-pipeline",
-            "data-analysis", "cli-tool", "fullstack-web", "monorepo",
-            "scraper", "fintech", "api-microservice", "discord-bot",
-            "etl-pipeline", "saas-backend", "document-processor",
-            "media-pipeline", "realtime-api", "file-service",
+            "python-lib",
+            "fastapi-service",
+            "ai-agent",
+            "ml-pipeline",
+            "data-analysis",
+            "cli-tool",
+            "fullstack-web",
+            "monorepo",
+            "scraper",
+            "fintech",
+            "api-microservice",
+            "discord-bot",
+            "etl-pipeline",
+            "saas-backend",
+            "document-processor",
+            "media-pipeline",
+            "realtime-api",
+            "file-service",
         ]:
             assert name in result.stdout
 
@@ -568,10 +571,16 @@ class TestRecipeCreateCommand:
         result = runner.invoke(
             app,
             [
-                "recipe-create", "my-stack",
-                "-a", "service",
-                "-g", "api", "-g", "database",
-                "-o", str(tmp_path / "my_stack.yaml"),
+                "recipe-create",
+                "my-stack",
+                "-a",
+                "service",
+                "-g",
+                "api",
+                "-g",
+                "database",
+                "-o",
+                str(tmp_path / "my_stack.yaml"),
             ],
         )
         assert result.exit_code == 0
@@ -580,7 +589,8 @@ class TestRecipeCreateCommand:
 
     def test_recipe_create_no_groups(self):
         result = runner.invoke(
-            app, ["recipe-create", "empty-recipe"],
+            app,
+            ["recipe-create", "empty-recipe"],
         )
         assert result.exit_code != 0
         assert "At least one group" in result.stdout
@@ -599,23 +609,17 @@ class TestPreviewCommand:
     """Test the preview command."""
 
     def test_preview_basic(self):
-        result = runner.invoke(
-            app, ["preview", "single-package"]
-        )
+        result = runner.invoke(app, ["preview", "single-package"])
         assert result.exit_code == 0
         assert "Preview" in result.stdout
 
     def test_preview_with_groups(self):
-        result = runner.invoke(
-            app, ["preview", "service", "-g", "api", "-g", "docker"]
-        )
+        result = runner.invoke(app, ["preview", "service", "-g", "api", "-g", "docker"])
         assert result.exit_code == 0
         assert "service" in result.stdout
 
     def test_preview_with_recipe(self):
-        result = runner.invoke(
-            app, ["preview", "--recipe", "fastapi-service"]
-        )
+        result = runner.invoke(app, ["preview", "--recipe", "fastapi-service"])
         assert result.exit_code == 0
         assert "fastapi-service" in result.stdout
 
@@ -628,9 +632,7 @@ class TestPreviewCommand:
         assert result.exit_code != 0
 
     def test_preview_invalid_recipe(self):
-        result = runner.invoke(
-            app, ["preview", "--recipe", "nonexistent"]
-        )
+        result = runner.invoke(app, ["preview", "--recipe", "nonexistent"])
         assert result.exit_code != 0
 
 
@@ -706,9 +708,7 @@ class TestUpgradeCommand:
         assert "pyproject.toml" in result.stdout
 
     def test_upgrade_no_groups(self, tmp_path):
-        (tmp_path / "pyproject.toml").write_text(
-            '[project]\nname = "test"\n'
-        )
+        (tmp_path / "pyproject.toml").write_text('[project]\nname = "test"\n')
         result = runner.invoke(app, ["upgrade", "--dir", str(tmp_path)])
         assert result.exit_code != 0
         assert "No groups" in result.stdout
@@ -717,9 +717,7 @@ class TestUpgradeCommand:
         (tmp_path / "pyproject.toml").write_text(
             '[project]\nname = "test"\n\n[project.optional-dependencies]\nlogging = ["structlog>=24.0.0"]\n\n[tool.pjkm]\ngroups = ["logging"]\n'
         )
-        result = runner.invoke(
-            app, ["upgrade", "--dir", str(tmp_path), "--dry-run"]
-        )
+        result = runner.invoke(app, ["upgrade", "--dir", str(tmp_path), "--dry-run"])
         assert result.exit_code == 0
 
 
@@ -727,27 +725,19 @@ class TestLinkCommand:
     """Test the link command."""
 
     def test_link_no_pyproject(self, tmp_path):
-        result = runner.invoke(
-            app, ["link", "ruff", "--dir", str(tmp_path)]
-        )
+        result = runner.invoke(app, ["link", "ruff", "--dir", str(tmp_path)])
         assert result.exit_code != 0
 
     def test_link_no_groups(self, tmp_path):
-        (tmp_path / "pyproject.toml").write_text(
-            '[project]\nname = "test"\n'
-        )
-        result = runner.invoke(
-            app, ["link", "ruff", "--dir", str(tmp_path)]
-        )
+        (tmp_path / "pyproject.toml").write_text('[project]\nname = "test"\n')
+        result = runner.invoke(app, ["link", "ruff", "--dir", str(tmp_path)])
         assert result.exit_code != 0
 
     def test_link_unknown_tool(self, tmp_path):
         (tmp_path / "pyproject.toml").write_text(
             '[project]\nname = "test"\n\n[tool.pjkm]\ngroups = ["logging"]\n'
         )
-        result = runner.invoke(
-            app, ["link", "nonexistent_tool", "--dir", str(tmp_path)]
-        )
+        result = runner.invoke(app, ["link", "nonexistent_tool", "--dir", str(tmp_path)])
         assert result.exit_code != 0
 
 
@@ -764,8 +754,7 @@ class TestWorkspaceCommand:
     def test_workspace_dry_run(self):
         result = runner.invoke(
             app,
-            ["workspace", "my-platform", "-s", "api:api", "-s", "jobs:worker",
-             "--dry-run"],
+            ["workspace", "my-platform", "-s", "api:api", "-s", "jobs:worker", "--dry-run"],
         )
         assert result.exit_code == 0
         assert "api" in result.stdout
@@ -782,8 +771,7 @@ class TestWorkspaceCommand:
     def test_workspace_creates_files(self, tmp_path):
         result = runner.invoke(
             app,
-            ["workspace", "my-plat", "-s", "api:api", "-s", "shared:lib",
-             "--dir", str(tmp_path)],
+            ["workspace", "my-plat", "-s", "api:api", "-s", "shared:lib", "--dir", str(tmp_path)],
         )
         assert result.exit_code == 0, result.stdout
         ws = tmp_path / "my-plat"
@@ -836,9 +824,7 @@ class TestStatusCommand:
         assert result.exit_code != 0
 
     def test_status_no_groups(self, tmp_path):
-        (tmp_path / "pyproject.toml").write_text(
-            '[project]\nname = "test"\n'
-        )
+        (tmp_path / "pyproject.toml").write_text('[project]\nname = "test"\n')
         result = runner.invoke(app, ["status", "--dir", str(tmp_path)])
         assert result.exit_code == 0
         assert "No groups" in result.stdout
@@ -846,7 +832,7 @@ class TestStatusCommand:
     def test_status_with_groups(self, tmp_path):
         (tmp_path / "pyproject.toml").write_text(
             '[project]\nname = "test"\n\n'
-            '[project.optional-dependencies]\n'
+            "[project.optional-dependencies]\n"
             'logging = ["structlog>=24.0.0", "rich>=13.0.0"]\n\n'
             '[tool.pjkm]\narchetype = "service"\ngroups = ["logging"]\n'
         )

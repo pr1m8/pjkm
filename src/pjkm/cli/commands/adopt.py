@@ -39,7 +39,6 @@ def adopt(
         import tomli as tomllib  # type: ignore[no-redef]
 
     from rich.console import Console
-    from rich.panel import Panel
     from rich.table import Table
 
     console = Console()
@@ -209,9 +208,7 @@ def adopt(
             from pjkm.cli.app import app as pjkm_app
 
             runner = CliRunner()
-            add_args = ["add"] + [
-                arg for g in sorted(new_groups) for arg in ("-g", g)
-            ]
+            add_args = ["add"] + [arg for g in sorted(new_groups) for arg in ("-g", g)]
             if directory:
                 add_args.extend(["--dir", directory])
             result = runner.invoke(pjkm_app, add_args)
@@ -305,10 +302,14 @@ def status(
         status_str = "ok"
         for section, expected_deps in group.dependencies.items():
             actual_deps = optional_deps.get(section, [])
-            actual_names = {d.split(">")[0].split("=")[0].split("<")[0].split("[")[0].strip().lower()
-                           for d in actual_deps}
+            actual_names = {
+                d.split(">")[0].split("=")[0].split("<")[0].split("[")[0].strip().lower()
+                for d in actual_deps
+            }
             for dep in expected_deps:
-                dep_name = dep.split(">")[0].split("=")[0].split("<")[0].split("[")[0].strip().lower()
+                dep_name = (
+                    dep.split(">")[0].split("=")[0].split("<")[0].split("[")[0].strip().lower()
+                )
                 if dep_name not in actual_names:
                     status_str = "[yellow]drift[/yellow]"
                     break

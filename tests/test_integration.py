@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import subprocess
-
 import pytest
 from typer.testing import CliRunner
 
@@ -37,9 +35,20 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "my-api", "-a", "service",
-                "-g", "api", "-g", "database", "-g", "redis", "-g", "logging",
-                "--dir", str(tmp_path),
+                "init",
+                "my-api",
+                "-a",
+                "service",
+                "-g",
+                "api",
+                "-g",
+                "database",
+                "-g",
+                "redis",
+                "-g",
+                "logging",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -104,9 +113,16 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "my-app", "-a", "service",
-                "-g", "api", "-g", "auth",
-                "--dir", str(tmp_path),
+                "init",
+                "my-app",
+                "-a",
+                "service",
+                "-g",
+                "api",
+                "-g",
+                "auth",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -129,9 +145,12 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "recipe-test",
-                "--recipe", "fastapi-service",
-                "--dir", str(tmp_path),
+                "init",
+                "recipe-test",
+                "--recipe",
+                "fastapi-service",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -148,9 +167,12 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "my-scraper",
-                "--recipe", "scraper-full",
-                "--dir", str(tmp_path),
+                "init",
+                "my-scraper",
+                "--recipe",
+                "scraper-full",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -185,9 +207,16 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "my-tool", "-a", "script-tool",
-                "-g", "cli_rich", "-g", "logging",
-                "--dir", str(tmp_path),
+                "init",
+                "my-tool",
+                "-a",
+                "script-tool",
+                "-g",
+                "cli_rich",
+                "-g",
+                "logging",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -202,9 +231,14 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "my-project", "-a", "service",
-                "-g", "api",
-                "--dir", str(tmp_path),
+                "init",
+                "my-project",
+                "-a",
+                "service",
+                "-g",
+                "api",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -240,10 +274,22 @@ class TestFullProjectGeneration:
         result = runner.invoke(
             app,
             [
-                "init", "syntax-check", "-a", "service",
-                "-g", "api", "-g", "auth", "-g", "database",
-                "-g", "redis", "-g", "logging",
-                "--dir", str(tmp_path),
+                "init",
+                "syntax-check",
+                "-a",
+                "service",
+                "-g",
+                "api",
+                "-g",
+                "auth",
+                "-g",
+                "database",
+                "-g",
+                "redis",
+                "-g",
+                "logging",
+                "--dir",
+                str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.stdout
@@ -259,7 +305,7 @@ class TestFullProjectGeneration:
             except SyntaxError as e:
                 errors.append(f"{py_file.relative_to(project)}: {e}")
 
-        assert not errors, f"Syntax errors in generated files:\n" + "\n".join(errors)
+        assert not errors, "Syntax errors in generated files:\n" + "\n".join(errors)
 
 
 class TestAgentGeneration:
@@ -357,6 +403,7 @@ class TestAllRecipes:
     @pytest.fixture
     def all_recipes(self):
         from pjkm.cli.commands.recipes import RECIPES
+
         return list(RECIPES.keys())
 
     def test_every_recipe_inits(self, tmp_path, all_recipes):
@@ -365,8 +412,15 @@ class TestAllRecipes:
         for recipe_name in all_recipes:
             result = runner.invoke(
                 app,
-                ["init", f"test-{recipe_name[:10]}", "--recipe", recipe_name,
-                 "--dir", str(tmp_path), "--dry-run"],
+                [
+                    "init",
+                    f"test-{recipe_name[:10]}",
+                    "--recipe",
+                    recipe_name,
+                    "--dir",
+                    str(tmp_path),
+                    "--dry-run",
+                ],
             )
             if result.exit_code != 0:
                 failures.append(f"{recipe_name}: {result.stdout[-200:]}")
@@ -382,8 +436,7 @@ class TestAllRecipes:
             proj_name = recipe_name.replace("-", "")[:12] + "proj"
             result = runner.invoke(
                 app,
-                ["init", proj_name, "--recipe", recipe_name,
-                 "--dir", str(sub)],
+                ["init", proj_name, "--recipe", recipe_name, "--dir", str(sub)],
             )
             if result.exit_code != 0:
                 failures.append(f"{recipe_name}: exit={result.exit_code}")
@@ -397,8 +450,7 @@ class TestWorkspaceE2E:
         """Microservices blueprint generates all services."""
         result = runner.invoke(
             app,
-            ["workspace", "my-plat", "--blueprint", "microservices",
-             "--dir", str(tmp_path)],
+            ["workspace", "my-plat", "--blueprint", "microservices", "--dir", str(tmp_path)],
         )
         assert result.exit_code == 0, result.stdout
 
@@ -414,6 +466,7 @@ class TestWorkspaceE2E:
 
         # VS Code workspace has all folders
         import json
+
         ws_config = json.loads((ws / "my-plat.code-workspace").read_text())
         folder_names = [f["path"] for f in ws_config["folders"]]
         assert "api" in folder_names
@@ -425,8 +478,7 @@ class TestWorkspaceE2E:
         """Each service in workspace is a real pjkm project."""
         result = runner.invoke(
             app,
-            ["workspace", "ws-test", "-s", "api:api", "-s", "lib:lib",
-             "--dir", str(tmp_path)],
+            ["workspace", "ws-test", "-s", "api:api", "-s", "lib:lib", "--dir", str(tmp_path)],
         )
         assert result.exit_code == 0, result.stdout
 

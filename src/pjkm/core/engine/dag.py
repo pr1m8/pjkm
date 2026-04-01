@@ -41,15 +41,13 @@ class DAGResolver:
                 result.extend(self._sort_phase(phase, phase_tasks))
         return result
 
-    def _sort_phase(
-        self, phase: Phase, tasks: list[TaskDefinition]
-    ) -> list[TaskDefinition]:
+    def _sort_phase(self, phase: Phase, tasks: list[TaskDefinition]) -> list[TaskDefinition]:
         """Topological sort within a single phase using Kahn's algorithm."""
         task_map: dict[str, TaskDefinition] = {t.id: t for t in tasks}
         task_ids = set(task_map.keys())
 
         # Build adjacency list and in-degree map
-        in_degree: dict[str, int] = {tid: 0 for tid in task_ids}
+        in_degree: dict[str, int] = dict.fromkeys(task_ids, 0)
         dependents: dict[str, list[str]] = defaultdict(list)
 
         for task in tasks:
@@ -61,9 +59,7 @@ class DAGResolver:
                 dependents[dep_id].append(task.id)
 
         # Start with zero in-degree tasks, sorted by id for deterministic order
-        queue: deque[str] = deque(
-            sorted(tid for tid, deg in in_degree.items() if deg == 0)
-        )
+        queue: deque[str] = deque(sorted(tid for tid, deg in in_degree.items() if deg == 0))
         sorted_tasks: list[TaskDefinition] = []
 
         while queue:
@@ -75,9 +71,7 @@ class DAGResolver:
                     queue.append(dependent_id)
 
         if len(sorted_tasks) != len(tasks):
-            remaining = [
-                tid for tid in task_ids if tid not in {t.id for t in sorted_tasks}
-            ]
+            remaining = [tid for tid in task_ids if tid not in {t.id for t in sorted_tasks}]
             raise CyclicDependencyError(phase, remaining)
 
         return sorted_tasks

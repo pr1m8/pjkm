@@ -215,3 +215,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 pdm.lock
+.DS_Store
+docs/autoapi/
+docs/_build/

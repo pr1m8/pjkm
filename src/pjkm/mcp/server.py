@@ -9,8 +9,6 @@ Run:     python -m pjkm.mcp
 from __future__ import annotations
 
 import json
-import tempfile
-from pathlib import Path
 
 from fastmcp import FastMCP
 
@@ -46,6 +44,7 @@ def init_project(
         Summary of what was created.
     """
     from typer.testing import CliRunner
+
     from pjkm.cli.app import app
 
     runner = CliRunner()
@@ -78,6 +77,7 @@ def add_groups(
         directory: Project directory containing pyproject.toml
     """
     from typer.testing import CliRunner
+
     from pjkm.cli.app import app
 
     runner = CliRunner()
@@ -105,6 +105,7 @@ def preview_project(
         groups: Groups to preview
     """
     from typer.testing import CliRunner
+
     from pjkm.cli.app import app
 
     runner = CliRunner()
@@ -268,6 +269,7 @@ def create_recipe(
         directory: Where to save (default: .pjkm/recipes/)
     """
     from typer.testing import CliRunner
+
     from pjkm.cli.app import app
 
     runner = CliRunner()
@@ -294,6 +296,7 @@ def adopt_project(directory: str = ".") -> str:
         directory: Project directory to scan
     """
     from typer.testing import CliRunner
+
     from pjkm.cli.app import app
 
     runner = CliRunner()
@@ -311,6 +314,7 @@ def project_status(directory: str = ".") -> str:
         directory: Project directory
     """
     from typer.testing import CliRunner
+
     from pjkm.cli.app import app
 
     runner = CliRunner()

@@ -221,9 +221,7 @@ class TestTaskRunner:
         runner = TaskRunner(registry=reg, on_event=events.append)
         runner.run(defs, ctx)
 
-        phase_events = [
-            e for e in events if isinstance(e, (PhaseStarted, PhaseCompleted))
-        ]
+        phase_events = [e for e in events if isinstance(e, (PhaseStarted, PhaseCompleted))]
         assert len(phase_events) == 4  # start/end for SCAFFOLD and CONFIGURE
 
     def test_missing_task_raises(self, ctx):

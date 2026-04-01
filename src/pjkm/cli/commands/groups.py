@@ -136,9 +136,7 @@ def group_import(
         console.print(f"  [cyan]{path.name}[/cyan]")
 
     console.print()
-    console.print(
-        "[dim]Edit the generated files to customize names and descriptions.[/dim]"
-    )
+    console.print("[dim]Edit the generated files to customize names and descriptions.[/dim]")
     console.print("[dim]Use `pjkm group validate` to check your definitions.[/dim]")
 
 
@@ -190,11 +188,7 @@ def group_validate(
                 data = yaml.safe_load(fh)
             group = PackageGroup.model_validate(data)
 
-            bad_refs = [
-                r
-                for r in group.requires_groups
-                if r not in builtin_ids and r != group.id
-            ]
+            bad_refs = [r for r in group.requires_groups if r not in builtin_ids and r != group.id]
             if bad_refs:
                 console.print(
                     f"  [yellow]Warning:[/yellow] {f.name} requires unknown groups: {', '.join(bad_refs)}"
@@ -255,9 +249,7 @@ def source_add(
         "", "--path", "-p", help="Subdirectory within repo containing .yaml files"
     ),
     ref: str = typer.Option("", "--ref", "-r", help="Branch, tag, or commit to track"),
-    sync_now: bool = typer.Option(
-        True, "--sync/--no-sync", help="Clone the repo immediately"
-    ),
+    sync_now: bool = typer.Option(True, "--sync/--no-sync", help="Clone the repo immediately"),
 ) -> None:
     r"""Add a remote git repo as a group source.
 
@@ -299,13 +291,9 @@ def source_add(
                 console.print(f"  [green]Synced:[/green] {src.name} ({msg})")
                 yaml_count = len(list(src.groups_dir.glob("*.yaml")))
                 if yaml_count:
-                    console.print(
-                        f"  [dim]Found {yaml_count} group definition(s)[/dim]"
-                    )
+                    console.print(f"  [dim]Found {yaml_count} group definition(s)[/dim]")
                 else:
-                    console.print(
-                        f"  [yellow]No .yaml files found in {src.groups_dir}[/yellow]"
-                    )
+                    console.print(f"  [yellow]No .yaml files found in {src.groups_dir}[/yellow]")
                     if not path:
                         console.print(
                             "  [dim]Hint: use --path to specify the subdirectory with group files[/dim]"
@@ -372,9 +360,7 @@ def source_list() -> None:
 
     for s in mgr.sources:
         cached = "yes" if s.cache_dir.exists() else "no"
-        yaml_count = (
-            len(list(s.groups_dir.glob("*.yaml"))) if s.groups_dir.is_dir() else 0
-        )
+        yaml_count = len(list(s.groups_dir.glob("*.yaml"))) if s.groups_dir.is_dir() else 0
         table.add_row(
             s.name,
             s.url,
@@ -421,13 +407,7 @@ def group_sync(
     results = mgr.sync(name=name or None)
     for src, ok, msg in results:
         if ok:
-            yaml_count = (
-                len(list(src.groups_dir.glob("*.yaml")))
-                if src.groups_dir.is_dir()
-                else 0
-            )
-            console.print(
-                f"  [green]OK:[/green] {src.name} — {msg} ({yaml_count} groups)"
-            )
+            yaml_count = len(list(src.groups_dir.glob("*.yaml"))) if src.groups_dir.is_dir() else 0
+            console.print(f"  [green]OK:[/green] {src.name} — {msg} ({yaml_count} groups)")
         else:
             console.print(f"  [red]Failed:[/red] {src.name} — {msg}")

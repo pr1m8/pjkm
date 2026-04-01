@@ -86,9 +86,7 @@ class TestSourceEntry:
 
 class TestGroupSourceManager:
     def test_save_and_load(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
         monkeypatch.setattr("pjkm.core.groups.sources.CACHE_DIR", tmp_path / "cache")
 
         mgr = GroupSourceManager()
@@ -103,9 +101,7 @@ class TestGroupSourceManager:
         assert mgr2.sources[1].path == "defs/"
 
     def test_remove(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
         monkeypatch.setattr("pjkm.core.groups.sources.CACHE_DIR", tmp_path / "cache")
 
         mgr = GroupSourceManager()
@@ -118,16 +114,12 @@ class TestGroupSourceManager:
         assert mgr.sources[0].name == "keep"
 
     def test_remove_not_found(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
         mgr = GroupSourceManager()
         assert mgr.remove("nope") is False
 
     def test_add_replaces_same_name(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
         monkeypatch.setattr("pjkm.core.groups.sources.CACHE_DIR", tmp_path / "cache")
 
         mgr = GroupSourceManager()
@@ -138,9 +130,7 @@ class TestGroupSourceManager:
 
     def test_get_all_group_dirs(self, tmp_path, monkeypatch):
         monkeypatch.setattr("pjkm.core.groups.sources.CACHE_DIR", tmp_path)
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
 
         # Create a fake cached source with yaml files
         (tmp_path / "mysrc").mkdir()
@@ -163,9 +153,7 @@ class TestGroupSourceManager:
         assert dirs[0][0] == "mysrc"
 
     def test_load_from_defaults(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
         mgr = GroupSourceManager()
         mgr.load_from_defaults(
             [
@@ -176,9 +164,7 @@ class TestGroupSourceManager:
         assert mgr.sources[0].name == "from-defaults"
 
     def test_load_from_defaults_no_duplicates(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
         monkeypatch.setattr("pjkm.core.groups.sources.CACHE_DIR", tmp_path / "cache")
 
         mgr = GroupSourceManager()
@@ -197,9 +183,7 @@ class TestRegistryLoadSources:
         from pjkm.core.groups.registry import GroupRegistry
 
         monkeypatch.setattr("pjkm.core.groups.sources.CACHE_DIR", tmp_path / "cache")
-        monkeypatch.setattr(
-            "pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml"
-        )
+        monkeypatch.setattr("pjkm.core.groups.sources.SOURCES_FILE", tmp_path / "sources.yaml")
 
         # Create a cached source
         cache_dir = tmp_path / "cache" / "test-src"

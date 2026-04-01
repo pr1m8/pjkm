@@ -91,9 +91,9 @@ class TestGroupRegistry:
         for group in registry.list_all():
             for sf in group.scaffolded_files:
                 path = loader.resolve(f"fragments/{sf.template_fragment}")
-                assert (
-                    path.exists()
-                ), f"Group '{group.id}' references missing fragment: {sf.template_fragment}"
+                assert path.exists(), (
+                    f"Group '{group.id}' references missing fragment: {sf.template_fragment}"
+                )
 
     def test_group_ids_unique(self):
         from pjkm.core.groups.registry import GroupRegistry
@@ -112,9 +112,7 @@ class TestGroupRegistry:
         all_ids = {g.id for g in registry.list_all()}
         for group in registry.list_all():
             for req in group.requires_groups:
-                assert (
-                    req in all_ids
-                ), f"Group '{group.id}' requires unknown group: {req}"
+                assert req in all_ids, f"Group '{group.id}' requires unknown group: {req}"
 
     def test_load_custom_directory(self, tmp_path):
         """Custom groups can be loaded from an arbitrary directory."""
@@ -183,9 +181,7 @@ dev = ["pytest>=8.0"]
 """)
 
         out = tmp_path / "imported"
-        created = GroupRegistry.import_from_pyproject(
-            pyproject, out, sections=["data", "ml"]
-        )
+        created = GroupRegistry.import_from_pyproject(pyproject, out, sections=["data", "ml"])
         assert len(created) == 2
         assert (out / "data.yaml").exists()
         assert (out / "ml.yaml").exists()

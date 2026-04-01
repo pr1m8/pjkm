@@ -30,9 +30,7 @@ class BaseTask(ABC):
 
     def skip_result(self) -> TaskResult:
         """Return a skip result for this task."""
-        return TaskResult(
-            task_id=self.id, success=True, skipped=True, message="Skipped"
-        )
+        return TaskResult(task_id=self.id, success=True, skipped=True, message="Skipped")
 
     def success_result(
         self,

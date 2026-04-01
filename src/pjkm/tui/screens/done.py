@@ -28,9 +28,7 @@ class DoneScreen(Screen):
                 yield Label(f"  cd {self._project_dir}")
                 yield Label("  pdm install")
                 yield Label("  pdm run pytest")
-                yield Label(
-                    "Run 'pjkm doctor' to verify your environment.", classes="hint"
-                )
+                yield Label("Run 'pjkm doctor' to verify your environment.", classes="hint")
             else:
                 yield Static("Build Failed", classes="title")
                 yield Label("Check the logs above for details.")

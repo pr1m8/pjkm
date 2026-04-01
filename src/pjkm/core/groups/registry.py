@@ -127,11 +127,7 @@ class GroupRegistry:
 
     def list_for_archetype(self, archetype: str) -> list[PackageGroup]:
         """Return groups applicable to a given archetype (empty archetypes = all)."""
-        return [
-            g
-            for g in self._groups.values()
-            if not g.archetypes or archetype in g.archetypes
-        ]
+        return [g for g in self._groups.values() if not g.archetypes or archetype in g.archetypes]
 
     @property
     def group_ids(self) -> list[str]:

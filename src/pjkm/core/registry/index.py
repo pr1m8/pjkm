@@ -12,9 +12,7 @@ INDEX_CACHE = CACHE_DIR / "index.json"
 INDEX_TTL = 3600  # 1 hour cache
 
 # Default registry URL — points to a JSON index file
-DEFAULT_REGISTRY_URL = (
-    "https://raw.githubusercontent.com/pr1m8/pjkm-registry/main/index.json"
-)
+DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/pr1m8/pjkm-registry/main/index.json"
 
 
 @dataclass
@@ -97,8 +95,8 @@ class RegistryIndex:
 
     def _fetch_remote(self) -> None:
         """Fetch the index from the registry URL."""
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         try:
             req = urllib.request.Request(

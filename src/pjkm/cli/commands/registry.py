@@ -135,8 +135,7 @@ def install(
             if ok:
                 yaml_count = len(list(src.groups_dir.glob("*.yaml")))
                 console.print(
-                    f"  [green]Synced:[/green] {src.name} — "
-                    f"{yaml_count} group(s) available"
+                    f"  [green]Synced:[/green] {src.name} — {yaml_count} group(s) available"
                 )
             else:
                 console.print(f"  [yellow]Sync pending:[/yellow] {msg}")
@@ -168,9 +167,7 @@ def uninstall(
     else:
         console.print(f"[red]Pack '{name}' is not installed.[/red]")
         if mgr.sources:
-            console.print(
-                f"Installed: {', '.join(s.name for s in mgr.sources)}"
-            )
+            console.print(f"Installed: {', '.join(s.name for s in mgr.sources)}")
         raise typer.Exit(1)
 
 
@@ -197,8 +194,6 @@ def installed() -> None:
     table.add_column("Groups", style="dim", justify="right")
 
     for s in mgr.sources:
-        yaml_count = (
-            len(list(s.groups_dir.glob("*.yaml"))) if s.groups_dir.is_dir() else 0
-        )
+        yaml_count = len(list(s.groups_dir.glob("*.yaml"))) if s.groups_dir.is_dir() else 0
         table.add_row(s.name, s.url, str(yaml_count) if yaml_count else "-")
     console.print(table)

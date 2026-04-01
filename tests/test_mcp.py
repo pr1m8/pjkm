@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 
 class TestMCPToolFunctions:
     """Test the underlying tool functions directly (no MCP transport)."""
@@ -104,8 +102,10 @@ class TestMCPToolFunctions:
 
     def test_resources(self):
         from pjkm.mcp.server import (
-            get_recipes_resource, get_groups_resource,
-            get_registry_resource, get_group_resource,
+            get_group_resource,
+            get_groups_resource,
+            get_recipes_resource,
+            get_registry_resource,
         )
 
         assert "fastapi-service" in get_recipes_resource()
@@ -115,7 +115,9 @@ class TestMCPToolFunctions:
 
     def test_prompts(self):
         from pjkm.mcp.server import (
-            project_advisor, architecture_advisor, agent_scaffold,
+            agent_scaffold,
+            architecture_advisor,
+            project_advisor,
         )
 
         assert "recipe" in project_advisor("a REST API").lower()

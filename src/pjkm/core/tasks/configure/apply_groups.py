@@ -61,9 +61,7 @@ class ApplyGroupsTask(BaseTask):
             pyproject = tomllib.load(f)
 
         # Merge dependencies from each group
-        optional_deps = pyproject.setdefault("project", {}).setdefault(
-            "optional-dependencies", {}
-        )
+        optional_deps = pyproject.setdefault("project", {}).setdefault("optional-dependencies", {})
         tool_config = pyproject.setdefault("tool", {})
 
         for group in groups:

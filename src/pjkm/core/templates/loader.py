@@ -61,9 +61,7 @@ class TemplateLoader:
             if not base.is_dir():
                 return []
             return sorted(
-                d.name
-                for d in base.iterdir()
-                if d.is_dir() and not d.name.startswith("_")
+                d.name for d in base.iterdir() if d.is_dir() and not d.name.startswith("_")
             )
         except (TypeError, FileNotFoundError):
             return []

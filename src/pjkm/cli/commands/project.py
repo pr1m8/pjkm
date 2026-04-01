@@ -77,16 +77,14 @@ def init(
 
         if recipe_name not in RECIPES:
             console.print(
-                f"[red]Unknown recipe: {recipe_name}. "
-                f"Options: {', '.join(RECIPES.keys())}[/red]"
+                f"[red]Unknown recipe: {recipe_name}. Options: {', '.join(RECIPES.keys())}[/red]"
             )
             raise typer.Exit(1)
         r = RECIPES[recipe_name]
         archetype = r["archetype"]
         group = r["groups"]
         console.print(
-            f"[dim]Using recipe '{recipe_name}' "
-            f"({r['archetype']}, {len(r['groups'])} groups)[/dim]"
+            f"[dim]Using recipe '{recipe_name}' ({r['archetype']}, {len(r['groups'])} groups)[/dim]"
         )
 
     # Load user defaults from ~/.pjkmrc.yaml and ./.pjkmrc.yaml
@@ -156,9 +154,7 @@ def init(
     result = engine.execute(config, on_event=on_event, extra={"github": github_extra})
 
     if result.success:
-        console.print(
-            f"\n[bold green]Project {name} created at {config.project_dir}[/bold green]"
-        )
+        console.print(f"\n[bold green]Project {name} created at {config.project_dir}[/bold green]")
         console.print()
         console.print("[dim]Next steps:[/dim]")
         console.print(f"  cd {config.project_dir}")
@@ -213,9 +209,7 @@ def add(
     pyproject_path = project_dir / "pyproject.toml"
 
     if not pyproject_path.exists():
-        console.print(
-            f"[red]pyproject.toml not found in {project_dir}[/red]"
-        )
+        console.print(f"[red]pyproject.toml not found in {project_dir}[/red]")
         raise typer.Exit(1)
 
     with open(pyproject_path, "rb") as f:
@@ -230,12 +224,8 @@ def add(
     valid_ids = set(registry.group_ids)
     invalid = [g for g in group if g not in valid_ids]
     if invalid:
-        console.print(
-            f"[red]Unknown group(s): {', '.join(sorted(invalid))}[/red]"
-        )
-        console.print(
-            f"Valid groups: {', '.join(sorted(valid_ids))}"
-        )
+        console.print(f"[red]Unknown group(s): {', '.join(sorted(invalid))}[/red]")
+        console.print(f"Valid groups: {', '.join(sorted(valid_ids))}")
         raise typer.Exit(1)
 
     resolver = GroupResolver({g.id: g for g in registry.list_all()})
@@ -253,9 +243,7 @@ def add(
         console.print("[dim]All requested groups are already applied.[/dim]")
         raise typer.Exit(0)
 
-    optional_deps = pyproject.setdefault("project", {}).setdefault(
-        "optional-dependencies", {}
-    )
+    optional_deps = pyproject.setdefault("project", {}).setdefault("optional-dependencies", {})
     tool_config = pyproject.setdefault("tool", {})
 
     for g in new_groups:
@@ -312,9 +300,7 @@ def add(
     with open(pyproject_path, "wb") as f:
         tomli_w.dump(pyproject, f)
 
-    console.print(
-        f"[bold green]Added {len(new_groups)} group(s) to {pyproject_path}[/bold green]"
-    )
+    console.print(f"[bold green]Added {len(new_groups)} group(s) to {pyproject_path}[/bold green]")
     for g in new_groups:
         dep_count = sum(len(deps) for deps in g.dependencies.values())
         console.print(f"  [cyan]{g.id}[/cyan] — {dep_count} dep(s)")
@@ -399,9 +385,7 @@ def update(
     groups = pjkm_meta.get("groups", [])
 
     if not archetype:
-        console.print(
-            "[yellow]No [tool.pjkm] archetype found in pyproject.toml.[/yellow]"
-        )
+        console.print("[yellow]No [tool.pjkm] archetype found in pyproject.toml.[/yellow]")
         console.print(
             "[dim]This project may not have been created by pjkm, "
             "or was created before archetype tracking was added.[/dim]"
@@ -421,9 +405,7 @@ def update(
         "description": project_meta.get("description", ""),
         "author_name": first_author.get("name", ""),
         "author_email": first_author.get("email", ""),
-        "python_version": _extract_python_version(
-            project_meta.get("requires-python", ">=3.13")
-        ),
+        "python_version": _extract_python_version(project_meta.get("requires-python", ">=3.13")),
         "license": _extract_license(project_meta.get("license", {})),
     }
 
@@ -443,9 +425,7 @@ def update(
     applied: list[str] = []
 
     if use_copier_update:
-        console.print(
-            "[dim]Found .copier-answers.yml — using Copier update.[/dim]"
-        )
+        console.print("[dim]Found .copier-answers.yml — using Copier update.[/dim]")
         try:
             renderer.update(
                 template_path=loader.resolve("base"),
@@ -456,8 +436,7 @@ def update(
             applied.append("base (copier update)")
         except Exception as exc:
             console.print(
-                f"[yellow]Copier update failed ({exc}), "
-                f"falling back to overwrite.[/yellow]"
+                f"[yellow]Copier update failed ({exc}), falling back to overwrite.[/yellow]"
             )
             use_copier_update = False
 
@@ -487,14 +466,11 @@ def update(
                 applied.append(archetype)
             except Exception as exc:
                 console.print(
-                    f"[yellow]Could not render archetype "
-                    f"template '{archetype}': {exc}[/yellow]"
+                    f"[yellow]Could not render archetype template '{archetype}': {exc}[/yellow]"
                 )
 
     console.print()
-    console.print(
-        f"[bold green]Updated {project_name} in {project_dir}[/bold green]"
-    )
+    console.print(f"[bold green]Updated {project_name} in {project_dir}[/bold green]")
     console.print(f"  Templates applied: {', '.join(applied)}")
     if groups:
         console.print(f"  Groups in project: {', '.join(groups)}")
@@ -601,9 +577,7 @@ def upgrade(
 
     not_applied = [g for g in target_groups if g not in applied_groups]
     if not_applied:
-        console.print(
-            f"[yellow]Group(s) not in project: {', '.join(sorted(not_applied))}[/yellow]"
-        )
+        console.print(f"[yellow]Group(s) not in project: {', '.join(sorted(not_applied))}[/yellow]")
         console.print("[dim]Use `pjkm add` to add them first.[/dim]")
         raise typer.Exit(1)
 
@@ -654,7 +628,8 @@ def upgrade(
                 existing_map.pop(pkg_name, None)
 
             remaining = [
-                dep for dep in existing
+                dep
+                for dep in existing
                 if re.match(r"^([a-zA-Z0-9_-]+(?:\[[^\]]+\])?)", dep)
                 and re.match(r"^([a-zA-Z0-9_-]+(?:\[[^\]]+\])?)", dep).group(1).lower()
                 in existing_map
@@ -800,9 +775,7 @@ def link_tool(
                 matched.append(f"[tool.{tool_key}]")
 
     if not matched:
-        console.print(
-            f"[yellow]No groups define config for '{tool_name}'.[/yellow]"
-        )
+        console.print(f"[yellow]No groups define config for '{tool_name}'.[/yellow]")
         console.print("[dim]Available tool configs from your groups:[/dim]")
         all_tools = set()
         for grp in resolved:
@@ -872,8 +845,7 @@ def preview(
 
         if recipe_name not in RECIPES:
             console.print(
-                f"[red]Unknown recipe: {recipe_name}. "
-                f"Options: {', '.join(RECIPES.keys())}[/red]"
+                f"[red]Unknown recipe: {recipe_name}. Options: {', '.join(RECIPES.keys())}[/red]"
             )
             raise typer.Exit(1)
         r = RECIPES[recipe_name]
@@ -991,16 +963,14 @@ def preview(
                     f"across {len(opt_deps)} sections"
                 )
                 for section, deps in sorted(opt_deps.items()):
-                    console.print(f"  [cyan]{section}[/cyan] ({len(deps)}): {', '.join(deps[:5])}"
-                                  + ("..." if len(deps) > 5 else ""))
+                    console.print(
+                        f"  [cyan]{section}[/cyan] ({len(deps)}): {', '.join(deps[:5])}"
+                        + ("..." if len(deps) > 5 else "")
+                    )
 
     console.print()
     if recipe_name:
-        console.print(
-            f"[dim]To create: pjkm init my-project --recipe {recipe_name}[/dim]"
-        )
+        console.print(f"[dim]To create: pjkm init my-project --recipe {recipe_name}[/dim]")
     elif group:
         groups_str = " ".join(f"-g {g}" for g in group)
-        console.print(
-            f"[dim]To create: pjkm init my-project -a {archetype} {groups_str}[/dim]"
-        )
+        console.print(f"[dim]To create: pjkm init my-project -a {archetype} {groups_str}[/dim]")

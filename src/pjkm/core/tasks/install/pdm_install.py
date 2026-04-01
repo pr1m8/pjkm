@@ -18,10 +18,7 @@ class PdmInstallTask(BaseTask):
     description = "Install project dependencies with PDM"
 
     def should_run(self, ctx: TaskContext) -> bool:
-        return (
-            ctx.platform.has_tool("pdm")
-            and (ctx.project_dir / "pyproject.toml").exists()
-        )
+        return ctx.platform.has_tool("pdm") and (ctx.project_dir / "pyproject.toml").exists()
 
     def execute(self, ctx: TaskContext) -> TaskResult:
         if ctx.config.dry_run:

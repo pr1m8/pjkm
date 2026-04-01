@@ -6,14 +6,22 @@ import json
 
 import typer
 
-
 # Pre-defined service templates for platform init
 SERVICE_TEMPLATES: dict[str, dict] = {
     # --- Services ---
     "api": {
         "archetype": "service",
-        "groups": ["api", "auth", "database", "redis", "logging", "otel",
-                   "monitoring", "docker", "makefile"],
+        "groups": [
+            "api",
+            "auth",
+            "database",
+            "redis",
+            "logging",
+            "otel",
+            "monitoring",
+            "docker",
+            "makefile",
+        ],
         "description": "Main API gateway",
     },
     "worker": {
@@ -28,27 +36,55 @@ SERVICE_TEMPLATES: dict[str, dict] = {
     },
     "scraper": {
         "archetype": "service",
-        "groups": ["web_scraping", "crawling", "celery", "database", "redis",
-                   "s3", "docker", "logging", "makefile"],
+        "groups": [
+            "web_scraping",
+            "crawling",
+            "celery",
+            "database",
+            "redis",
+            "s3",
+            "docker",
+            "logging",
+            "makefile",
+        ],
         "description": "Web scraping service",
     },
     "ml": {
         "archetype": "service",
-        "groups": ["ml", "hf", "api", "database", "redis", "docker",
-                   "logging", "makefile"],
+        "groups": ["ml", "hf", "api", "database", "redis", "docker", "logging", "makefile"],
         "description": "ML model serving",
     },
     "integration": {
         "archetype": "service",
-        "groups": ["api", "http_client", "async_tools", "celery", "redis",
-                   "database", "logging", "otel", "docker", "makefile"],
+        "groups": [
+            "api",
+            "http_client",
+            "async_tools",
+            "celery",
+            "redis",
+            "database",
+            "logging",
+            "otel",
+            "docker",
+            "makefile",
+        ],
         "description": "Integration / webhook service (3rd party APIs)",
     },
     # --- Data Platform ---
     "ingestion": {
         "archetype": "service",
-        "groups": ["api", "celery", "kafka", "database", "redis", "s3",
-                   "docker", "logging", "otel", "makefile"],
+        "groups": [
+            "api",
+            "celery",
+            "kafka",
+            "database",
+            "redis",
+            "s3",
+            "docker",
+            "logging",
+            "otel",
+            "makefile",
+        ],
         "description": "Data ingestion pipeline (CDC, streaming, batch)",
     },
     "warehouse": {
@@ -69,8 +105,16 @@ SERVICE_TEMPLATES: dict[str, dict] = {
     # --- Analytics ---
     "dashboards": {
         "archetype": "service",
-        "groups": ["api", "database", "redis", "dataviz", "streamlit",
-                   "docker", "logging", "makefile"],
+        "groups": [
+            "api",
+            "database",
+            "redis",
+            "dataviz",
+            "streamlit",
+            "docker",
+            "logging",
+            "makefile",
+        ],
         "description": "Analytics dashboards (Streamlit / Grafana)",
     },
     "analytics-events": {
@@ -115,24 +159,46 @@ SERVICE_TEMPLATES: dict[str, dict] = {
 # Pre-defined platform blueprints
 PLATFORM_BLUEPRINTS: dict[str, list[str]] = {
     "microservices": [
-        "api:api", "jobs:worker", "site:web", "shared:lib",
+        "api:api",
+        "jobs:worker",
+        "site:web",
+        "shared:lib",
     ],
     "data-platform": [
-        "api:api", "ingestion:ingestion", "warehouse:warehouse",
-        "orchestration:orchestration", "quality:quality", "dashboards:dashboards",
-        "events:analytics-events", "shared:lib",
+        "api:api",
+        "ingestion:ingestion",
+        "warehouse:warehouse",
+        "orchestration:orchestration",
+        "quality:quality",
+        "dashboards:dashboards",
+        "events:analytics-events",
+        "shared:lib",
     ],
     "scraping-platform": [
-        "api:api", "scraper:scraper", "jobs:worker", "site:web",
-        "storage-lib:storage", "shared:lib",
+        "api:api",
+        "scraper:scraper",
+        "jobs:worker",
+        "site:web",
+        "storage-lib:storage",
+        "shared:lib",
     ],
     "ml-platform": [
-        "api:api", "ml-service:ml", "jobs:worker", "data:ingestion",
-        "dashboards:dashboards", "shared:lib", "models-pkg:db-models",
+        "api:api",
+        "ml-service:ml",
+        "jobs:worker",
+        "data:ingestion",
+        "dashboards:dashboards",
+        "shared:lib",
+        "models-pkg:db-models",
     ],
     "fullstack": [
-        "api:api", "jobs:worker", "site:web", "integrations:integration",
-        "shared:lib", "db-pkg:db-models", "obs-pkg:observability",
+        "api:api",
+        "jobs:worker",
+        "site:web",
+        "integrations:integration",
+        "shared:lib",
+        "db-pkg:db-models",
+        "obs-pkg:observability",
     ],
 }
 
@@ -206,7 +272,8 @@ def workspace(
         table.add_column("Description")
         for tname, tdata in SERVICE_TEMPLATES.items():
             table.add_row(
-                tname, tdata["archetype"],
+                tname,
+                tdata["archetype"],
                 str(len(tdata["groups"])),
                 tdata["description"],
             )
@@ -221,7 +288,9 @@ def workspace(
         console.print(bp_table)
         console.print()
         console.print("[dim]Usage: pjkm workspace my-platform --blueprint microservices[/dim]")
-        console.print("[dim]   or: pjkm workspace my-platform -s api:api -s jobs:worker -s site:web[/dim]")
+        console.print(
+            "[dim]   or: pjkm workspace my-platform -s api:api -s jobs:worker -s site:web[/dim]"
+        )
         return
 
     # Parse service specs
@@ -239,13 +308,15 @@ def workspace(
             raise typer.Exit(1)
 
         tmpl = SERVICE_TEMPLATES[template]
-        services.append({
-            "name": svc_name,
-            "template": template,
-            "archetype": tmpl["archetype"],
-            "groups": tmpl["groups"],
-            "description": tmpl["description"],
-        })
+        services.append(
+            {
+                "name": svc_name,
+                "template": template,
+                "archetype": tmpl["archetype"],
+                "groups": tmpl["groups"],
+                "description": tmpl["description"],
+            }
+        )
 
     parent = Path(directory).resolve() if directory else Path.cwd()
     workspace_dir = parent / name
@@ -254,8 +325,10 @@ def workspace(
         Panel(
             f"[bold]{name}[/bold]\n"
             f"Services: {len(services)}\n"
-            + "\n".join(f"  [cyan]{s['name']}[/cyan] ({s['template']}) — {s['description']}"
-                        for s in services),
+            + "\n".join(
+                f"  [cyan]{s['name']}[/cyan] ({s['template']}) — {s['description']}"
+                for s in services
+            ),
             title="Workspace",
         )
     )
@@ -266,24 +339,28 @@ def workspace(
         for s in services:
             console.print(f"  {s['name']}/  ({s['archetype']}, {len(s['groups'])} groups)")
         console.print(f"  {name}.code-workspace")
-        console.print(f"  docker-compose.yml")
-        console.print(f"  Makefile")
-        console.print(f"  .github/workflows/")
+        console.print("  docker-compose.yml")
+        console.print("  Makefile")
+        console.print("  .github/workflows/")
         raise typer.Exit(0)
 
     workspace_dir.mkdir(parents=True, exist_ok=True)
 
     # --- Init each service ---
     from typer.testing import CliRunner as _Runner
+
     from pjkm.cli.app import app as pjkm_app
 
     _runner = _Runner()
     for svc in services:
         console.print(f"\n[bold blue]Creating {svc['name']}...[/bold blue]")
         args = [
-            "init", svc["name"],
-            "-a", svc["archetype"],
-            "--dir", str(workspace_dir),
+            "init",
+            svc["name"],
+            "-a",
+            svc["archetype"],
+            "--dir",
+            str(workspace_dir),
         ]
         for g in svc["groups"]:
             args.extend(["-g", g])
@@ -294,13 +371,12 @@ def workspace(
             if result.stdout:
                 console.print(result.stdout[-300:])
         else:
-            console.print(f"  [green]Done[/green]")
+            console.print("  [green]Done[/green]")
 
     # --- VS Code workspace file ---
     workspace_config = {
         "folders": [
-            {"path": svc["name"], "name": f"{svc['name']} ({svc['template']})"}
-            for svc in services
+            {"path": svc["name"], "name": f"{svc['name']} ({svc['template']})"} for svc in services
         ],
         "settings": {
             "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
@@ -377,6 +453,7 @@ def workspace(
             compose_services[svc_slug] = svc_entry
 
     import yaml
+
     compose = {
         "version": "3.9",
         "services": compose_services,
@@ -404,13 +481,13 @@ def workspace(
         "\tdocker compose build",
         "",
         "test:",
-        "\t@for svc in $(SERVICES); do echo \"\\n=== Testing $$svc ===\"; (cd $$svc && pdm run pytest -x -q) || exit 1; done",
+        '\t@for svc in $(SERVICES); do echo "\\n=== Testing $$svc ==="; (cd $$svc && pdm run pytest -x -q) || exit 1; done',
         "",
         "lint:",
-        "\t@for svc in $(SERVICES); do echo \"\\n=== Linting $$svc ===\"; (cd $$svc && pdm run ruff check .) || exit 1; done",
+        '\t@for svc in $(SERVICES); do echo "\\n=== Linting $$svc ==="; (cd $$svc && pdm run ruff check .) || exit 1; done',
         "",
         "install:",
-        "\t@for svc in $(SERVICES); do echo \"\\n=== Installing $$svc ===\"; (cd $$svc && pdm install) || exit 1; done",
+        '\t@for svc in $(SERVICES); do echo "\\n=== Installing $$svc ==="; (cd $$svc && pdm install) || exit 1; done',
         "",
     ]
     (workspace_dir / "Makefile").write_text("\n".join(makefile_lines) + "\n")
@@ -432,13 +509,18 @@ def workspace(
             "defaults": {"run": {"working-directory": svc["name"]}},
             "steps": [
                 {"uses": "actions/checkout@v4"},
-                {"name": "Install PDM", "uses": "pdm-project/setup-pdm@v4",
-                 "with": {"python-version": "3.13"}},
+                {
+                    "name": "Install PDM",
+                    "uses": "pdm-project/setup-pdm@v4",
+                    "with": {"python-version": "3.13"},
+                },
                 {"name": "Install", "run": "pdm install -G testing"},
                 {"name": "Test", "run": "pdm run pytest -x -q"},
             ],
         }
-    (gh_dir / "ci.yml").write_text(yaml.dump(ci_workflow, default_flow_style=False, sort_keys=False))
+    (gh_dir / "ci.yml").write_text(
+        yaml.dump(ci_workflow, default_flow_style=False, sort_keys=False)
+    )
 
     # --- Root .gitignore ---
     (workspace_dir / ".gitignore").write_text(
@@ -454,6 +536,6 @@ def workspace(
     console.print("[dim]Next steps:[/dim]")
     console.print(f"  cd {workspace_dir}")
     console.print(f"  code {name}.code-workspace    # open in VS Code")
-    console.print(f"  make install                   # install all services")
-    console.print(f"  make up                        # start Postgres + Redis + services")
-    console.print(f"  make test                      # test all services")
+    console.print("  make install                   # install all services")
+    console.print("  make up                        # start Postgres + Redis + services")
+    console.print("  make test                      # test all services")

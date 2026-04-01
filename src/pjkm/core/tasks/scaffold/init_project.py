@@ -21,9 +21,7 @@ class InitProjectTask(BaseTask):
         dest = config.project_dir
 
         if dest.exists() and any(dest.iterdir()):
-            return self.failure_result(
-                f"Directory {dest} already exists and is not empty"
-            )
+            return self.failure_result(f"Directory {dest} already exists and is not empty")
 
         dest.mkdir(parents=True, exist_ok=True)
 
@@ -57,7 +55,7 @@ class InitProjectTask(BaseTask):
         )
 
     @staticmethod
-    def _record_archetype(dest: "Path", archetype: str) -> None:  # noqa: F821
+    def _record_archetype(dest: Path, archetype: str) -> None:  # noqa: F821
         """Write the archetype into [tool.pjkm] in pyproject.toml."""
         from pathlib import Path
 

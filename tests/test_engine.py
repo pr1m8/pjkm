@@ -72,9 +72,7 @@ class TestProjectEngine:
         reg.register(StubScaffoldTask())
         engine = ProjectEngine(task_registry=reg)
         engine.execute(config, on_event=events.append)
-        assert (
-            len(events) >= 3
-        )  # PhaseStarted, TaskStarted, TaskCompleted, PhaseCompleted
+        assert len(events) >= 3  # PhaseStarted, TaskStarted, TaskCompleted, PhaseCompleted
 
     def test_result_properties(self, config):
         reg = TaskRegistry()

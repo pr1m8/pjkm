@@ -83,9 +83,7 @@ class ProgressScreen(Screen):
                 self._status.update(f"Running: {desc or tid}")
             case TaskCompleted(task_id=tid, result=result):
                 self._completed_tasks += 1
-                pct = min(
-                    99, int(self._completed_tasks / max(self._total_tasks, 7) * 100)
-                )
+                pct = min(99, int(self._completed_tasks / max(self._total_tasks, 7) * 100))
                 self._progress.update(progress=pct)
                 if result.skipped:
                     self._log.write(f"  [yellow]Skipped:[/yellow] {tid}")

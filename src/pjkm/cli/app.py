@@ -13,7 +13,8 @@ from __future__ import annotations
 import typer
 
 from pjkm.cli.commands import adopt as adopt_mod
-from pjkm.cli.commands import config, groups, info, project, recipes, registry, workspace as ws_mod
+from pjkm.cli.commands import config, groups, info, project, recipes, registry
+from pjkm.cli.commands import workspace as ws_mod
 
 app = typer.Typer(
     name="pjkm",

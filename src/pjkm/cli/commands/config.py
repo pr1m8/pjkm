@@ -80,22 +80,14 @@ github:
     # Show current defaults
     user_defaults = UserDefaults.load()
 
-    console.print(
-        Panel("[bold]Current Defaults[/bold]", title="pjkm defaults")
-    )
+    console.print(Panel("[bold]Current Defaults[/bold]", title="pjkm defaults"))
     console.print()
-    console.print(
-        f"  [cyan]author_name:[/cyan]    {user_defaults.author_name or '(not set)'}"
-    )
-    console.print(
-        f"  [cyan]author_email:[/cyan]   {user_defaults.author_email or '(not set)'}"
-    )
+    console.print(f"  [cyan]author_name:[/cyan]    {user_defaults.author_name or '(not set)'}")
+    console.print(f"  [cyan]author_email:[/cyan]   {user_defaults.author_email or '(not set)'}")
     console.print(f"  [cyan]license:[/cyan]         {user_defaults.license}")
     console.print(f"  [cyan]python_version:[/cyan]  {user_defaults.python_version}")
     console.print(f"  [cyan]archetype:[/cyan]       {user_defaults.archetype}")
-    console.print(
-        f"  [cyan]groups:[/cyan]          {', '.join(user_defaults.groups) or '(none)'}"
-    )
+    console.print(f"  [cyan]groups:[/cyan]          {', '.join(user_defaults.groups) or '(none)'}")
     console.print(f"  [cyan]target_dir:[/cyan]      {user_defaults.target_dir}")
 
     gh = user_defaults.github
@@ -103,9 +95,7 @@ github:
     console.print("  [bold]GitHub[/bold]")
     console.print(f"  [cyan]org:[/cyan]             {gh.org or '(not set)'}")
     console.print(f"  [cyan]visibility:[/cyan]      {gh.visibility}")
-    console.print(
-        f"  [cyan]remote:[/cyan]          {gh.remote or '(default: github.com)'}"
-    )
+    console.print(f"  [cyan]remote:[/cyan]          {gh.remote or '(default: github.com)'}")
     console.print(f"  [cyan]create_repo:[/cyan]     {gh.create_repo}")
     console.print(f"  [cyan]default_branch:[/cyan]  {gh.default_branch}")
 

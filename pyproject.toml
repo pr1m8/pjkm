@@ -30,6 +30,7 @@ classifiers = [
 
 [project.scripts]
 pjkm = "pjkm.cli.app:app"
+pjkm-mcp = "pjkm.mcp.server:main"
 
 [project.urls]
 Homepage = "https://github.com/pr1m8/pjkm"
@@ -54,6 +55,10 @@ docs = [
   "sphinxcontrib-mermaid>=1.0.0",
   "myst-parser>=4.0.0",
   "furo>=2024.8.0",
+]
+mcp = [
+  "fastmcp>=2.0.0",
+  "langchain-mcp-adapters>=0.1.8",
 ]
 
 [project.entry-points."pjkm.groups"]

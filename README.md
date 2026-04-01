@@ -1,19 +1,47 @@
+<div align="center">
+
 # pjkm
 
-Python project scaffolder with composable templates, 91 package groups, and a community registry.
+**Python project scaffolder with composable templates, 105 package groups, and a community registry.**
+
+[![CI](https://github.com/pr1m8/pjkm/actions/workflows/ci.yml/badge.svg)](https://github.com/pr1m8/pjkm/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/pr1m8/pjkm/graph/badge.svg)](https://codecov.io/gh/pr1m8/pjkm)
+[![PyPI](https://img.shields.io/pypi/v/pjkm?color=blue)](https://pypi.org/project/pjkm/)
+[![Python](https://img.shields.io/pypi/pyversions/pjkm)](https://pypi.org/project/pjkm/)
+[![License](https://img.shields.io/github/license/pr1m8/pjkm)](LICENSE)
+[![Docs](https://readthedocs.org/projects/pjkm/badge/?version=latest)](https://pjkm.readthedocs.io)
+
+[Quick Start](#quick-start) · [Recipes](#recipes-22) · [Groups](#package-groups-105) · [Workspace](#workspace) · [Docs](https://pjkm.readthedocs.io)
+
+</div>
+
+---
+
+## Why pjkm?
+
+Most project generators give you a skeleton. pjkm gives you a **running application**.
+
+Pick `api + database + redis + auth` and you get a FastAPI app where the lifespan connects your DB, health checks ping Redis, settings read from `.env`, and test fixtures match your stack. Not placeholder comments — real wired code.
+
+```bash
+pjkm init my-api --recipe fastapi-service
+cd my-api && python -m my_api   # → http://localhost:8000/docs
+```
 
 ## Features
 
-- **105 package groups** across 8 categories — API, database, Redis, auth, ML, LangChain, Docker, K8s, and more
-- **22 recipes** — one command to scaffold a FastAPI service, AI agent, SaaS backend, ML pipeline, etc.
-- **Workspace command** — scaffold multi-service platforms with shared infra, VS Code workspace, docker-compose
-- **Group-aware templates** — fragments auto-wire based on what you select (DB + Redis + auth = fully connected app)
-- **Source code scaffolding** — generates real Python modules, not just dependency lists
-- **Community registry** — `pjkm search django` / `pjkm install pjkm-django`
-- **Adopt existing projects** — `pjkm adopt` scans your project and suggests groups
-- **22 GitHub Actions workflows** — CI, release, Docker, CodeQL, auto-merge, deploy, and more
-- **4 archetypes** — single-package, service, poly-repo, script-tool
-- **CLI + TUI** — Typer CLI and Textual TUI wizard
+| | |
+|---|---|
+| **105 groups** | Composable dependency + code bundles across 8 categories |
+| **22 recipes** | One command → fully configured project |
+| **Group-aware templates** | Fragments auto-wire based on selection |
+| **Real source code** | API routes, DB models, auth, Redis client — not stubs |
+| **22 CI workflows** | Test, lint, Docker, CodeQL, deploy, auto-merge |
+| **Community registry** | `pjkm search` / `pjkm install` |
+| **Workspace** | Multi-service platforms with shared infra |
+| **Adopt** | Scan existing projects, suggest groups |
+| **18 Sphinx extensions** | AutoAPI, Furo, mermaid, copybutton |
+| **CLI + TUI** | Typer CLI and Textual interactive wizard |
 
 ## Install
 
@@ -24,186 +52,163 @@ pip install pjkm
 ## Quick Start
 
 ```bash
-# Use a recipe — one command, fully configured
+# From a recipe
 pjkm init my-api --recipe fastapi-service
-cd my-api && python -m my_api   # it runs
 
-# Or pick groups manually
+# From groups
 pjkm init my-lib -a single-package -g dev -g docs -g coverage
 
-# Preview before creating
+# Preview first
 pjkm preview --recipe saas-backend
 
-# Adopt an existing project
-cd ~/existing-project
-pjkm adopt               # detects FastAPI, SQLAlchemy, Redis, etc.
-pjkm adopt --apply       # applies detected groups
+# Adopt existing project
+cd ~/my-project && pjkm adopt --apply
 
-# Interactive wizard
+# Interactive
 pjkm tui
 ```
 
-## Recipes
+## Recipes (22)
 
 ```bash
-pjkm init myapp --recipe <name>
+pjkm recipe                          # browse all
+pjkm recipe ai-agent --show          # details
+pjkm init myapp --recipe <name>      # create
 ```
 
-| Recipe | What you get |
-|--------|-------------|
-| `python-lib` | Publish-ready library with full CI/CD |
-| `fastapi-service` | Production API with DB, auth, observability |
-| `ai-agent` | LangChain/LangGraph agent with vector stores |
-| `ml-pipeline` | ML training with experiment tracking |
-| `data-analysis` | Notebooks + visualization workspace |
-| `cli-tool` | Polished CLI with rich output |
-| `fullstack-web` | API + Next.js frontend + auth + infra |
-| `monorepo` | Multi-package with shared CI |
-| `scraper` | Crawling pipeline with storage |
-| `fintech` | Payments, compliance, monitoring |
-| `api-microservice` | Lightweight async service with caching |
-| `discord-bot` | Async bot with scheduling |
-| `etl-pipeline` | ETL with queues and scheduling |
-| `saas-backend` | Multi-tenant with billing, email, websocket |
-| `document-processor` | Doc ingestion, OCR, PDF generation |
-| `media-pipeline` | Video/audio/image processing with ffmpeg |
-| `realtime-api` | WebSocket + SSE + rate limiting |
-| `file-service` | S3 uploads with thumbnails and metadata |
-| `scraper-full` | Full scraping platform with MinIO, Celery, Prometheus |
-| `tui-app` | Textual terminal UI with async + config |
-| `rag-service` | RAG API with vector store, embeddings, doc ingestion |
-| `agent-platform` | Multi-agent with eval, observability, monitoring |
+<details>
+<summary><strong>All 22 recipes</strong></summary>
 
-## What gets generated
+| Recipe | Archetype | Description |
+|--------|-----------|-------------|
+| `python-lib` | single-package | Publish-ready library with CI/CD |
+| `fastapi-service` | service | Production API with DB, auth, observability |
+| `ai-agent` | single-package | LangGraph agent with tools, memory, MCP |
+| `rag-service` | service | RAG API with vector store + embeddings |
+| `agent-platform` | service | Multi-agent with eval + monitoring |
+| `ml-pipeline` | service | ML training with experiment tracking |
+| `data-analysis` | single-package | Notebooks + visualization |
+| `cli-tool` | script-tool | Polished CLI with Typer |
+| `fullstack-web` | service | API + Next.js + auth + infra |
+| `monorepo` | poly-repo | Multi-package with shared CI |
+| `scraper` | service | Crawling pipeline |
+| `fintech` | service | Payments, compliance, monitoring |
+| `api-microservice` | service | Lightweight async service + caching |
+| `discord-bot` | single-package | Async bot with scheduling |
+| `etl-pipeline` | service | ETL with queues |
+| `saas-backend` | service | Multi-tenant with billing, email, WS |
+| `document-processor` | service | Doc ingestion, OCR, PDF |
+| `media-pipeline` | service | Video/audio/image with ffmpeg |
+| `realtime-api` | service | WebSocket + SSE + rate limiting |
+| `file-service` | service | S3 uploads with thumbnails |
+| `scraper-full` | service | Full platform + MinIO + Celery |
+| `tui-app` | script-tool | Textual terminal UI |
+
+</details>
+
+## What Gets Generated
 
 `pjkm init my-api --recipe fastapi-service` produces:
 
 ```
 my-api/
-├── .env.example                    # only vars for your selected groups
-├── .github/workflows/              # 15+ CI/CD workflows
-├── Dockerfile                      # multi-stage production build
-├── Makefile
-├── alembic/                        # database migrations
-├── pyproject.toml                  # deps organized by group
+├── .env.example                    ← only vars for your groups
+├── .github/workflows/              ← 15+ CI/CD workflows
+├── Dockerfile                      ← multi-stage production build
+├── Makefile + make/*.mk            ← modular build targets
+├── alembic/                        ← database migrations
+├── docs/                           ← Sphinx + Furo + AutoAPI
+├── pyproject.toml                  ← deps organized by group
+├── tests/
+│   ├── conftest.py                 ← fixtures: app, client, db, redis
+│   ├── test_health.py              ← endpoint tests
+│   └── test_settings.py            ← settings validation
 └── src/my_api/
-    ├── __main__.py                 # python -m my_api starts uvicorn
+    ├── __main__.py                 ← python -m my_api
     ├── api/
-    │   ├── app.py                  # FastAPI factory + CORS + middleware
-    │   ├── deps.py                 # get_db(), get_redis(), get_settings()
-    │   ├── middleware.py           # request ID, timing
-    │   ├── pagination.py           # paginated response utility
-    │   └── routes/
-    │       ├── health.py           # /health + /ready (pings DB, Redis)
-    │       └── v1.py
-    ├── auth/
-    │   ├── jwt.py                  # create/decode tokens
-    │   └── deps.py                 # get_current_user dependency
+    │   ├── app.py                  ← FastAPI factory + middleware
+    │   ├── deps.py                 ← Depends(get_db), Depends(get_redis)
+    │   ├── middleware.py           ← request ID, timing headers
+    │   ├── pagination.py           ← cursor/offset pagination
+    │   └── routes/{health,v1}.py   ← /health pings DB+Redis
+    ├── auth/{jwt,deps}.py          ← JWT + Bearer dependency
     ├── core/
-    │   ├── database.py             # async SQLAlchemy engine + sessions
-    │   ├── lifespan.py             # auto-connects DB + Redis on startup
-    │   ├── logging/                # structlog + Rich
-    │   ├── redis.py                # async client + connection pool
-    │   └── settings.py             # Pydantic Settings from .env
-    └── models/
-        ├── __init__.py             # model registry for Alembic
-        └── mixins.py               # timestamps, UUID PKs, soft-delete
+    │   ├── database.py             ← async SQLAlchemy + session factory
+    │   ├── lifespan.py             ← auto-wires DB + Redis startup/shutdown
+    │   ├── logging/config.py       ← structlog + Rich
+    │   ├── redis.py                ← async client + pool + health check
+    │   └── settings.py             ← Pydantic Settings ← .env
+    └── models/{__init__,mixins}.py ← Base, timestamps, UUID PKs, soft-delete
 ```
 
-Templates are **group-aware** — the lifespan, health checks, deps, settings, and .env all dynamically compose based on which groups you selected.
+> **Group-aware**: lifespan, health checks, deps, settings, .env, and test fixtures all dynamically compose based on which groups you selected.
 
-## Package Groups (91)
+## Package Groups (105)
 
 ```bash
-pjkm list groups    # browse all, organized by category
-pjkm info <group>   # detailed view
+pjkm list groups        # categorized view
+pjkm info database      # detailed view with deps + scaffolding
 ```
 
-| Category | Groups | Examples |
-|----------|--------|---------|
-| Core Dev (23) | dev, linting, testing, typecheck, coverage, security, ... | code quality, profiling, Textual TUI |
-| AI / ML (29) | langchain, langgraph, agents, hf, ml, torch, ... | RAG, eval, embeddings, guardrails, MCP |
-| Web & API (18) | api, auth, websocket, sse, rate_limit, ... | payments, email, file upload |
-| Infrastructure (18) | docker, k8s, otel, celery, ci_cd, s3, ... | terraform, pulumi, MinIO |
-| Data & Storage (9) | database, redis, mongodb, kafka, elasticsearch, ... | caching, neo4j |
-| Docs & Meta (4) | docs, docs_mkdocs, github_templates, submodules | |
-| Frontend (2) | frontend (Next.js), frontend_vite (Vite+React) | |
-| Platform (2) | mac, linux | |
+| Category | Count | Highlights |
+|----------|-------|-----------|
+| **Core Dev** | 23 | testing, linting, typecheck, coverage, profiling, Textual TUI |
+| **AI / ML** | 29 | LangGraph agents, RAG, embeddings, eval, Claude/OpenAI SDK, MCP, guardrails |
+| **Web & API** | 18 | FastAPI, auth, WebSocket, SSE, rate limiting, payments, email |
+| **Infrastructure** | 18 | Docker, K8s, OTel, Celery, Terraform, S3, MinIO |
+| **Data & Storage** | 9 | PostgreSQL, Redis, MongoDB, Kafka, Elasticsearch |
+| **Docs & Meta** | 4 | Sphinx (18 extensions), MkDocs Material |
+| **Frontend** | 2 | Next.js, Vite + React |
+| **Platform** | 2 | macOS, Linux |
+
+## Workspace
+
+Scaffold multi-service platforms:
+
+```bash
+pjkm workspace my-platform --blueprint microservices
+# Creates: api/ + jobs/ + site/ + shared/ + docker-compose + VS Code workspace
+
+pjkm workspace my-platform --blueprint data-platform
+# Creates: api/ + ingestion/ + warehouse/ + orchestration/ + dashboards/ + ...
+```
+
+**Blueprints**: `microservices` · `data-platform` · `scraping-platform` · `ml-platform` · `fullstack`
+
+Each service is a full pjkm project. Includes shared `docker-compose.yml` (Postgres + Redis), root `Makefile`, VS Code `.code-workspace`, and GitHub Actions CI.
 
 ## Registry
 
-Browse and install community group packs:
-
 ```bash
-pjkm search                    # list all packs
-pjkm search django             # search
-pjkm install pjkm-django       # install
-pjkm installed                 # see what's installed
-pjkm uninstall pjkm-django     # remove
+pjkm search django          # browse community packs
+pjkm install pjkm-django    # install
+pjkm installed               # list installed
 ```
 
-## Project Status
+## Adopt Existing Projects
 
 ```bash
-pjkm status              # show applied groups, detect dep drift
-pjkm adopt               # scan project, suggest groups
-pjkm upgrade              # update deps to latest group definitions
-pjkm upgrade --dry-run    # preview changes
+cd ~/my-existing-api
+pjkm adopt                  # detects 60+ deps, 20 file patterns
+pjkm adopt --apply          # applies matching groups
+pjkm status                 # shows groups, detects drift
 ```
 
-## User Defaults
+## Configuration
 
 ```bash
-pjkm defaults --init     # create .pjkmrc.yaml
+pjkm defaults --init        # create ~/.pjkmrc.yaml
 ```
 
 ```yaml
 author_name: "Your Name"
 author_email: "you@example.com"
-license: MIT
 python_version: "3.13"
 archetype: single-package
 groups: [dev]
-
 github:
   org: mycompany
-  visibility: private
   create_repo: true
-```
-
-## CLI Reference
-
-```
-pjkm init NAME [-a ARCH] [-g GROUP...] [--recipe NAME] [--dry-run]
-pjkm add -g GROUP... [-d DIR]
-pjkm update [-d DIR] [--dry-run]
-pjkm upgrade [-g GROUP...] [--latest] [--dry-run]
-pjkm link TOOL [-d DIR]
-pjkm preview [ARCH] [-g GROUP...] [--recipe NAME]
-
-pjkm adopt [--dir DIR] [--apply]
-pjkm status [--dir DIR]
-
-pjkm list [archetypes|groups]
-pjkm info GROUP_ID
-pjkm recommend ARCH [--preset NAME]
-pjkm recipe [NAME] [--show]
-pjkm doctor
-
-pjkm search [QUERY]
-pjkm install PACK
-pjkm uninstall PACK
-pjkm installed
-
-pjkm adopt [--dir DIR] [--apply]
-pjkm status [--dir DIR]
-pjkm workspace NAME [-s name:template...] [--blueprint NAME]
-
-pjkm group create|import|validate|list|sync
-pjkm group source add|list|remove
-
-pjkm defaults [--init] [--global]
-pjkm tui
 ```
 
 ## Development
@@ -211,20 +216,23 @@ pjkm tui
 ```bash
 git clone https://github.com/pr1m8/pjkm
 cd pjkm
-pdm install -G dev
-pdm run pytest        # 197 tests
-pdm run ruff check .
+pdm install -G dev -G docs
+pdm run pytest                    # 197 tests
+pdm run ruff check src tests
+pdm run sphinx-build docs/ docs/_build/html
 ```
 
-## Architecture
+## Documentation
 
-See [`docs_internal/`](docs_internal/) and [`CLAUDE.md`](CLAUDE.md) for internals:
+Full docs at [**pjkm.readthedocs.io**](https://pjkm.readthedocs.io):
 
-- [ARCHITECTURE.md](docs_internal/ARCHITECTURE.md) — package layout, execution flow
-- [TASKS.md](docs_internal/TASKS.md) — DAG task system, 9 built-in tasks
-- [GROUPS.md](docs_internal/GROUPS.md) — group schema, 105 groups
-- [TEMPLATES.md](docs_internal/TEMPLATES.md) — template layers, 34 fragments
-- [PACK_AUTHORING.md](docs_internal/PACK_AUTHORING.md) — create and publish group packs
+- [Quick Start](https://pjkm.readthedocs.io/en/latest/quickstart.html)
+- [Recipes](https://pjkm.readthedocs.io/en/latest/recipes.html)
+- [Groups](https://pjkm.readthedocs.io/en/latest/groups.html)
+- [Templates](https://pjkm.readthedocs.io/en/latest/templates.html)
+- [Workspace](https://pjkm.readthedocs.io/en/latest/workspace.html)
+- [Pack Authoring](https://pjkm.readthedocs.io/en/latest/pack-authoring.html)
+- [API Reference](https://pjkm.readthedocs.io/en/latest/autoapi/index.html)
 
 ## License
 

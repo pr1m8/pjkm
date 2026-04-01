@@ -44,6 +44,17 @@ dev = [
   "pytest-mock>=3.15.0",
   "ruff>=0.15.0",
 ]
+docs = [
+  "sphinx>=8.0.0",
+  "sphinx-autobuild>=2024.10.0",
+  "sphinx-autodoc-typehints>=3.0.0",
+  "sphinx-autoapi>=3.4.0",
+  "sphinx-copybutton>=0.5.0",
+  "sphinx-design>=0.6.0",
+  "sphinxcontrib-mermaid>=1.0.0",
+  "myst-parser>=4.0.0",
+  "furo>=2024.8.0",
+]
 
 [project.entry-points."pjkm.groups"]
 [project.entry-points."pjkm.tasks"]
